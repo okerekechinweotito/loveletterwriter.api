@@ -12,9 +12,16 @@ openai.api_key = os.environ.get("OPENAI_API_KEY", None)
 
 def generate_letter(prompt):
     response = openai.Completion.create(
-        model="text-davinci-002", prompt=prompt, temperature=0, max_tokens=6
+        model="text-davinci-002",
+        prompt=prompt,
+        temperature=0.7,
+        max_tokens=256,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0,
     )
-    return response
+    text = response["choices"][0]["text"]
+    return text
 
 
 def send_sms(reciever, text):
