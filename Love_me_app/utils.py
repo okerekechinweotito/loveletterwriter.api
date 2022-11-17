@@ -15,3 +15,9 @@ def generate_letter(prompt):
         model="text-davinci-002", prompt=prompt, temperature=0, max_tokens=6
     )
     return response
+
+
+def send_sms(reciever, text):
+    twilio_client.messages.create(
+        body=text, from_=twilio_phone_number, to=reciever.phone_number
+    )
