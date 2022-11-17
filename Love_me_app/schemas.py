@@ -45,6 +45,7 @@ class AiTrainerValue(BaseModel):
     date_created:datetime
 
 class Subscription(BaseModel):
+    id:int
     name:str
     description:str
     months:int
@@ -52,11 +53,18 @@ class Subscription(BaseModel):
     amount:int
     date_created:datetime
 
+    # class config:
+    #     orm_mode = True
+
 class Transaction(BaseModel):
     user_id:int
     subscription_id:int
     ref_no:str
     date_created:str
+
+    class config:
+        orm_mode = True
+        
 
 class ResetPass(BaseModel):
     pin:str

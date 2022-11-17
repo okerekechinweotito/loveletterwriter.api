@@ -1,6 +1,6 @@
 from sqlalchemy import Column,Integer,String,Time,Date,DateTime,Boolean,ForeignKey
 from sqlalchemy.orm import relationship
-from .database import Base
+from database import Base
 
 class User(Base):
     __tablename__ = "users"
@@ -78,17 +78,19 @@ class AiTrainerValue(Base):
 
 
 class Subscription(Base):
-    __tablename__ = "subscriptions"
+    __tablename__ = 'subscriptions'
     id = Column(Integer,primary_key=True,index=True)
-    name = Column(String)
-    description = Column(String)
+    name = Column(String(255))
+    description = Column(String(255))
     months = Column(Integer)
     total_sms = Column(Integer)
-    amount = Column(String)
+    amount = Column(String(255))
     date_created = Column(DateTime)
     transaction = relationship('Transaction',back_populates='subscription')
 
-
+    def __repr__(self):
+        return f'{name} {amount}'
+ 
 class Transaction(Base):
     __tablename__="transactions"
     id = Column(Integer,primary_key=True,index=True)
