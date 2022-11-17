@@ -53,8 +53,8 @@ class Subscription(BaseModel):
     amount:int
     date_created:datetime
 
-    # class config:
-    #     orm_mode = True
+    class config:
+        orm_mode = True
 
 class Transaction(BaseModel):
     user_id:int
