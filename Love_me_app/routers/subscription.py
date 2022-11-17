@@ -1,15 +1,18 @@
 from fastapi import APIRouter
-from models import * 
-from schemas import *
-from database import engine,SessionLocal
+from schemas import Subscription
+from typing import List
+import models
+from database import SessionLocal
 
 
 
 router = APIRouter()
 
+#<-- @madvirus work -->
+
 db = SessionLocal()
-@router.post("/sub",response_model=Subscription)
-async def subsc(subscription:Subscription):
+@router.post("/api/subscription",response_model=Subscription,description="endpoint to post subscription")
+async def subscribe(subscription:Subscription):
     data = Subscription(
         id = subscription.id,
         name=subscription.name,
@@ -24,3 +27,12 @@ async def subsc(subscription:Subscription):
 
 
     return data 
+
+
+@router.get('/api/subscription/plans',description="list of available plans",response_model=List[Subscription])
+async def SubscriptionPlans():
+    plans = db.query(models.Subscription).all()
+    return plans
+
+
+#<-- @madvirus -->
