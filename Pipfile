@@ -11,6 +11,8 @@ uvicorn = "*"
 passlib = "*"
 fastapi-mail = "*"
 python-dotenv = "*"
+fastapi-jwt-auth = "*"
+python-jose = "*"
 
 [dev-packages]
 

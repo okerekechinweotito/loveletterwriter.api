@@ -9,6 +9,9 @@ venv/
 
 #files worked on by others
 Love_me_app/dependencies.py
+Love_me_app/crud.py
+Love_me_app/utils.py
+Love_me_app/templates
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -8,10 +8,10 @@ work as expected
 
 #Import libraries
 from fastapi import APIRouter, HTTPException, status, Depends
-
-from dependencies import get_current_user, generate_access_token, \
-    get_password_hash, password_reset, website_url
-
+from send_email import password_reset
+from dependencies import get_current_user, website_url
+from utils import generate_access_token, get_password_hash
+from crud import UserCrud
 #Import modules
 import schemas, models
 from database import get_db
@@ -25,13 +25,15 @@ router = APIRouter()
 # TODO: Reset password request route
 
 @router.post("/user/reset_request/", response_description="Password reset request")
-async def reset_request(user_email: schemas.User):
-    user = await db["users"].find_one({"email": user_email.email})
+async def reset_request(requesting_user: schemas.ResetPasswordRequest):
+    user = UserCrud.get_user_by_id(db, requesting_user.user_id)
+
 
     if user is not None:
         token = generate_access_token({"id": user["id"]})
 
         reset_link = f"{website_url}user/password_reset?token={token}"
+
 
         await password_reset("Password Reset", user["email"],
             {
@@ -40,7 +42,7 @@ async def reset_request(user_email: schemas.User):
                 "reset_link": reset_link
             }
         )
-        return {"msg": "Email has been sent to the provided mail with instructions to reset your password."}
+        return {"msg": "Password reset email sent successfully."}
 
     else:
         raise HTTPException(
@@ -50,7 +52,7 @@ async def reset_request(user_email: schemas.User):
 
 # TODO: Reset password route
 @router.patch("user/reset_password/", response_description="Password reset")
-async def reset_password(token: str, password_reset: schemas.User):
+async def reset_password(token: str, password_reset: schemas.ResetPassword):
     reset_pass_data = {k:v for k, v in password_reset.dict().items() if v is not None}
 
 
