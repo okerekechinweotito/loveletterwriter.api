@@ -1,6 +1,7 @@
-from pydantic import BaseModel
-from datetime import date,time,datetime
-
+from pydantic import BaseModel, Field, EmailStr
+from datetime import datetime
+from fastapi_jwt_auth import AuthJWT
+from typing import Union
 class User(BaseModel):
     first_name:str
     last_name:str
@@ -69,3 +70,40 @@ class BlackListedTokens(BaseModel):
     token:str
     expiry_date:datetime
     blacklisted_on:datetime
+
+class UserBase(BaseModel):
+    first_name: str
+    last_name:str
+    email: EmailStr
+
+class UserCreate(UserBase):
+    password:str=Field(min_length=8, description='password minimum length is 8 characters')
+
+class Login(BaseModel):
+    email:EmailStr
+    password:str
+class UserDetails(UserBase):
+    id: str
+    first_name:str
+    last_name:str
+    is_sub_active:bool
+    sub_end_date:Union[datetime, None]=None
+    is_reminder:bool
+    date_created:datetime
+
+    class Config:
+        orm_mode=True
+from decouple import config
+SECRET_KEY=config('SECRET_KEY')
+class Settings(BaseModel):
+    authjwt_secret_key: str = SECRET_KEY
+    authjwt_token_location:set ={'cookies','headers'}
+    authjwt_access_cookie_key:str='access_token'
+    authjwt_refresh_cookie_key:str='refresh_token'
+    authjwt_cookie_csrf_protect: bool = False
+    authjwt_cookie_samesite:str ='lax'
+
+
+@AuthJWT.load_config
+def get_config():
+    return Settings()
