@@ -1,6 +1,6 @@
 from dependencies import get_current_user
 from fastapi import Depends, APIRouter
-from fastapi import APIRouter
+from .. import schemas
 router=APIRouter()
 @router.get("/user/me")
 def user_me(user:dict=Depends(get_currrent_user)):
@@ -15,11 +15,10 @@ def user_me(user:dict=Depends(get_currrent_user)):
     }
 
 @router.patch("/user/me")
-def update_profile(user:dict= Depends(get_current_user)):
+def update_profile(user:dict= Depends(get_current_user), db:Session = Depends(get_db)):
 
     user.update(user.dict(exclude_unset=True))
-    return {
-        "firstname": ,
-        "lastname": ,
-        "is_active": ,
-    }
+    db.commit()
+    return {"User successfully updated"}
+        
+
