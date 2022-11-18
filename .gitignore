@@ -7,6 +7,8 @@ env/
 venv/
 /venv
 
+#files worked on by others
+Love_me_app/dependencies.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
