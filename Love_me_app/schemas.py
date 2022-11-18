@@ -45,12 +45,11 @@ class AiTrainerValue(BaseModel):
     date_created:datetime
 
 class Subscription(BaseModel):
-    id:int
     name:str
     description:str
     months:int
     total_sms:int
-    amount:int
+    amount:float
     date_created:datetime
 
     class config:

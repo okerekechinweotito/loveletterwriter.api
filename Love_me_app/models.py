@@ -1,4 +1,4 @@
-from sqlalchemy import Column,Integer,String,Time,Date,DateTime,Boolean,ForeignKey
+from sqlalchemy import Column,Integer,String,Time,Date,DateTime,Boolean,ForeignKey,Float
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -84,12 +84,12 @@ class Subscription(Base):
     description = Column(String(255))
     months = Column(Integer)
     total_sms = Column(Integer)
-    amount = Column(String(255))
+    amount = Column(Float)
     date_created = Column(DateTime)
     transaction = relationship('Transaction',back_populates='subscription')
 
     def __repr__(self):
-        return f'{name} {amount}'
+        return f'{self.name} {self.amount}'
  
 class Transaction(Base):
     __tablename__="transactions"
@@ -100,6 +100,8 @@ class Transaction(Base):
     date_created = Column(DateTime)
     user = relationship('User',back_populates='transaction')
     subscription = relationship('Subscription',back_populates='transaction')
+
+    
 
 class ResetPass(Base):
     __tablename__="reset_pass"
