@@ -26,7 +26,6 @@ class Receiver(BaseModel):
     name:str
     email:str
     phone_number:str
-    user_id:int
 
 class Letter(BaseModel):
     user_id:int
@@ -100,8 +99,8 @@ class UserDetails(UserBase):
 
     class Config:
         orm_mode=True
-from decouple import config
-SECRET_KEY=config('SECRET_KEY')
+
+SECRET_KEY='random'
 class Settings(BaseModel):
     authjwt_secret_key: str = SECRET_KEY
     authjwt_token_location:set ={'cookies','headers'}

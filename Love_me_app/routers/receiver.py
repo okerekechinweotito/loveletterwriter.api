@@ -1,20 +1,26 @@
-from fastapi import APIRouter,status,Response,HTTPException
+from fastapi import APIRouter,status,Response,HTTPException,Cookie, Request
 from fastapi.params import Depends
 from sqlalchemy.orm import Session 
 from ..database import get_db
 from ..import models,schemas
+from ..dependencies import get_current_user
 from typing import List
+from fastapi_jwt_auth import AuthJWT
 
-router = APIRouter(tags=['Receiver'],prefix="/api/v1/receiver")
+router = APIRouter(tags=['Receiver'],prefix="/receiver")
 
 @router.post('/',response_model= schemas.DisplayReceiver)
-def create_receiver(request: schemas.Receiver,db:Session = Depends(get_db)):
-    new_receiver = models.Receiver(name=request.name,email=request.email,phone_number=request.phone_number,
-                                  user_id=request.user_id)
+def create_receiver(payload: schemas.Receiver, user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
+    user = user
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Please log in")
+
+    new_receiver = models.Receiver(name=payload.name,email=payload.email,phone_number=payload.phone_number,
+                                  user_id=user.id)
     db.add(new_receiver)
     db.commit()
     db.refresh(new_receiver)
-    return new_receiver
+    return new_receiver 
 
 @router.get('/{receiver_id}',response_model=schemas.DisplayReceiver)
 def get_receiver(id, response: Response, db:Session = Depends(get_db)):
