@@ -1,5 +1,5 @@
 from fastapi import Depends,  HTTPException, Cookie, Header
-from database import get_db
+from .database import get_db
 from sqlalchemy.orm import Session
 from crud import UserCrud
 from typing import Optional

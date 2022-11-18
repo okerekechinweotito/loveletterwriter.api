@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from fastapi import HTTPException
-import crud
+from .import crud
 
 
 

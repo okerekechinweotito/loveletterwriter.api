@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-import models
-from database import engine
-from routers import ai_trainer,authentication,letter,schedule,subscription,transaction,users
+from .import models
+from .database import engine
+from .routers import ai_trainer,authentication,letter,schedule,subscription,transaction,users
 
 app = FastAPI(
     title="LoveMeApp",
