@@ -1,20 +1,21 @@
 from sqlalchemy import Column,Integer,String,Time,Date,DateTime,Boolean,ForeignKey
 from sqlalchemy.orm import relationship
-from .database import Base
+from database import Base
+from datetime import datetime
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer,primary_key=True,index=True)
+    id = Column(String,primary_key=True,index=True)
     first_name = Column(String)
     last_name = Column(String)
     password = Column(String)
     email = Column(String)
     facebook_id = Column(String)
     google_id = Column(String)
-    is_sub_active = Column(Boolean)
+    is_sub_active = Column(Boolean, default=False)
     sub_end_date = Column(DateTime)
-    is_reminder = Column(Boolean)
-    date_created = Column(DateTime)
+    is_reminder = Column(Boolean, default=False)
+    date_created = Column(DateTime, default=datetime.utcnow())
     receiver = relationship('Receiver',back_populates='sender')
     letter = relationship('Letter',back_populates='writer')
     schedule = relationship('Schedule',back_populates='user')
