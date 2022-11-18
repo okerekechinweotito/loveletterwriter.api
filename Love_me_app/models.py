@@ -1,6 +1,7 @@
 from sqlalchemy import Column,Integer,String,Time,Date,DateTime,Boolean,ForeignKey
 from sqlalchemy.orm import relationship
 from .database import Base
+from sqlalchemy.sql import func
 
 class User(Base):
     __tablename__ = "users"
@@ -14,7 +15,7 @@ class User(Base):
     is_sub_active = Column(Boolean)
     sub_end_date = Column(DateTime)
     is_reminder = Column(Boolean)
-    date_created = Column(DateTime)
+    date_created = Column(DateTime(timezone=True), server_default=func.now())
     receiver = relationship('Receiver',back_populates='sender')
     letter = relationship('Letter',back_populates='writer')
     schedule = relationship('Schedule',back_populates='user')
@@ -29,7 +30,7 @@ class Receiver(Base):
     email = Column(String)
     phone_number = Column(String)
     user_id = Column(Integer,ForeignKey('users.id'))
-    date_created = Column(DateTime)
+    date_created = Column(DateTime(timezone=True), server_default=func.now())
     sender = relationship('User',back_populates='receiver')
     letter = relationship('Letter',back_populates='receiver')
     schedule = relationship('Schedule',back_populates='receiver')
@@ -42,7 +43,7 @@ class Letter(Base):
     user_id = Column(Integer,ForeignKey('users.id'))
     receiver_id = Column(Integer,ForeignKey('receivers.id'))
     letter = Column(String)
-    date_created = Column(DateTime)
+    date_created = Column(DateTime(timezone=True), server_default=func.now())
     writer = relationship('User',back_populates='letter')
     receiver = relationship('Receiver',back_populates='letter')
 
@@ -52,7 +53,7 @@ class Schedule(Base):
     user_id = Column(Integer,ForeignKey('users.id'))
     receiver_id = Column(Integer,ForeignKey('receivers.id'))
     schedule_time = Column(Time)
-    date_created = Column(DateTime)
+    date_created = Column(DateTime(timezone=True), server_default=func.now())
     user = relationship('User',back_populates='schedule')
     receiver = relationship('Receiver',back_populates='schedule')
 
@@ -61,7 +62,7 @@ class AiTrainer(Base):
     id = Column(Integer,primary_key=True,index=True)
     ui_name = Column(String)
     ai_word = Column(String)
-    date_created = Column(DateTime)
+    date_created = Column(DateTime(timezone=True), server_default=func.now())
     ai_trainer_value = relationship('AiTrainerValue',back_populates='ai_trainer')
 
 class AiTrainerValue(Base):
@@ -71,7 +72,7 @@ class AiTrainerValue(Base):
     user_id = Column(Integer,ForeignKey('users.id'))
     receiver_id = Column(Integer,ForeignKey('receivers.id'))
     value = Column(String)
-    date_created = Column(DateTime)
+    date_created = Column(DateTime(timezone=True), server_default=func.now())
     ai_trainer = relationship('AiTrainer',back_populates='ai_trainer_value')
     user = relationship('User',back_populates='ai_trainer_value')
     receiver = relationship('Receiver',back_populates='ai_trainer_value')
@@ -85,7 +86,7 @@ class Subscription(Base):
     months = Column(Integer)
     total_sms = Column(Integer)
     amount = Column(String)
-    date_created = Column(DateTime)
+    date_created = Column(DateTime(timezone=True), server_default=func.now())
     transaction = relationship('Transaction',back_populates='subscription')
 
 
@@ -95,7 +96,7 @@ class Transaction(Base):
     user_id = Column(Integer,ForeignKey('users.id'))
     subscription_id = Column(Integer,ForeignKey('subscriptions.id'))
     ref_no = Column(String)
-    date_created = Column(DateTime)
+    date_created = Column(DateTime(timezone=True), server_default=func.now())
     user = relationship('User',back_populates='transaction')
     subscription = relationship('Subscription',back_populates='transaction')
 
@@ -106,7 +107,7 @@ class ResetPass(Base):
     user_id = Column(Integer,ForeignKey('users.id'))
     is_used = Column(Boolean)
     expiry_date = Column(DateTime)
-    date_created = Column(DateTime)
+    date_created = Column(DateTime(timezone=True), server_default=func.now())
     user = relationship('User',back_populates='reset_pass')
 
 class BlackListedTokens(Base):
@@ -114,4 +115,4 @@ class BlackListedTokens(Base):
     id = Column(Integer,primary_key=True,index=True)
     token = Column(String)
     expiry_date = Column(String)
-    blacklisted_on = Column(DateTime)
+    blacklisted_on = Column(DateTime(timezone=True), server_default=func.now())

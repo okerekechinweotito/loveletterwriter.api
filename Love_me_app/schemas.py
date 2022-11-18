@@ -13,12 +13,19 @@ class User(BaseModel):
     is_reminder:bool
     date_created:datetime
 
-class Receiver(BaseModel):
+class DisplayReceiver(BaseModel):
     name:str
     email:str
     phone_number:str
     user_id:int
     date_created:datetime
+    class Config:
+        orm_mode=True
+class Receiver(BaseModel):
+    name:str
+    email:str
+    phone_number:str
+    user_id:int
 
 class Letter(BaseModel):
     user_id:int
