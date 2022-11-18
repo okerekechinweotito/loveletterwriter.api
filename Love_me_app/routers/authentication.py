@@ -30,7 +30,7 @@ def Login( response:Response,login:schemas.Login,Authorize:AuthJWT=Depends() ,db
     if authentication is sucessful access_token and refresh_token will be given which should be passed in the header or sent with the cookie to access protected resource.
     its preferable if tokens are sent with cookies because it is httponly which prevents clients from accessing it.
     * access token lifetime is 5minutes
-    * rfresh token lifetime is 14 days
+    * refresh token lifetime is 14 days
     '''
     password, email=login.password, login.email
     user=authenticate(db=db, password=password, email=email)
