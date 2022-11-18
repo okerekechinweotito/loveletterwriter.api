@@ -16,7 +16,7 @@ class UserCrud:
 
     def create_user(db,user:schemas.UserCreate):
         password=hash_password(user.password)
-        db_user=models.User(email=user.email, password=password, first_name=user.first_name, id=str(uuid.uuid4()),last_name=user.last_name )
+        db_user=models.User(email=user.email, password=password, first_name=user.first_name, last_name=user.last_name )
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
