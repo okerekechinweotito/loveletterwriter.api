@@ -6,7 +6,7 @@ from ..import models
 class AITrainerBusiness:
 
     @staticmethod
-    def get_all_trainer(length, start, db):
+    def get_all_trainer(user_id, length, start, db):
         found_trainer = db.query(models.AiTrainer)
         found_trainers = found_trainer.offset(start).limit(length).all()
         total_rows = found_trainer.count()
@@ -41,10 +41,10 @@ class AITrainerBusiness:
             return response_object
 
     @staticmethod
-    def store_trainer_value(item, receiver_id, db):
+    def store_trainer_value(user_id, item, receiver_id, db):
         new_trainer_value = models.AiTrainerValue(
             ai_trainer_id = item.ai_trainer_id,
-            user_id=1,
+            user_id=user_id,
             receiver_id=receiver_id,
             value=item.value,
             date_created=datetime.datetime.now()
@@ -68,11 +68,11 @@ class AITrainerBusiness:
             return response_object
 
     @staticmethod
-    def update_trainer_value(item,ai_trainer_id, receiver_id, db):
+    def update_trainer_value(user_id, item,ai_trainer_id, receiver_id, db):
         found_trainer_value = db.query(models.AiTrainerValue)\
             .filter(models.AiTrainerValue.ai_trainer_id == ai_trainer_id,
                     models.AiTrainerValue.receiver_id == receiver_id,
-                    models.AiTrainerValue.user_id == 1).first()
+                    models.AiTrainerValue.user_id == user_id).first()
 
         if found_trainer_value:
             found_trainer_value.value = item.value
@@ -98,18 +98,18 @@ class AITrainerBusiness:
             return response_object
 
     @staticmethod
-    def delete_trainer_value(ai_trainer_id, receiver_id, db):
+    def delete_trainer_value(user_id, ai_trainer_id, receiver_id, db):
         found_trainer_value = db.query(models.AiTrainerValue) \
             .filter(models.AiTrainerValue.ai_trainer_id == ai_trainer_id,
                     models.AiTrainerValue.receiver_id == receiver_id,
-                    models.AiTrainerValue.user_id == 1).first()
+                    models.AiTrainerValue.user_id == user_id).first()
 
         if found_trainer_value:
             try:
                 db.query(models.AiTrainerValue) \
                     .filter(models.AiTrainerValue.ai_trainer_id == ai_trainer_id,
                             models.AiTrainerValue.receiver_id == receiver_id,
-                            models.AiTrainerValue.user_id == 1).delete(synchronize_session=False)
+                            models.AiTrainerValue.user_id == user_id).delete(synchronize_session=False)
                 db.commit()
                 response_object = {
                     'status': 1,
@@ -120,7 +120,7 @@ class AITrainerBusiness:
                 print(str(e))
                 response_object = {
                     'status': 0,
-                    'message': 'An error occured while deleting answer.'
+                    'message': 'An error occurred while deleting answer.'
                 }
                 return response_object
         else:
