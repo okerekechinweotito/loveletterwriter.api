@@ -2,3 +2,10 @@ fastapi
 sqlalchemy
 pydantic
 uvicorn
+bcrypt
+email-validator
+fastapi-jwt-auth
+decouple
+passlib
+python-jose
+python-multipart

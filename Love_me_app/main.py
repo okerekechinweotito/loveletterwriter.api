@@ -10,7 +10,7 @@ app = FastAPI(
 models.Base.metadata.create_all(engine)
 
 # app.include_router(ai_trainer.router)
-# app.include_router(authentication.router)
+app.include_router(authentication.router)
 # app.include_router(letter.router)
 app.include_router(receiver.router)
 # app.include_router(schedule.router)

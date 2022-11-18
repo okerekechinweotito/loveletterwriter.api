@@ -2,6 +2,7 @@ from sqlalchemy import Column,Integer,String,Time,Date,DateTime,Boolean,ForeignK
 from sqlalchemy.orm import relationship
 from .database import Base
 from sqlalchemy.sql import func
+from datetime import datetime
 
 class User(Base):
     __tablename__ = "users"
@@ -12,10 +13,10 @@ class User(Base):
     email = Column(String)
     facebook_id = Column(String)
     google_id = Column(String)
-    is_sub_active = Column(Boolean)
+    is_sub_active = Column(Boolean, default=False)
     sub_end_date = Column(DateTime)
-    is_reminder = Column(Boolean)
-    date_created = Column(DateTime(timezone=True), server_default=func.now())
+    is_reminder = Column(Boolean, default=False)
+    date_created = Column(DateTime, default=datetime.utcnow())
     receiver = relationship('Receiver',back_populates='sender')
     letter = relationship('Letter',back_populates='writer')
     schedule = relationship('Schedule',back_populates='user')
