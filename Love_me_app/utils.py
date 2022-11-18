@@ -84,32 +84,4 @@ def send_email(letter):
     # Display an error if something goes wrong.
     except ClientError as e:
         print(e.response["Error"]["Message"])
-    else:
-        print("Email sent! Message ID:"),
-        print(response["MessageId"])
-
-
-# mock_prompt = "Write a letter to Shade telling her I love her so much in a romantic fashion, from Afeez"
-
-# message = generate_letter(mock_prompt)
-
-
-# class MockSender:
-#     name: str = "Afeez"
-#     email: str = "lafrizfz@gmail.com"
-
-
-# class MockReciever:
-#     name: str = "Afeez"
-#     email: str = "afeezlg@gmail.com"
-#     phone_number: str = "+2348162302855"
-
-
-# class Letter:
-#     letter: str = message
-#     reciever = MockReciever
-#     sender = MockSender
-
-
-# send_sms(Letter)
-# send_email(Letter)
+    return response
