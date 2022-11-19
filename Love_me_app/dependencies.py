@@ -10,7 +10,6 @@ from google.auth.transport import requests
 from .utils import hash_password
 from decouple import config
 
-
 def get_current_user(Authorize:AuthJWT=Depends(), db:Session=Depends(get_db), access_token:str=Cookie(default=None),Bearer=Header(default=None)):
     exception=HTTPException(status_code=401, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 

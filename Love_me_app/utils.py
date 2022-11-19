@@ -1,11 +1,13 @@
+
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from fastapi import HTTPException
 from .import crud
-
-
-
-
+import os
+import boto3
+import openai
+from botocore.exceptions import ClientError
+from twilio.rest import Client
 
 
 
@@ -17,6 +19,21 @@ access_cookies_time=ACCESS_TOKEN_LIFETIME_MINUTES * 60
 refresh_cookies_time=REFRESH_TOKEN_LIFETIME*3600*24
 
 pwd_hash=CryptContext(schemes=['bcrypt'], deprecated='auto')
+
+# Setup Twilio
+twilio_account_sid = os.environ.get("TWILIO_ACCOUNT_SID", None)
+twilio_auth_token = os.environ.get("TWILIO_AUTH_TOKEN", None)
+twilio_phone_number = os.environ.get("TWILIO_PHONE_NUMBER", None)
+twilio_client = Client(twilio_account_sid, twilio_auth_token)
+
+# Setup openai
+openai.api_key = os.environ.get("OPENAI_API_KEY", None)
+
+# Setup SES
+FROM_EMAIL = os.environ.get("FROM_EMAIL", None)
+AWS_REGION = os.environ.get("AWS_REGION", None)
+email_client = boto3.client("ses", region_name=AWS_REGION)
+
 
 
 def hash_password(password):
@@ -34,28 +51,6 @@ def authenticate(db:Session,email:str, password:str):
     if not verify_password(password, user.password):
         raise exception
     return user
-
-
-import os
-
-import boto3
-import openai
-from botocore.exceptions import ClientError
-from twilio.rest import Client
-
-# Setup Twilio
-twilio_account_sid = os.environ.get("TWILIO_ACCOUNT_SID", None)
-twilio_auth_token = os.environ.get("TWILIO_AUTH_TOKEN", None)
-twilio_phone_number = os.environ.get("TWILIO_PHONE_NUMBER", None)
-twilio_client = Client(twilio_account_sid, twilio_auth_token)
-
-# Setup openai
-openai.api_key = os.environ.get("OPENAI_API_KEY", None)
-
-# Setup SES
-FROM_EMAIL = os.environ.get("FROM_EMAIL", None)
-AWS_REGION = os.environ.get("AWS_REGION", None)
-email_client = boto3.client("ses", region_name=AWS_REGION)
 
 
 def generate_letter(prompt):
@@ -123,3 +118,4 @@ def send_email(letter):
     except ClientError as e:
         print(e.response["Error"]["Message"])
     return response
+
