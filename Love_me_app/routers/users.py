@@ -1,4 +1,4 @@
-from dependencies import get_current_user
+from ..dependencies import get_current_user
 from fastapi import Depends, APIRouter, HTTPException
 from .. import schemas
 from ..database import get_db
@@ -6,7 +6,10 @@ from sqlalchemy.orm import Session
 
 router=APIRouter(tags=['User'],prefix="/api/v1/user/me")
 
+"""
+endpoint to get a user profile. The user has to be logged in already.
 
+"""
 @router.get("/", dependencies=[Depends(get_current_user())])
 def user_me(user: schemas.User):
     if user is None:
@@ -20,9 +23,13 @@ def user_me(user: schemas.User):
         "date_joined": user.date_created,
     }
 
+"""
+endpoint to update user profile by getting the current user email and updating their profile.
+"""
 @router.patch("/", dependencies=[Depends(get_current_user())])
-def update_profile(user: schemas.User, db:Session = Depends(get_db)):
-    user.update(user.dict(exclude_unset=True))
+def update_profile(profile, user: schemas.User, db:Session = Depends(get_db)):
+    profile = user.email
+    profile.update(user.dict(exclude_unset=True))
     db.commit()
     return {"User successfully updated"}
         
