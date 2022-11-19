@@ -1,7 +1,11 @@
 from fastapi import APIRouter,Depends,Request,Header
 from datetime import timedelta
+import models
 from fastapi.responses import Response
 import stripe
+from database import get_db
+ 
+from sqlalchemy.orm import Session
 
 
 
@@ -9,8 +13,8 @@ router = APIRouter(tags=['transactions'])
 
 
 
-@router.post("/completed",description="transaction webhook")
-async def completed(requests:Request,stripe_signature:str = Header(str)):
+@router.post("/completed",description="transaction webhook",)
+async def completed(requests:Request,stripe_signature:str = Header(str),db:Session = Depends(get_db)):
     payload =await requests.body()
     sig_header = stripe_signature
     endpoint_secret = 'whsec_9408e100f9b71cae7e32ce9f54927bb1f2f76a88dfe62d9793e5d0ce16617066'
@@ -36,7 +40,15 @@ async def completed(requests:Request,stripe_signature:str = Header(str)):
             'month':event.data.object.metadata.month,
             'total_sms':event.data.object.metadata.total_sms
         }
-        return details
+        data = models.Transaction(
+            user_id = event.data.object.metadata.user_id,
+            ref_no = event.data.object.id,
+            date_created = event.data.object.created
+        )
+        db.add(data)
+        db.commit()
+        db.refresh(data)
+        print("saved")
 
     print('Handled event type {}'.format(event['type']))
     
