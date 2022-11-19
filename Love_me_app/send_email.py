@@ -30,7 +30,7 @@ env_config = ConnectionConfig(
 )
 
 
-async def password_reset(subject: str, email_to: str, body: dict):
+async def password_reset_email(subject: str, email_to: str, body: dict):
     message = MessageSchema(
         subject=subject,
         recipients=[email_to],
