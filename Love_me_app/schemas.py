@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, EmailStr
-from datetime import datetime
+from datetime import datetime,date,time
 from fastapi_jwt_auth import AuthJWT
 from typing import Union
 class User(BaseModel):
@@ -83,6 +83,14 @@ class BlackListedTokens(BaseModel):
     token:str
     expiry_date:datetime
     blacklisted_on:datetime
+
+class PasswordResetRequest(BaseModel):
+    email: EmailStr = Field(...)
+
+class PasswordReset(BaseModel):
+    password: str = Field(...)
+    confirm_password: str = Field(...)
+
 
 class UserBase(BaseModel):
     first_name: str
