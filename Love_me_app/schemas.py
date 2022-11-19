@@ -93,8 +93,11 @@ class UserDetails(UserBase):
 
     class Config:
         orm_mode=True
-from decouple import config
-SECRET_KEY=config('SECRET_KEY')
+from dotenv import load_dotenv
+import os 
+load_dotenv()
+
+SECRET_KEY=os.getenv("SECRET_KEY")
 class Settings(BaseModel):
     authjwt_secret_key: str = SECRET_KEY
     authjwt_token_location:set ={'cookies','headers'}
