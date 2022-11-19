@@ -3,3 +3,10 @@ sqlalchemy
 pydantic
 uvicorn
 stripe
+bcrypt
+email-validator
+fastapi-jwt-auth
+python-decouple
+passlib
+python-jose
+python-multipart
