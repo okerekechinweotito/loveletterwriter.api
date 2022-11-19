@@ -17,7 +17,7 @@ from ..database import get_db
 
 #Initialize router and db
 db = get_db()
-router = APIRouter()
+router = APIRouter(tags=['reset password'],prefix="/api/v1/user")
 
 #Function to get current user
 def get_current_user(Authorize:AuthJWT=Depends(), db:Session=Depends(get_db), access_token:str=Cookie(default=None),Bearer=Header(default=None)):
@@ -36,7 +36,7 @@ def get_current_user(Authorize:AuthJWT=Depends(), db:Session=Depends(get_db), ac
 #Endpoints
 # TODO: Reset password request route
 
-@router.post("/user/reset_request/", response_description="Password reset request")
+@router.post("/reset_request/", response_description="Password reset request")
 async def reset_request(requesting_user: schemas.PasswordResetRequest, Authorize:AuthJWT=Depends()):
     user = UserCrud.get_user_by_email(db, requesting_user.email)
 
@@ -63,7 +63,7 @@ async def reset_request(requesting_user: schemas.PasswordResetRequest, Authorize
         )
 
 # TODO: Reset password route
-@router.patch("user/reset_password/", response_description="Password reset")
+@router.patch("/reset_password/", response_description="Password reset")
 async def reset_password(token: str, password_reset: schemas.PasswordReset):
     reset_pass_data = {k:v for k, v in password_reset.dict().items() if v is not None}
 
