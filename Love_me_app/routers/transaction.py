@@ -36,7 +36,7 @@ async def completed(requests:Request,stripe_signature:str = Header(str)):
             'month':event.data.object.metadata.month,
             'total_sms':event.data.object.metadata.total_sms
         }
-        print(details)
+        return details
 
     print('Handled event type {}'.format(event['type']))
     
