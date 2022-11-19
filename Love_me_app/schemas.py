@@ -14,12 +14,18 @@ class User(BaseModel):
     is_reminder:bool
     date_created:datetime
 
-class Receiver(BaseModel):
+class DisplayReceiver(BaseModel):
     name:str
     email:str
     phone_number:str
     user_id:int
     date_created:datetime
+    class Config:
+        orm_mode=True
+class Receiver(BaseModel):
+    name:str
+    email:str
+    phone_number:str
 
 class Letter(BaseModel):
     user_id:int
@@ -100,8 +106,8 @@ class UserDetails(UserBase):
 
     class Config:
         orm_mode=True
-from decouple import config
-SECRET_KEY='jhkjn'
+
+SECRET_KEY='random'
 class Settings(BaseModel):
     authjwt_secret_key: str = SECRET_KEY
     authjwt_token_location:set ={'cookies','headers'}
