@@ -9,3 +9,8 @@ python-decouple
 passlib
 python-jose
 python-multipart
+httpx
+google-auth
+oauth2client
+itsdangerous
+requests
