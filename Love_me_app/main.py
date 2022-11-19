@@ -5,8 +5,20 @@ from routers import ai_trainer,authentication,letter,schedule,subscription,trans
 
 tags_metadata = [
     {
+        "name": "auth",
+        "description": "Operations related to the everything auth",
+    },
+    {
         "name": "ai_trainer",
         "description": "Operations related to the survey questions to be answered for each love letter receiver. Used in the openai prompt",
+    },
+    {
+        "name": "subscription",
+        "description": "Operations related to the subscription plans  and co",
+    },
+    {
+        "name": "transactions",
+        "description": "Operations related to the transaction and verification of payment",
     },
 ]
 

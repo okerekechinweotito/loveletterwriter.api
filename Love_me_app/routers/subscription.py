@@ -11,11 +11,10 @@ import stripe
 
 
 
-router = APIRouter()
+router = APIRouter(tags=['subscription'])
 
-#<-- @madvirus work -->
 
-@router.post("/api/subscription",description="endpoint to post subscription")
+@router.post("/api/v1/subscription",description="endpoint to post subscription")
 async def subscribe(subscription:schemas.Subscription,db: Session = Depends(get_db)):
     data = models.Subscription(
         name=subscription.name,
@@ -33,7 +32,7 @@ async def subscribe(subscription:schemas.Subscription,db: Session = Depends(get_
     return data 
 
 
-@router.get('/api/subscription/plans',description="list of available plans")
+@router.get('/api/v1/subscription/plans',description="list of available plans")
 async def SubscriptionPlans(db: Session = Depends(get_db)):
     plans = db.query(models.Subscription).all()
     return plans
@@ -42,7 +41,7 @@ async def SubscriptionPlans(db: Session = Depends(get_db)):
 
 
 
-@router.post("/subscription/plans/pay/{plan_id}")
+@router.post("/api/v1/subscription/checkout/{plan_id}")
 async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = Depends(get_current_user)):
 
     stripe.api_key = 'sk_test_51M5T6WGYYMC7FKsItosehAJ1CJGFajEiYBLYNTty6sGgpNfqjukMbir08BUcLVzOLzpnSrFY0x1oOO2NozpsSZDI00GUJdvY6u'
@@ -59,7 +58,10 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
             metadata = {
                 'user_id':user.id,
                 'user_name':user.first_name,
-                'user_email':user.email
+                'user_email':user.email,
+                'plan_type':plans.name,
+                'month':plans.months,
+                'total_sms':plans.total_sms
             },
             payment_method_types =["card"],
                 line_items =[{
@@ -73,10 +75,13 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
             success_url = "http://127.0.0.1:8000/completed?session_id={CHECKOUT_SESSION_ID}",
             cancel_url = 'http://127.0.0.1:8000/docs',
             mode='subscription',
-            metadata = {
+             metadata = {
                 'user_id':user.id,
                 'user_name':user.first_name,
-                'user_email':user.email
+                'user_email':user.email,
+                'plan_type':plans.name,
+                'month':plans.months,
+                'total_sms':plans.total_sms
             },
             payment_method_types =["card"],
                 line_items =[{
@@ -90,10 +95,13 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
             success_url = "http://127.0.0.1:8000/completed?session_id={CHECKOUT_SESSION_ID}",
             cancel_url = 'http://127.0.0.1:8000/docs',
             mode='subscription',
-            metadata = {
+             metadata = {
                 'user_id':user.id,
                 'user_name':user.first_name,
-                'user_email':user.email
+                'user_email':user.email,
+                'plan_type':plans.name,
+                'month':plans.months,
+                'total_sms':plans.total_sms
             },
             payment_method_types =["card"],
                 line_items =[{

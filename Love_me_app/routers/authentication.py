@@ -10,7 +10,7 @@ user_crud=crud.UserCrud
 from datetime import timedelta
 
 
-router=APIRouter()
+router=APIRouter(tags=['auth'])
 
 
 
