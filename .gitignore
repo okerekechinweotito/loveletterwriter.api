@@ -7,3 +7,4 @@ env/
 venv/
 /venv
 __pycache__/
+project.db
