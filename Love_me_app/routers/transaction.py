@@ -29,12 +29,12 @@ async def completed(requests:Request,stripe_signature:str = Header(str)):
         payment_intent = event.data # contains a stripe.PaymentIntent
         print('PaymentIntent was successful!',payment_intent)
         details = {
-            'user_name':event.data.metadata.user_name,
-            'user_email':event.data.metadata.user_email,
-            'user_id':event.data.metadata.user_id,
-            'plan_type':event.data.metadata.plan_type,
-            'month':event.data.metadata.month,
-            'total_sms':event.data.metadata.totel_sms
+            'user_name':event.data.object.metadata.user_name,
+            'user_email':event.data.object.metadata.user_email,
+            'user_id':event.data.object.metadata.user_id,
+            'plan_type':event.data.object.metadata.plan_type,
+            'month':event.data.object.metadata.month,
+            'total_sms':event.data.object.metadata.total_sms
         }
         print(details)
 
