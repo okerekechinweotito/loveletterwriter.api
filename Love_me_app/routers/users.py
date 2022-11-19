@@ -17,7 +17,7 @@ from ..database import get_db
 
 #Initialize router and db
 db = get_db()
-router = APIRouter(tags=['reset password'],prefix="/api/v1/user")
+router = APIRouter(prefix="/api/v1/user")
 
 #Function to get current user
 def get_current_user(Authorize:AuthJWT=Depends(), db:Session=Depends(get_db), access_token:str=Cookie(default=None),Bearer=Header(default=None)):
