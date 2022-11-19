@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from datetime import date,time,datetime
 
 class User(BaseModel):
@@ -58,7 +58,7 @@ class Transaction(BaseModel):
     ref_no:str
     date_created:str
 
-class ResetPasswordRequest(BaseModel):
+class ResetPass(BaseModel):
     pin:str
     user_id:int
     is_used:bool
@@ -70,6 +70,11 @@ class BlackListedTokens(BaseModel):
     expiry_date:datetime
     blacklisted_on:datetime
 
-class ResetPassword(BaseModel):
+class PasswordResetRequest(BaseModel):
+    email: EmailStr = Field(...)
+
+class PasswordReset(BaseModel):
     password: str = Field(...)
+    confirm_password: str = Field(...)
+
 

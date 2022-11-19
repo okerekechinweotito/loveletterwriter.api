@@ -1,41 +1,53 @@
 """
-User endpoints for resetting password
-Modules needed for these endpoints that are being worked on by others
-have been 'simulated' in the dependencies.py file and have been imported
-This is to ensure that once the branches are merged, everything should 
-work as expected
+User endpoints for requesting password reset link and resetting password
 """
 
 #Import libraries
-from fastapi import APIRouter, HTTPException, status, Depends
-from send_email import password_reset
-from dependencies import get_current_user, website_url
-from utils import generate_access_token, get_password_hash
-from crud import UserCrud
+from fastapi import APIRouter, HTTPException, status, Depends, Cookie, Header
+from sqlalchemy.orm import Session
+from datetime import timedelta
+from fastapi_jwt_auth import AuthJWT
+
 #Import modules
-import schemas, models
-from database import get_db
+from ..send_email import password_reset_email
+from ..utils import  hash_password, ACCESS_TOKEN_LIFETIME_MINUTES
+from ..crud import UserCrud
+from .. import schemas
+from ..database import get_db
 
 #Initialize router and db
 db = get_db()
 router = APIRouter()
+
+#Function to get current user
+def get_current_user(Authorize:AuthJWT=Depends(), db:Session=Depends(get_db), access_token:str=Cookie(default=None),Bearer=Header(default=None)):
+    exception=HTTPException(status_code=401, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
+
+    try:
+
+        Authorize.jwt_required()
+        user_id=Authorize.get_jwt_subject()
+        user=UserCrud.get_user_by_id(db, user_id)
+        return user
+    except:
+        raise exception
 
 
 #Endpoints
 # TODO: Reset password request route
 
 @router.post("/user/reset_request/", response_description="Password reset request")
-async def reset_request(requesting_user: schemas.ResetPasswordRequest):
-    user = UserCrud.get_user_by_id(db, requesting_user.user_id)
+async def reset_request(requesting_user: schemas.PasswordResetRequest, Authorize:AuthJWT=Depends()):
+    user = UserCrud.get_user_by_email(db, requesting_user.email)
 
 
     if user is not None:
-        token = generate_access_token({"id": user["id"]})
+        token=Authorize.create_access_token(subject=user.id, expires_time=timedelta(minutes=ACCESS_TOKEN_LIFETIME_MINUTES))
 
-        reset_link = f"{website_url}user/password_reset?token={token}"
+        reset_link = f"loveme.zuri.team/user/password_reset?token={token}"
 
 
-        await password_reset("Password Reset", user["email"],
+        await password_reset_email("Password Reset", user["email"],
             {
                 "title": "Password Reset",
                 "name": user["name"],
@@ -52,11 +64,11 @@ async def reset_request(requesting_user: schemas.ResetPasswordRequest):
 
 # TODO: Reset password route
 @router.patch("user/reset_password/", response_description="Password reset")
-async def reset_password(token: str, password_reset: schemas.ResetPassword):
+async def reset_password(token: str, password_reset: schemas.PasswordReset):
     reset_pass_data = {k:v for k, v in password_reset.dict().items() if v is not None}
 
 
-    reset_pass_data["password"] = get_password_hash(reset_pass_data["new_password"])
+    reset_pass_data["password"] = hash_password(reset_pass_data["new_password"])
     
     if len(reset_pass_data) >= 1:
         # Get current user from session token

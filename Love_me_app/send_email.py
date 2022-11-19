@@ -13,6 +13,7 @@ class Environ:
     MAIL_SERVER = os.getenv('MAIL_SERVER')
     MAIL_FROM_NAME = os.getenv('MAIN_FROM_NAME')
     TEMPLATE_FOLDER = os.getenv('TEMPLATE_FOLDER')
+    TEMPLATE_NAME = os.getenv('TEMPLATE_NAME')
 
 
 env_config = ConnectionConfig(
@@ -38,5 +39,5 @@ async def password_reset(subject: str, email_to: str, body: dict):
     )
     
     fm = FastMail(env_config)
-    await fm.send_message(message, template_name='')
+    await fm.send_message(message, template_name=Environ.TEMPLATE_NAME)
 
