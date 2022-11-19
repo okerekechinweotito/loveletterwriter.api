@@ -19,10 +19,10 @@ Base.metadata.create_all(engine)
 
 
 app.include_router(authentication.router)
-app.include_router(ai_trainer.router)
+# app.include_router(ai_trainer.router)
 # app.include_router(letter.router)
 # app.include_router(schedule.router)
 app.include_router(subscription.router)
-# app.include_router(transaction.router)
+app.include_router(transaction.router)
 # app.include_router(users.router)
 

@@ -101,7 +101,7 @@ class UserDetails(UserBase):
     class Config:
         orm_mode=True
 from decouple import config
-SECRET_KEY=config('SECRET_KEY')
+SECRET_KEY='jhkjn'
 class Settings(BaseModel):
     authjwt_secret_key: str = SECRET_KEY
     authjwt_token_location:set ={'cookies','headers'}
