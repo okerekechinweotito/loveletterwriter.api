@@ -8,6 +8,7 @@ from ..utils import  authenticate, REFRESH_TOKEN_LIFETIME, ACCESS_TOKEN_LIFETIME
 from sqlalchemy.orm import Session
 user_crud=crud.UserCrud
 from datetime import timedelta
+from ..dependencies import google_auth
 
 router=APIRouter()
 
@@ -68,3 +69,15 @@ def logout(Authorize:AuthJWT=Depends()):
     '''
     Authorize.unset_jwt_cookies()
     return {'message':'successfully logout'}
+
+@router.post('/google', tags=['auth'], summary='endpoint for google authentication')
+def google(response:Response,user:dict=Depends(google_auth), Authorize:AuthJWT=Depends()):
+    '''
+    endpoint for google authentication
+    * requires a token which will be given to you by google, you are to post the token here
+    '''
+    access_token=Authorize.create_access_token(subject=user.id, expires_time=timedelta(minutes=ACCESS_TOKEN_LIFETIME_MINUTES))
+    refresh_token=Authorize.create_refresh_token(subject=user.id, expires_time=timedelta(days=REFRESH_TOKEN_LIFETIME))
+    response.set_cookie(key='access_token',value=access_token, expires=access_cookies_time, max_age=access_cookies_time, httponly=True)
+    response.set_cookie(key='refresh_token',value=refresh_token, expires=refresh_cookies_time, max_age=refresh_cookies_time, httponly=True)
+    return {'access_token':access_token, 'refresh_token':refresh_token}
