@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import models
-from database import engine
-from routers import ai_trainer,authentication,letter,schedule,subscription,transaction,users
+from .import models
+from .database import engine
+from .routers import ai_trainer,authentication,letter,receiver,schedule,subscription,transaction,users
 
 tags_metadata = [
     {
@@ -18,13 +18,15 @@ app = FastAPI(
 )
 models.Base.metadata.create_all(engine)
 
-# app.include_router(authentication.router)
+
+app.include_router(authentication.router)
+app.include_router(ai_trainer.router)
 # app.include_router(letter.router)
+app.include_router(receiver.router)
 # app.include_router(schedule.router)
 # app.include_router(subscription.router)
 # app.include_router(transaction.router)
-# app.include_router(users.router)
-# app.include_router(ai_trainer.router)
+app.include_router(users.router)
 
 @app.get("/")
 def get():

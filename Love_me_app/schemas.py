@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field, EmailStr
-from datetime import date,time,datetime
-
+from datetime import datetime,date,time
+from fastapi_jwt_auth import AuthJWT
+from typing import Union
 class User(BaseModel):
     first_name:str
     last_name:str
@@ -13,12 +14,18 @@ class User(BaseModel):
     is_reminder:bool
     date_created:datetime
 
-class Receiver(BaseModel):
+class DisplayReceiver(BaseModel):
     name:str
     email:str
     phone_number:str
     user_id:int
     date_created:datetime
+    class Config:
+        orm_mode=True
+class Receiver(BaseModel):
+    name:str
+    email:str
+    phone_number:str
 
 class Letter(BaseModel):
     user_id:int
@@ -78,3 +85,39 @@ class PasswordReset(BaseModel):
     confirm_password: str = Field(...)
 
 
+class UserBase(BaseModel):
+    first_name: str
+    last_name:str
+    email: EmailStr
+
+class UserCreate(UserBase):
+    password:str=Field(min_length=8, description='password minimum length is 8 characters')
+
+class Login(BaseModel):
+    email:EmailStr
+    password:str
+class UserDetails(UserBase):
+    id: str
+    first_name:str
+    last_name:str
+    is_sub_active:bool
+    sub_end_date:Union[datetime, None]=None
+    is_reminder:bool
+    date_created:datetime
+
+    class Config:
+        orm_mode=True
+
+SECRET_KEY='random'
+class Settings(BaseModel):
+    authjwt_secret_key: str = SECRET_KEY
+    authjwt_token_location:set ={'cookies','headers'}
+    authjwt_access_cookie_key:str='access_token'
+    authjwt_refresh_cookie_key:str='refresh_token'
+    authjwt_cookie_csrf_protect: bool = False
+    authjwt_cookie_samesite:str ='lax'
+
+
+@AuthJWT.load_config
+def get_config():
+    return Settings()

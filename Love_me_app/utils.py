@@ -1,9 +1,24 @@
-import os
 
+from sqlalchemy.orm import Session
+from passlib.context import CryptContext
+from fastapi import HTTPException
+from .import crud
+import os
 import boto3
 import openai
 from botocore.exceptions import ClientError
 from twilio.rest import Client
+
+
+
+SECRET_KEY='secret'
+ALGORITHM='HS256'
+ACCESS_TOKEN_LIFETIME_MINUTES= 5
+REFRESH_TOKEN_LIFETIME=14
+access_cookies_time=ACCESS_TOKEN_LIFETIME_MINUTES * 60
+refresh_cookies_time=REFRESH_TOKEN_LIFETIME*3600*24
+
+pwd_hash=CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 # Setup Twilio
 twilio_account_sid = os.environ.get("TWILIO_ACCOUNT_SID", None)
@@ -18,6 +33,24 @@ openai.api_key = os.environ.get("OPENAI_API_KEY", None)
 FROM_EMAIL = os.environ.get("FROM_EMAIL", None)
 AWS_REGION = os.environ.get("AWS_REGION", None)
 email_client = boto3.client("ses", region_name=AWS_REGION)
+
+
+
+def hash_password(password):
+    return pwd_hash.hash(password)
+
+def verify_password(plain_password, hashed_password):
+    return pwd_hash.verify(plain_password, hashed_password)
+
+
+def authenticate(db:Session,email:str, password:str):
+    user=crud.UserCrud.get_user_by_email(db, email)
+    exception= HTTPException(status_code=400, detail='invalid email or password')
+    if not user:
+        raise exception
+    if not verify_password(password, user.password):
+        raise exception
+    return user
 
 
 def generate_letter(prompt):
@@ -85,3 +118,4 @@ def send_email(letter):
     except ClientError as e:
         print(e.response["Error"]["Message"])
     return response
+
