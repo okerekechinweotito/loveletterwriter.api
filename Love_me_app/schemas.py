@@ -56,14 +56,21 @@ class Subscription(BaseModel):
     description:str
     months:int
     total_sms:int
-    amount:int
+    amount:float
     date_created:datetime
+
+    class config:
+        orm_mode = True
 
 class Transaction(BaseModel):
     user_id:int
     subscription_id:int
     ref_no:str
     date_created:str
+
+    class config:
+        orm_mode = True
+        
 
 class ResetPass(BaseModel):
     pin:str

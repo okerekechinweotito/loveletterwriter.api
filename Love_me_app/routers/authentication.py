@@ -1,16 +1,17 @@
 from fastapi import APIRouter
 from fastapi import  Depends,  HTTPException, APIRouter,Cookie, Header
-from .. import crud, schemas
+import crud, schemas
 from fastapi.responses import Response
-from ..database import get_db
+from database import get_db
 from fastapi_jwt_auth import AuthJWT
-from ..utils import  authenticate, REFRESH_TOKEN_LIFETIME, ACCESS_TOKEN_LIFETIME_MINUTES, access_cookies_time, refresh_cookies_time
+from utils import  authenticate, REFRESH_TOKEN_LIFETIME, ACCESS_TOKEN_LIFETIME_MINUTES, access_cookies_time, refresh_cookies_time
 from sqlalchemy.orm import Session
 user_crud=crud.UserCrud
 from datetime import timedelta
 from ..dependencies import google_auth
 
-router=APIRouter()
+
+router=APIRouter(tags=['auth'])
 
 
 @router.post('/signup/', response_model=schemas.UserDetails, summary='endpoint for users to signup', status_code=201, tags=['auth'])

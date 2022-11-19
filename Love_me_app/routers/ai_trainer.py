@@ -9,11 +9,11 @@ from fastapi import Depends
 from ..dependencies import get_current_user
 
 
-router = APIRouter(tags=['ai_trainer'],prefix="/api/v1/ai_trainer")
+# router = APIRouter(tags=['ai_trainer'],prefix="/api/v1/ai_trainer")
 
-# This endpoint is used to return all questions/survey a user needs to answer
-# The answers/values will be used to train the OpenAi model/prompt to generate love letter
-# tailored to the receiver
+# # This endpoint is used to return all questions/survey a user needs to answer
+# # The answers/values will be used to train the OpenAi model/prompt to generate love letter
+# # tailored to the receiver
 
 
 @router.get("/")

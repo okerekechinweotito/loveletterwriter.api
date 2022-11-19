@@ -1,5 +1,6 @@
-from sqlalchemy import Column,Integer,String,Time,Date,DateTime,Boolean,ForeignKey
+from sqlalchemy import Column,Integer,String,Time,Date,DateTime,Boolean,ForeignKey,Float
 from sqlalchemy.orm import relationship
+from database import Base
 from .database import Base
 from sqlalchemy.sql import func
 from datetime import datetime
@@ -23,6 +24,9 @@ class User(Base):
     ai_trainer_value = relationship('AiTrainerValue',back_populates='user')
     transaction = relationship('Transaction',back_populates='user')
     reset_pass = relationship('ResetPass',back_populates='user')
+
+    
+    
 
 class Receiver(Base):
     __tablename__ = "receivers"
@@ -80,17 +84,21 @@ class AiTrainerValue(Base):
 
 
 class Subscription(Base):
-    __tablename__ = "subscriptions"
+    __tablename__ = 'subscriptions'
     id = Column(Integer,primary_key=True,index=True)
-    name = Column(String)
-    description = Column(String)
+    name = Column(String(255))
+    description = Column(String(255))
     months = Column(Integer)
     total_sms = Column(Integer)
+    amount = Column(Float)
+    date_created = Column(DateTime)
     amount = Column(String)
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     transaction = relationship('Transaction',back_populates='subscription')
 
-
+    def __repr__(self):
+        return f'{self.name} {self.amount}'
+ 
 class Transaction(Base):
     __tablename__="transactions"
     id = Column(Integer,primary_key=True,index=True)
@@ -100,6 +108,9 @@ class Transaction(Base):
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     user = relationship('User',back_populates='transaction')
     subscription = relationship('Subscription',back_populates='transaction')
+
+    
+    
 
 class ResetPass(Base):
     __tablename__="reset_pass"
