@@ -1,5 +1,5 @@
 import datetime
-
+from Love_me_app.scripts.load_survey import load_survey_from
 from ..import models
 
 
@@ -7,38 +7,43 @@ class AITrainerBusiness:
 
     @staticmethod
     def get_all_trainer(user_id, length, start, db):
-        found_trainer = db.query(models.AiTrainer)
-        found_trainers = found_trainer.offset(start).limit(length).all()
-        total_rows = found_trainer.count()
-        is_last_page = total_rows <= start + length
+        try:
+            load_survey_from(db)
+        except Exception as e:
+            print(str(e))
+        finally:
+            found_trainer = db.query(models.AiTrainer)
+            found_trainers = found_trainer.offset(start).limit(length).all()
+            total_rows = found_trainer.count()
+            is_last_page = total_rows <= start + length
 
-        list_trainers = []
-        if found_trainers:
             list_trainers = []
-            for trainer in found_trainers:
-                list_trainers.append({
-                    'id': trainer.id,
-                    'ui_name': trainer.ui_name,
-                    'ai_word': trainer.ai_word,
-                    'date_created': str(trainer.date_created),
-                })
-            response_object = {
-                'status': 1,
-                'data': list_trainers,
-                "recordsTotal": total_rows,
-                "is_last_page": is_last_page,
-                'message': 'Found trainer/survey.'
-            }
-            return response_object
-        else:
-            response_object = {
-                'status': 0,
-                'data': list_trainers,
-                "recordsTotal": total_rows,
-                "is_last_page": is_last_page,
-                'message': 'No trainer/survey found.'
-            }
-            return response_object
+            if found_trainers:
+                list_trainers = []
+                for trainer in found_trainers:
+                    list_trainers.append({
+                        'id': trainer.id,
+                        'ui_name': trainer.ui_name,
+                        'ai_word': trainer.ai_word,
+                        'date_created': str(trainer.date_created),
+                    })
+                response_object = {
+                    'status': 1,
+                    'data': list_trainers,
+                    "recordsTotal": total_rows,
+                    "is_last_page": is_last_page,
+                    'message': 'Found trainer/survey.'
+                }
+                return response_object
+            else:
+                response_object = {
+                    'status': 0,
+                    'data': list_trainers,
+                    "recordsTotal": total_rows,
+                    "is_last_page": is_last_page,
+                    'message': 'No trainer/survey found.'
+                }
+                return response_object
 
     @staticmethod
     def store_trainer_value(user_id, item, receiver_id, db):
