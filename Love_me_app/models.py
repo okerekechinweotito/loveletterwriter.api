@@ -22,6 +22,9 @@ class User(Base):
     transaction = relationship('Transaction',back_populates='user')
     reset_pass = relationship('ResetPass',back_populates='user')
 
+    
+    
+
 class Receiver(Base):
     __tablename__ = "receivers"
     id = Column(Integer,primary_key=True,index=True)

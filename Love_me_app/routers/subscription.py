@@ -58,8 +58,8 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db)):
     if plans.name == "sweet love":
 
         sessions = stripe.checkout.Session.create(
-            success_url = "https://taskone.up.railway.app/api/subscription?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url = 'https://taskone.up.railway.app/docs',
+            success_url = "http://127.0.0.1:8000/completed?session_id={CHECKOUT_SESSION_ID}",
+            cancel_url = 'http://127.0.0.1:8000/docs',
             mode='subscription',
             payment_method_types =["card"],
                 line_items =[{
@@ -70,9 +70,13 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db)):
             )
     elif plans.name == "Advanced":
         sessions = stripe.checkout.Session.create(
-            success_url = "https://taskone.up.railway.app/api/subscription?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url = 'https://taskone.up.railway.app/docs',
+            success_url = "http://127.0.0.1:8000/completed?session_id={CHECKOUT_SESSION_ID}",
+            cancel_url = 'http://127.0.0.1:8000/docs',
             mode='subscription',
+            metadata = {
+                'user_id':"1245",
+                'user_name':"username",
+            },
             payment_method_types =["card"],
                 line_items =[{
                     'price':'price_1M5ThaGYYMC7FKsIYViZMmtm',
@@ -104,9 +108,21 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db)):
 @router.get("/completed")
 async def completed(requests:Request):
     payload = requests.body
-    sig_header = requests.META['HTTP_STRIPE_SIGNATURE']
+    sig_header = requests.headers['STRIPE_SIGNATURE']
     endpoint_secret = 'whsec_9408e100f9b71cae7e32ce9f54927bb1f2f76a88dfe62d9793e5d0ce16617066'
-    event = stripe.Webhook.construct_event(
-      payload, sig_header, endpoint_secret
-    )
-    return event
+    event = None
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+        # Invalid payload
+        raise e
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        raise e
+
+    # Handle the event
+    print('Handled event type {}'.format(event['type']))
+
+    return jsonify(success=True)
