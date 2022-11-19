@@ -14,3 +14,6 @@ google-auth
 oauth2client
 itsdangerous
 requests
+openai
+twilio
+boto3
