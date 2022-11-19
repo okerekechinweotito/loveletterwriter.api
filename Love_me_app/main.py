@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from .import models
 from .database import engine
 from .routers import ai_trainer,authentication,letter,receiver,schedule,subscription,transaction,users
@@ -26,3 +27,7 @@ app.include_router(receiver.router)
 # app.include_router(subscription.router)
 # app.include_router(transaction.router)
 app.include_router(users.router)
+
+@app.get("/")
+def get():
+    return {"msg": "Home page on!"}
