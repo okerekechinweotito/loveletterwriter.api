@@ -11,19 +11,6 @@ passlib
 python-jose
 python-multipart
 
-fastapi
-sqlalchemy
-pydantic
-uvicorn
-stripe
-bcrypt
-email-validator
-fastapi-jwt-auth
-python-decouple
-passlib
-python-jose
-python-multipart
-
 anyio==3.6.2
 astroid==2.12.12
 boto3==1.26.11
@@ -79,4 +66,5 @@ requests
 openai
 twilio
 boto3
+python-dotenv
 

@@ -8,7 +8,10 @@ from . import models
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from .utils import hash_password
-from decouple import config
+from dotenv import load_dotenv
+import os 
+load_dotenv()
+
 
 def get_current_user(Authorize:AuthJWT=Depends(), db:Session=Depends(get_db), access_token:str=Cookie(default=None),Bearer=Header(default=None)):
     exception=HTTPException(status_code=401, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
@@ -30,7 +33,7 @@ def get_user_sub_is_active(user:dict=Depends(get_current_user)):
 
 def google_auth(token:str, db:Session=Depends(get_db)):
     try:
-        token= id_token.verify_oauth2_token(token, requests.Request(), config('GOOGLE_CLIENT_ID'))
+        token= id_token.verify_oauth2_token(token, requests.Request(), os.getenv("GOOGLE_CLIENT_ID"))
         user=UserCrud.get_user_by_email(db, email=token['email'])
         if user:
             return user

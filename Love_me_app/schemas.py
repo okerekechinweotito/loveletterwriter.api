@@ -114,8 +114,12 @@ class UserDetails(UserBase):
 
     class Config:
         orm_mode=True
+from dotenv import load_dotenv
+import os 
+load_dotenv()
 
-SECRET_KEY='random'
+SECRET_KEY=os.getenv("SECRET_KEY")
+
 class Settings(BaseModel):
     authjwt_secret_key: str = SECRET_KEY
     authjwt_token_location:set ={'cookies','headers'}
