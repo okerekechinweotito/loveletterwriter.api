@@ -5,7 +5,6 @@ uvicorn
 bcrypt
 email-validator
 fastapi-jwt-auth
-python-decouple
 passlib
 python-jose
 python-multipart
@@ -17,3 +16,4 @@ requests
 openai
 twilio
 boto3
+python-dotenv
