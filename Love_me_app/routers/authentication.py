@@ -1,17 +1,17 @@
 from fastapi import APIRouter
 from fastapi import  Depends,  HTTPException, APIRouter,Cookie, Header
-from .. import crud, schemas
+import crud, schemas
 from fastapi.responses import Response
-from ..database import get_db
+from database import get_db
 from fastapi_jwt_auth import AuthJWT
-from ..utils import  authenticate, REFRESH_TOKEN_LIFETIME, ACCESS_TOKEN_LIFETIME_MINUTES, access_cookies_time, refresh_cookies_time
+from utils import  authenticate, REFRESH_TOKEN_LIFETIME, ACCESS_TOKEN_LIFETIME_MINUTES, access_cookies_time, refresh_cookies_time
 from sqlalchemy.orm import Session
 user_crud=crud.UserCrud
 from datetime import timedelta
 from ..dependencies import google_auth
 
-router=APIRouter()
 
+router=APIRouter(tags=['auth'])
 
 
 @router.post('/signup/', response_model=schemas.UserDetails, summary='endpoint for users to signup', status_code=201, tags=['auth'])
@@ -59,8 +59,6 @@ def refresh_token(response:Response,Authorization:AuthJWT=Depends(), refresh_tok
         raise exception
 
 
-
-
 @router.post('/logout',tags=['auth'],summary='endpoint to logout users')
 def logout(Authorize:AuthJWT=Depends()):
     '''
@@ -68,6 +66,7 @@ def logout(Authorize:AuthJWT=Depends()):
     if made with cookies they will be deleted here.
     '''
     Authorize.unset_jwt_cookies()
+
     return {'message':'successfully logout'}
 
 @router.post('/google', tags=['auth'], summary='endpoint for google authentication')
@@ -81,3 +80,4 @@ def google(response:Response,user:dict=Depends(google_auth), Authorize:AuthJWT=D
     response.set_cookie(key='access_token',value=access_token, expires=access_cookies_time, max_age=access_cookies_time, httponly=True)
     response.set_cookie(key='refresh_token',value=refresh_token, expires=refresh_cookies_time, max_age=refresh_cookies_time, httponly=True)
     return {'access_token':access_token, 'refresh_token':refresh_token}
+

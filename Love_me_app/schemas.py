@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, EmailStr
-from datetime import datetime
+from datetime import datetime,date,time
 from fastapi_jwt_auth import AuthJWT
 from typing import Union
 class User(BaseModel):
@@ -14,12 +14,18 @@ class User(BaseModel):
     is_reminder:bool
     date_created:datetime
 
-class Receiver(BaseModel):
+class DisplayReceiver(BaseModel):
     name:str
     email:str
     phone_number:str
     user_id:int
     date_created:datetime
+    class Config:
+        orm_mode=True
+class Receiver(BaseModel):
+    name:str
+    email:str
+    phone_number:str
 
 class Letter(BaseModel):
     user_id:int
@@ -50,14 +56,21 @@ class Subscription(BaseModel):
     description:str
     months:int
     total_sms:int
-    amount:int
+    amount:float
     date_created:datetime
+
+    class config:
+        orm_mode = True
 
 class Transaction(BaseModel):
     user_id:int
     subscription_id:int
     ref_no:str
     date_created:str
+
+    class config:
+        orm_mode = True
+        
 
 class ResetPass(BaseModel):
     pin:str
@@ -70,6 +83,14 @@ class BlackListedTokens(BaseModel):
     token:str
     expiry_date:datetime
     blacklisted_on:datetime
+
+class PasswordResetRequest(BaseModel):
+    email: EmailStr = Field(...)
+
+class PasswordReset(BaseModel):
+    password: str = Field(...)
+    confirm_password: str = Field(...)
+
 
 class UserBase(BaseModel):
     first_name: str
@@ -98,6 +119,7 @@ import os
 load_dotenv()
 
 SECRET_KEY=os.getenv("SECRET_KEY")
+
 class Settings(BaseModel):
     authjwt_secret_key: str = SECRET_KEY
     authjwt_token_location:set ={'cookies','headers'}

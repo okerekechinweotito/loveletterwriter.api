@@ -1,7 +1,7 @@
 from fastapi import Depends,  HTTPException, Cookie, Header
-from .database import get_db
+from database import get_db
 from sqlalchemy.orm import Session
-from .crud import UserCrud
+from crud import UserCrud
 from typing import Optional
 from fastapi_jwt_auth import AuthJWT
 from . import models
@@ -11,7 +11,6 @@ from .utils import hash_password
 from dotenv import load_dotenv
 import os 
 load_dotenv()
-
 
 
 def get_current_user(Authorize:AuthJWT=Depends(), db:Session=Depends(get_db), access_token:str=Cookie(default=None),Bearer=Header(default=None)):
@@ -24,7 +23,7 @@ def get_current_user(Authorize:AuthJWT=Depends(), db:Session=Depends(get_db), ac
         user=UserCrud.get_user_by_id(db, user_id)
         return user
     except:
-        raise exception
+        return None
 
 
 def get_user_sub_is_active(user:dict=Depends(get_current_user)):
