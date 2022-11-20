@@ -24,6 +24,10 @@ tags_metadata = [
         "name": "transactions",
         "description": "Operations related to the transaction and verification of payment",
     },
+    {
+        "name": "Receiver",
+        "description": "Operations related to the receiver of the love letters",
+    },
 ]
 
 app = FastAPI(
