@@ -1,4 +1,4 @@
-from fastapi import APIRouter,Header
+from fastapi import APIRouter,HTTPException,status
 from typing import Union
 from Love_me_app.util.dto import TrainerValue,TrainerValueUpdate
 from Love_me_app.business.ai_trainer import AITrainerBusiness
@@ -18,6 +18,8 @@ router = APIRouter(tags=['ai_trainer'],prefix="/api/v1/ai_trainer")
 
 @router.get("/")
 async def get_all_ai_trainer(db:Session = Depends(get_db), length: int = 10, start: int = 0,user:dict=Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Please log in")
     user_id = user.id
     api_response = AITrainerBusiness.get_all_trainer(user_id,length, start, db)
     return api_response
@@ -25,6 +27,8 @@ async def get_all_ai_trainer(db:Session = Depends(get_db), length: int = 10, sta
 
 @router.post("/{receiver_id}")
 async def store_trainer_value(receiver_id,item: TrainerValue,user:dict=Depends(get_current_user), db:Session = Depends(get_db),):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Please log in")
     user_id = user.id
     api_response = AITrainerBusiness.store_trainer_value(user_id, item,receiver_id,db)
     return api_response
@@ -32,6 +36,8 @@ async def store_trainer_value(receiver_id,item: TrainerValue,user:dict=Depends(g
 
 @router.put("/{ai_trainer_id}/{receiver_id}")
 async def update_trainer_value(receiver_id, ai_trainer_id, item: TrainerValueUpdate,user:dict=Depends(get_current_user), db:Session = Depends(get_db),):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Please log in")
     user_id = user.id
     api_response = AITrainerBusiness.update_trainer_value(user_id,item, ai_trainer_id, receiver_id, db)
     return api_response
@@ -39,6 +45,8 @@ async def update_trainer_value(receiver_id, ai_trainer_id, item: TrainerValueUpd
 
 @router.delete("/{ai_trainer_id}/{receiver_id}")
 async def delete_trainer_value(receiver_id, ai_trainer_id,user:dict=Depends(get_current_user),db:Session = Depends(get_db),):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Please log in")
     user_id = user.id
     api_response = AITrainerBusiness.delete_trainer_value(user_id,ai_trainer_id, receiver_id, db)
     return api_response
