@@ -1,0 +1,26 @@
+name: Deploy main CI
+
+on:
+  push:
+    branches: [ "update/dev" ]
+
+jobs:
+  build:
+
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v3
+    - name: Go to folder
+      run: cd /var/www/loveletterwriter.api
+    - name: Switch to branch
+      run: |
+        source env/bin/activate
+        git switch update/dev
+    - name: Pull the branch
+      run: git pull
+    - name: install dependencies
+      run: pip install -r "requirements.txt"
+    - name: restart server
+      run: sudo systemctl restart hng
+    - name: deactivate
+      run: deactivate
