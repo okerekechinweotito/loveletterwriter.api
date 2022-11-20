@@ -1,5 +1,5 @@
-from utils import hash_password
-import models, schemas
+from .utils import hash_password
+from . import models, schemas
 import uuid
 
 

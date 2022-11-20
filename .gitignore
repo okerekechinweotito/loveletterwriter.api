@@ -8,7 +8,6 @@ venv/
 /venv
 
 
-<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -138,5 +137,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-=======
->>>>>>> 568bfa3d9a5e1afd659db1db7b6c21590af9dcc6
+

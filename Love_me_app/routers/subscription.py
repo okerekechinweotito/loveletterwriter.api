@@ -1,11 +1,11 @@
 from fastapi import APIRouter,Depends,Request
-import  schemas 
-from dependencies import get_current_user
+from ..import  schemas 
+from ..dependencies import get_current_user
 from fastapi.responses import Response,RedirectResponse
 from sqlalchemy.orm import Session
-import models
+from ..import models
 import json
-from database import get_db
+from ..database import get_db
 from datetime import timedelta
 import stripe 
 

@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, EmailStr
 from datetime import datetime,date,time
-from fastapi_jwt_auth import AuthJWT
+
 from typing import Union
 class User(BaseModel):
     first_name:str
@@ -117,11 +117,11 @@ class UserDetails(UserBase):
 from dotenv import load_dotenv
 import os 
 load_dotenv()
-
+from fastapi_jwt_auth import AuthJWT
 SECRET_KEY=os.getenv("SECRET_KEY")
 
 class Settings(BaseModel):
-    authjwt_secret_key: str = SECRET_KEY
+    authjwt_secret_key=SECRET_KEY
     authjwt_token_location:set ={'cookies','headers'}
     authjwt_access_cookie_key:str='access_token'
     authjwt_refresh_cookie_key:str='refresh_token'

@@ -23,8 +23,6 @@ env_config = ConnectionConfig(
     MAIL_PORT=Environ.MAIL_PORT,
     MAIL_SERVER=Environ.MAIL_SERVER,
     MAIL_FROM_NAME=Environ.MAIL_FROM_NAME,
-    MAIL_TLS=True,
-    MAIL_SSL=False,
     USE_CREDENTIALS=True,
     TEMPLATE_FOLDER=Environ.TEMPLATE_FOLDER
 )

@@ -1,9 +1,9 @@
 from fastapi import APIRouter,Depends,Request,Header
 from datetime import timedelta
-import models
+from ..import models
 from fastapi.responses import Response
 import stripe
-from database import get_db
+from ..database import get_db
  
 from sqlalchemy.orm import Session
 
@@ -14,7 +14,7 @@ router = APIRouter(tags=['transactions'])
 
 
 @router.post("/completed",description="transaction webhook",)
-async def completed(requests:Request,stripe_signature:str = Header(str),db:Session = Depends(get_db)):
+async def completed(requests:Request,stripe_signature:str = Header(),db:Session = Depends(get_db)):
     payload =await requests.body()
     sig_header = stripe_signature
     endpoint_secret = 'whsec_9408e100f9b71cae7e32ce9f54927bb1f2f76a88dfe62d9793e5d0ce16617066'

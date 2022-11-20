@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from fastapi import HTTPException
-import crud
+from . import crud
 
 
 
@@ -36,12 +36,14 @@ def authenticate(db:Session,email:str, password:str):
         raise exception
     return user
 
-
+from dotenv import load_dotenv
+import os 
+load_dotenv()
 
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from fastapi import HTTPException
-import crud
+from . import crud
 import os
 import boto3
 import openai
@@ -60,17 +62,17 @@ refresh_cookies_time=REFRESH_TOKEN_LIFETIME*3600*24
 pwd_hash=CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 # Setup Twilio
-twilio_account_sid = os.environ.get("TWILIO_ACCOUNT_SID", None)
-twilio_auth_token = os.environ.get("TWILIO_AUTH_TOKEN", None)
-twilio_phone_number = os.environ.get("TWILIO_PHONE_NUMBER", None)
+twilio_account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+twilio_auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+twilio_phone_number = os.getenv("TWILIO_PHONE_NUMBER")
 twilio_client = Client(twilio_account_sid, twilio_auth_token)
 
 # Setup openai
-openai.api_key = os.environ.get("OPENAI_API_KEY", None)
+openai.api_key = os.getenv("OPENAI_API_KEY", None)
 
 # Setup SES
-FROM_EMAIL = os.environ.get("FROM_EMAIL", None)
-AWS_REGION = os.environ.get("AWS_REGION", None)
+FROM_EMAIL = os.getenv("FROM_EMAIL")
+AWS_REGION = os.getenv("AWS_REGION")
 email_client = boto3.client("ses", region_name=AWS_REGION)
 
 
