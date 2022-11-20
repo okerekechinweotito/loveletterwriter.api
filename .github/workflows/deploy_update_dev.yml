@@ -1,4 +1,4 @@
-name: Deploy main CI
+name: Deploy update/dev CI
 
 on:
   push:
@@ -11,16 +11,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Go to folder
-      run: cd /var/www/loveletterwriter.api
-    - name: Switch to branch
       run: |
+        cd /var/www/loveletterwriter.api
         source env/bin/activate
         git switch update/dev
-    - name: Pull the branch
-      run: git pull
-    - name: install dependencies
-      run: pip install -r "requirements.txt"
+        git pull
+        pip install -r "requirements.txt"
     - name: restart server
       run: sudo systemctl restart hng
-    - name: deactivate
-      run: deactivate
