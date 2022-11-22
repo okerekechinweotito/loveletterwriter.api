@@ -65,7 +65,7 @@ pwd_hash=CryptContext(schemes=['bcrypt'], deprecated='auto')
 twilio_account_sid = os.getenv("TWILIO_ACCOUNT_SID")
 twilio_auth_token = os.getenv("TWILIO_AUTH_TOKEN")
 twilio_phone_number = os.getenv("TWILIO_PHONE_NUMBER")
-twilio_client = Client(twilio_account_sid, twilio_auth_token)
+# twilio_client = Client(twilio_account_sid, twilio_auth_token)
 
 # Setup openai
 openai.api_key = os.getenv("OPENAI_API_KEY", None)
@@ -73,7 +73,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY", None)
 # Setup SES
 FROM_EMAIL = os.getenv("FROM_EMAIL")
 AWS_REGION = os.getenv("AWS_REGION")
-email_client = boto3.client("ses", region_name=AWS_REGION)
+# email_client = boto3.client("ses", region_name=AWS_REGION)
 
 
 

@@ -9,7 +9,8 @@ from ..database import get_db
 from datetime import timedelta
 import stripe 
 
-
+success_url = 'http://127.0.0.1:8000/success?session_id={CHECKOUT_SESSION_ID}'
+cancel_url = 'http://127.0.0.1:8000/docs'
 
 router = APIRouter(tags=['subscription'])
 
@@ -52,16 +53,15 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
     if plans.name == "sweet love":
 
         sessions = stripe.checkout.Session.create(
-            success_url = "http://127.0.0.1:8000/completed?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url = 'http://127.0.0.1:8000/docs',
+            success_url = success_url,
+            cancel_url = cancel_url,
             mode='subscription',
             metadata = {
                 'user_id':user.id,
                 'user_name':user.first_name,
                 'user_email':user.email,
                 'plan_type':plans.name,
-                'month':plans.months,
-                'total_sms':plans.total_sms
+                'month':plans.months
             },
             payment_method_types =["card"],
                 line_items =[{
@@ -72,16 +72,15 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
             )
     elif plans.name == "Advanced":
         sessions = stripe.checkout.Session.create(
-            success_url = "http://127.0.0.1:8000/completed?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url = 'http://127.0.0.1:8000/docs',
+            success_url = success_url,
+            cancel_url = cancel_url,
             mode='subscription',
              metadata = {
                 'user_id':user.id,
                 'user_name':user.first_name,
                 'user_email':user.email,
                 'plan_type':plans.name,
-                'month':plans.months,
-                'total_sms':plans.total_sms
+                'month':plans.months
             },
             payment_method_types =["card"],
                 line_items =[{
@@ -92,21 +91,22 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
             )
     elif plans.name == "Pro gratifying":
         sessions = stripe.checkout.Session.create(
-            success_url = "http://127.0.0.1:8000/completed?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url = 'http://127.0.0.1:8000/docs',
+            success_url = success_url,
+            cancel_url = cancel_url,
             mode='subscription',
              metadata = {
                 'user_id':user.id,
                 'user_name':user.first_name,
                 'user_email':user.email,
                 'plan_type':plans.name,
-                'month':plans.months,
-                'total_sms':plans.total_sms
+                'month':plans.months
+                
             },
             payment_method_types =["card"],
                 line_items =[{
                     'price':'price_1M5TiIGYYMC7FKsITCqacRIS',
                     'quantity':1,
+                    
                 }
                 ]
             )
@@ -117,3 +117,6 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
 
 
 
+@router.get("/success")
+async def successful(request:Request):
+    return {"success":"success"}
