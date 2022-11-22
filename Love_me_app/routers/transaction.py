@@ -33,8 +33,8 @@ async def completed(requests:Request,stripe_signature:str = Header(),user:dict=D
     if event['type'] == 'checkout.session.completed':
         # user.is_sub_active = True
         # user.sub_end_date = timedelta(days=30)
-        payment_intent = event.data # contains a stripe.PaymentIntent
-        print('PaymentIntent was successful!',payment_intent)
+        # payment_intent = event.data # contains a stripe.PaymentIntent
+        # print('PaymentIntent was successful!',payment_intent)
         details = {
             'user_name':event.data.object.metadata.user_name,
             'user_email':event.data.object.metadata.user_email,
@@ -42,20 +42,18 @@ async def completed(requests:Request,stripe_signature:str = Header(),user:dict=D
             'plan_type':event.data.object.metadata.plan_type,
             'month':event.data.object.metadata.month,
         }
-        # data = models.Transaction(
-        #     user_id = event.data.object.metadata.user_id,
-        #     ref_no = event.data.object.id,
-        #     date_created = datetime(datetime.utcfromtimestamp(event.data.object.created).strftime('%Y-%m-%d %H:%M:%S'))
-        # )
+        data = models.Transaction(
+            user_id = event.data.object.metadata.user_id,
+            ref_no = event.data.object.id,
+            date_created = datetime.utcfromtimestamp(int(event.data.object.created)).strftime('%Y-%m-%d %H:%M:%S')
+        )
+        db.add(data)
         id = int(event.data.object.metadata.user_id)
-        profile = db.query(models.User).filter_by(id=id).first()
         end = event.data.object.metadata.month
-        end_date = profile.sub_end_date + relativedelta(months=int(end))
-
+        profile = db.query(models.User).filter_by(id=id).first()
+        end_date = datetime.now() + relativedelta(months=int(end))
         profile.update(is_sub_active=True,sub_end_date=end_date)
         db.commit()
-        # db.add(data)
-        # db.commit()
         print("saved to data base..........................................")
 
     print('Handled event type {}'.format(event['type']))

@@ -111,8 +111,7 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
                 ]
             )
 
-    return {"url":sessions['url'],
-        "checkout_id":sessions['id']}
+    return {"url":sessions['url']}
 
 
 
