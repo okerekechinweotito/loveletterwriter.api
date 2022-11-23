@@ -131,3 +131,11 @@ class Settings(BaseModel):
 @AuthJWT.load_config
 def get_config():
     return Settings()
+
+class ProductReviews(BaseModel):
+    review:str
+    
+
+    class Config:
+        orm_mode = True
+

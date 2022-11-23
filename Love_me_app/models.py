@@ -131,3 +131,11 @@ class BlackListedTokens(Base):
     token = Column(String)
     expiry_date = Column(String)
     blacklisted_on = Column(DateTime(timezone=True), server_default=func.now())
+
+class ProductReviews(Base):
+    __tablename__ = "product_reviews"
+    id = Column(Integer, primary_key=True, index=True)
+    review = Column(String)
+    user = relationship('User', back_populates='product_reviews')
+    
+
