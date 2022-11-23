@@ -70,6 +70,12 @@ class Transaction(BaseModel):
     class config:
         orm_mode = True
         
+class SubscriptionBase(BaseModel):
+    name:str
+    description:str
+    months:str
+    amount:float
+
 
 class ResetPass(BaseModel):
     pin:str
