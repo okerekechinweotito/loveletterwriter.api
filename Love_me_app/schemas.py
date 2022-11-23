@@ -134,8 +134,19 @@ def get_config():
 
 class ProductReviews(BaseModel):
     review:str
+   
     
+    # user: List[ProductReview]
+   
+    class Config:
+        orm_mode = True
 
+
+class PydanticReview(BaseModel):
+    review:str
+    id: int
+    # first_name: str
+    
     class Config:
         orm_mode = True
 

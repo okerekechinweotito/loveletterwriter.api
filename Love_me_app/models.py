@@ -24,6 +24,7 @@ class User(Base):
     ai_trainer_value = relationship('AiTrainerValue', back_populates='user')
     transaction = relationship('Transaction', back_populates='user')
     reset_pass = relationship('ResetPass', back_populates='user')
+    product_review = relationship('ProductReview', back_populates='user')
 
 
 class Receiver(Base):
@@ -132,10 +133,13 @@ class BlackListedTokens(Base):
     expiry_date = Column(String)
     blacklisted_on = Column(DateTime(timezone=True), server_default=func.now())
 
-class ProductReviews(Base):
+class ProductReview(Base):
     __tablename__ = "product_reviews"
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
     review = Column(String)
-    user = relationship('User', back_populates='product_reviews')
+    date_created = Column(DateTime(timezone=True), server_default=func.now())
+    user = relationship('User', back_populates='product_review')
+ 
     
 
