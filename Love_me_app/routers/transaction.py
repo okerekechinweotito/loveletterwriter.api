@@ -5,6 +5,9 @@ from dateutil.relativedelta import relativedelta
 from ..import models
 from ..dependencies import get_current_user
 import stripe
+from dotenv import load_dotenv
+import os 
+load_dotenv()
 from datetime import datetime
 from ..database import get_db
  
@@ -20,7 +23,7 @@ router = APIRouter(tags=['transactions'])
 async def completed(requests:Request,stripe_signature:str = Header(),user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
     payload =await requests.body()
     sig_header = stripe_signature
-    endpoint_secret = 'whsec_9408e100f9b71cae7e32ce9f54927bb1f2f76a88dfe62d9793e5d0ce16617066'
+    endpoint_secret = os.getenv("ENDPOINT_SECRET")
     event = None
     try:
         event = stripe.Webhook.construct_event(

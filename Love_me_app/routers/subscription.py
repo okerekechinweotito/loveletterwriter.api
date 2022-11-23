@@ -7,6 +7,9 @@ from ..import models
 import json
 from ..database import get_db
 from datetime import timedelta
+from dotenv import load_dotenv
+import os 
+load_dotenv()
 import stripe 
 
 success_url = 'http://127.0.0.1:8000/success?session_id={CHECKOUT_SESSION_ID}'
@@ -45,7 +48,7 @@ async def SubscriptionPlans(db: Session = Depends(get_db)):
 @router.post("/api/v1/subscription/checkout/{plan_id}")
 async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = Depends(get_current_user)):
 
-    stripe.api_key = 'sk_test_51M5T6WGYYMC7FKsItosehAJ1CJGFajEiYBLYNTty6sGgpNfqjukMbir08BUcLVzOLzpnSrFY0x1oOO2NozpsSZDI00GUJdvY6u'
+    stripe.api_key = os.getenv("STRIPE_API_KEY")
 
     querr = db.query(models.Subscription).filter_by(id=plan_id).first()
     plans = querr

@@ -65,7 +65,7 @@ pwd_hash=CryptContext(schemes=['bcrypt'], deprecated='auto')
 twilio_account_sid = os.getenv("TWILIO_ACCOUNT_SID")
 twilio_auth_token = os.getenv("TWILIO_AUTH_TOKEN")
 twilio_phone_number = os.getenv("TWILIO_PHONE_NUMBER")
-# twilio_client = Client(twilio_account_sid, twilio_auth_token)
+twilio_client = Client(twilio_account_sid, twilio_auth_token)
 
 # Setup openai
 openai.api_key = os.getenv("OPENAI_API_KEY", None)
