@@ -1,7 +1,7 @@
 from fastapi import APIRouter,Depends,Request
 from ..import  schemas 
 from ..dependencies import get_current_user
-from fastapi.responses import Response,RedirectResponse
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from ..import models
 import json
@@ -19,7 +19,9 @@ router = APIRouter(tags=['subscription'])
 
 
 @router.post("/api/v1/subscription",description="endpoint to post subscription")
-async def subscribe(subscription:schemas.Subscription,db: Session = Depends(get_db)):
+async def subscribe(subscription:schemas.Subscription,db: Session = Depends(get_db),user:dict=Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="please login")
     data = models.Subscription(
         name=subscription.name,
         description=subscription.description,
@@ -60,9 +62,9 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
 
     querr = db.query(models.Subscription).filter_by(id=plan_id).first()
     plans = querr
-
+    if not user:
+        raise HTTPException(status_code=401, detail="please signin")
     if plans.name == "sweet love":
-
         sessions = stripe.checkout.Session.create(
             success_url = success_url,
             cancel_url = cancel_url,
