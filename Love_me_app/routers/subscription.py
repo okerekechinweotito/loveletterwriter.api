@@ -24,7 +24,6 @@ async def subscribe(subscription:schemas.Subscription,db: Session = Depends(get_
         name=subscription.name,
         description=subscription.description,
         months=subscription.months,
-        total_sms=subscription.total_sms,
         amount=subscription.amount,
         date_created=subscription.date_created
     )
@@ -36,11 +35,20 @@ async def subscribe(subscription:schemas.Subscription,db: Session = Depends(get_
     return data 
 
 
+
+
 @router.get('/api/v1/subscription/plans',description="list of available plans")
 async def SubscriptionPlans(db: Session = Depends(get_db)):
     plans = db.query(models.Subscription).all()
     return plans
 
+
+@router.patch("/api/v1/subscription/{plan_id}",description="edit plans")
+async def UpdateSubscription(plan_id:int,request: schemas.SubscriptionBase,db:Session = Depends(get_db)):
+    plans = db.query(models.Subscription).filter(models.Subscription.id == plan_id)
+    plans.update(request.dict(exclude_unset=True))
+    db.commit()
+    return {"User successfully updated"}
 
 
 
