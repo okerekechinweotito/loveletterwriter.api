@@ -91,7 +91,6 @@ class Subscription(Base):
     name = Column(String(255))
     description = Column(String(255))
     months = Column(Integer)
-    total_sms = Column(Integer)
     amount = Column(Float)
     date_created = Column(DateTime)
     amount = Column(String)
@@ -108,10 +107,12 @@ class Transaction(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     subscription_id = Column(Integer, ForeignKey('subscriptions.id'))
     ref_no = Column(String)
-    date_created = Column(DateTime(timezone=True), server_default=func.now())
-    user = relationship('User', back_populates='transaction')
-    subscription = relationship('Subscription', back_populates='transaction')
+    date_created = Column(String)
+    user = relationship('User',back_populates='transaction')
+    subscription = relationship('Subscription',back_populates='transaction')
 
+    
+    
 
 class ResetPass(Base):
     __tablename__ = "reset_pass"
