@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Time, TEXT, DateTime, Boolean, F
 from sqlalchemy.orm import relationship
 from .database import Base
 from sqlalchemy.sql import func
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class User(Base):
@@ -17,7 +17,7 @@ class User(Base):
     is_sub_active = Column(Boolean, default=False)
     sub_end_date = Column(DateTime)
     is_reminder = Column(Boolean, default=False)
-    date_created = Column(DateTime, default=datetime.utcnow())
+    date_created = Column(DateTime(timezone=True), server_default=func.now())
     receiver = relationship('Receiver', back_populates='sender')
     letter = relationship('Letter', back_populates='writer')
     schedule = relationship('Schedule', back_populates='user')
@@ -36,7 +36,6 @@ class Receiver(Base):
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     sender = relationship('User', back_populates='receiver')
     letter = relationship('Letter', back_populates='receiver')
-    schedule = relationship('Schedule', back_populates='receiver')
     ai_trainer_value = relationship('AiTrainerValue', back_populates='receiver')
 
 
@@ -50,6 +49,7 @@ class Letter(Base):
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     writer = relationship('User', back_populates='letter')
     receiver = relationship('Receiver', back_populates='letter')
+    schedule= relationship('Schedule',back_populates='letter')
 
 
 class Schedule(Base):
@@ -57,10 +57,12 @@ class Schedule(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     receiver_id = Column(Integer, ForeignKey('receivers.id'))
-    schedule_time = Column(Time)
+    letter_id=Column(Integer,ForeignKey('letters.id'))
+    schedule_time = Column(DateTime)
+    completed=Column(Boolean, default=False)
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     user = relationship('User', back_populates='schedule')
-    receiver = relationship('Receiver', back_populates='schedule')
+    letter=relationship('Letter', back_populates='schedule')
 
 
 class AiTrainer(Base):

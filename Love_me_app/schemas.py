@@ -117,7 +117,7 @@ from dotenv import load_dotenv
 import os 
 load_dotenv()
 from fastapi_jwt_auth import AuthJWT
-SECRET_KEY='random'
+SECRET_KEY=os.getenv('SECRET_KEY', 'secret')
 
 class Settings(BaseModel):
     authjwt_secret_key: str = SECRET_KEY
@@ -127,6 +127,27 @@ class Settings(BaseModel):
     authjwt_cookie_csrf_protect: bool = False
     authjwt_cookie_samesite:str ='lax'
 
+class Letter(BaseModel):
+    id:int
+    receiver_id:int
+    user_id:int
+    letter:str
+    date_created:datetime
+
+    class Config:
+        orm_mode=True
+ 
+
+class Schedule_Letter(BaseModel):
+    id:int
+    schedule_time:datetime
+    date_created:datetime
+    letter:Letter
+
+
+
+    class Config:
+        orm_mode=True
 
 @AuthJWT.load_config
 def get_config():
