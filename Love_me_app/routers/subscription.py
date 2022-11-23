@@ -12,8 +12,8 @@ import os
 load_dotenv()
 import stripe 
 
-success_url = 'http://127.0.0.1:8000/success?session_id={CHECKOUT_SESSION_ID}'
-cancel_url = 'http://127.0.0.1:8000/docs'
+success_url = os.getenv("SUCCESS_URL")
+cancel_url = os.getenv("CANCEL_URL")
 
 router = APIRouter(tags=['subscription'])
 

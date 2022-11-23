@@ -16,16 +16,16 @@ class Environ:
     TEMPLATE_NAME = os.getenv('TEMPLATE_NAME')
 
 
-# env_config = ConnectionConfig(
-#     MAIL_USERNAME=Environ.MAIL_USERNAME,
-#     MAIL_PASSWORD=Environ.MAIL_PASSWORD,
-#     MAIL_FROM=Environ.MAIL_FROM,
-#     MAIL_PORT=Environ.MAIL_PORT,
-#     MAIL_SERVER=Environ.MAIL_SERVER,
-#     MAIL_FROM_NAME=Environ.MAIL_FROM_NAME,
-#     USE_CREDENTIALS=True,
-#     TEMPLATE_FOLDER=Environ.TEMPLATE_FOLDER
-# )
+env_config = ConnectionConfig(
+    MAIL_USERNAME=Environ.MAIL_USERNAME,
+    MAIL_PASSWORD=Environ.MAIL_PASSWORD,
+    MAIL_FROM=Environ.MAIL_FROM,
+    MAIL_PORT=Environ.MAIL_PORT,
+    MAIL_SERVER=Environ.MAIL_SERVER,
+    MAIL_FROM_NAME=Environ.MAIL_FROM_NAME,
+    USE_CREDENTIALS=True,
+    TEMPLATE_FOLDER=Environ.TEMPLATE_FOLDER
+)
 
 
 async def password_reset_email(subject: str, email_to: str, body: dict):
