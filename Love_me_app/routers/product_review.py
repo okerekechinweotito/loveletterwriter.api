@@ -42,6 +42,21 @@ def get_reviews( db:Session = Depends(get_db)):
     return reviews
 
 
+@router.delete('/del/{review_id}')
+def create_review(user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
+    current_user = user
+    if current_user is not None:
+
+        review = db.query(ProductReviewModel).filter(id==id).first()
+        db.delete(review)
+        db.commit()
+        return {"Review  deleted"}
+    else:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Unauthorized")
+    
+    
+    
+
 
 
 
