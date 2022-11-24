@@ -137,6 +137,7 @@ class Letter(BaseModel):
     id:int
     receiver_id:int
     letter:str
+    title:str
     date_created:datetime
 
     class Config:
