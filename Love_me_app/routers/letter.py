@@ -3,7 +3,6 @@ from fastapi import APIRouter,HTTPException,status
 from Love_me_app.business.letter import LetterBusiness
 from sqlalchemy.orm import Session
 from Love_me_app.database import get_db
-from .. import  models
 from fastapi import Depends
 from ..dependencies import get_current_user
 from ..import schemas,models
