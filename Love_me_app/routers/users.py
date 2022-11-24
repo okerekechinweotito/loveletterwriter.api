@@ -121,6 +121,17 @@ def user_me(user:dict=Depends(get_current_user)):
         "plan_type":user.plan_type,
         
     }
+"""
+endpoint to update user profile by getting the current user email and updating their profile.
+"""
+@router.patch("/",)
+def update_profile(request: schemas.UserBase, user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
+    if not user:
+        raise HTTPException(status_code=401, detail="user not found")
+    profile = db.query(models.User).filter(models.User.id)
+    profile.update(request.dict(exclude_unset=True))
+    db.commit()
+    return {"User successfully updated"}
 
 
 """
