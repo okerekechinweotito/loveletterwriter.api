@@ -124,7 +124,7 @@ def user_me(user:dict=Depends(get_current_user)):
 """
 endpoint to update user profile by getting the current user email and updating their profile.
 """
-@router.patch("/",)
+@router.patch("/")
 def update_profile(request: schemas.UserBase, user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=401, detail="user not found")
@@ -140,7 +140,7 @@ endpoint to update user profile picture by getting the current user email and up
 @router.patch("/upload/profile_picture/")       
 async def upload_profile_picture(file: UploadFile = File(...),user:dict=Depends(get_current_user)):
     if not user:
-        raise HTTPException(status_code=404, detail=f"User not found")
+       raise HTTPException(status_code=404, detail=f"User not found")
     FILEPATH = "./static/profile_images/"
     filename = file.filename
     extension= filename.split(".")[1]
