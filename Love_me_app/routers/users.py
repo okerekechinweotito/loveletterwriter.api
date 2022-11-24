@@ -126,7 +126,7 @@ def user_me(user:dict=Depends(get_current_user)):
 """
 endpoint to update user profile picture by getting the current user email and updating their profile.
 """
-@router.post("/upload/profile_picture/")       
+@router.patch("/upload/profile_picture/")       
 async def upload_profile_picture(file: UploadFile = File(...),user:dict=Depends(get_current_user)):
     if not user:
         raise HTTPException(status_code=404, detail=f"User not found")

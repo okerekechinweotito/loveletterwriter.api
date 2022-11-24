@@ -10,6 +10,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String)
     last_name = Column(String)
+    image = Column(String)
     password = Column(String)
     email = Column(String)
     facebook_id = Column(String)
@@ -25,7 +26,6 @@ class User(Base):
     ai_trainer_value = relationship('AiTrainerValue', back_populates='user')
     transaction = relationship('Transaction', back_populates='user')
     reset_pass = relationship('ResetPass', back_populates='user')
-    image = Column(String)
     product_review = relationship('ProductReview', back_populates='user')
 
 
