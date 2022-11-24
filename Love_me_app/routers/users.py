@@ -124,3 +124,4 @@ def update_profile(request: schemas.UserBase, user:dict=Depends(get_current_user
     db.commit()
     return {"User successfully updated"}
         
+  
