@@ -18,7 +18,7 @@ def get_object_or_404(db,model, id, user):
     return obj
     
 
-@router.post('/schedule-letter/{letter_id}', response_model=schemas.Schedule_Letter, summary='endpoint to schedule letters')
+@router.post('/schedule-letter/{letter_id}', summary='endpoint to schedule letters')
 def schedule_letter(letter_id:int,user:dict=Depends(get_current_user),db:Session=Depends(get_db), date_scheduled:datetime=Body()):
     obj=db.query(models.Letter).filter(models.Letter.id==letter_id, models.Letter.user_id ==user.id).first()
     if not obj:
@@ -27,7 +27,7 @@ def schedule_letter(letter_id:int,user:dict=Depends(get_current_user),db:Session
     db.add(schedule)
     db.commit()
     db.refresh(schedule)
-    return schedule
+    return {'message':'letter has been scheduled'}
 
 @router.get('/schedule/{schedule_id}', response_model=schemas.Schedule_Letter, summary='endpoint to get a particular schedule')
 def get_schedule(schedule_id:int, db:Session=Depends(get_db), user:dict=Depends(get_current_user)):
@@ -39,6 +39,7 @@ def get_schedule(schedule_id:int, db:Session=Depends(get_db), user:dict=Depends(
 def get_all_scheduled_letter(offset:int=0, limit:int=10,db:Session=Depends(get_db), user:dict=Depends(get_current_user)):
     letters=db.query(models.Schedule).filter(models.Schedule.completed==False, models.Schedule.user_id==user.id).order_by(models.Schedule.schedule_time.asc()).offset(offset).limit(limit).all()
     return letters
+
 
 @router.patch('/schedule/{schedule_id}/', status_code=200, response_model=schemas.Schedule_Letter, summary='endpoint to update schedule time')
 def update_scedule( schedule_id:int,db:Session=Depends(get_db), date_scheduled:datetime=Body(), user:dict=Depends(get_current_user)):
@@ -54,6 +55,7 @@ def delete_schedule(schedule_id:int,db:Session=Depends(get_db), user:dict=Depend
     db.delete(schedule)
     db.commit()
     return {'message':'sucessfully deleted'}
+
 
 
 

@@ -12,7 +12,7 @@ from . import crud
 
 SECRET_KEY='secret'
 ALGORITHM='HS256'
-ACCESS_TOKEN_LIFETIME_MINUTES= 5
+ACCESS_TOKEN_LIFETIME_MINUTES= 15
 REFRESH_TOKEN_LIFETIME=14
 access_cookies_time=ACCESS_TOKEN_LIFETIME_MINUTES * 60
 refresh_cookies_time=REFRESH_TOKEN_LIFETIME*3600*24
@@ -73,7 +73,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY", None)
 # Setup SES
 FROM_EMAIL = os.getenv("FROM_EMAIL")
 AWS_REGION = os.getenv("AWS_REGION")
-# email_client = boto3.client("ses", region_name=AWS_REGION)
+#email_client = boto3.client("ses", region_name=AWS_REGION)
 
 
 

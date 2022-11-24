@@ -3,33 +3,35 @@ from fastapi_mail import FastMail, MessageSchema, MessageType
 from celery import Celery
 from .models import Schedule
 from datetime import datetime, timezone
-from .models import Schedule
+from .models import Schedule, Letter
 from .database import  SessionLocal
-from .send_email import env_config
+# from .send_email import env_config
 from dotenv import load_dotenv
+
+
 
 load_dotenv()
 
-celery=Celery(__name__, broker=os.getenv('CELERY_BROKER_URL'))
+celery=Celery(__name__, broker=os.getenv('CELERY_BROKER_URL', None))
 
 
+def send_email(letter, recepient):
 
+    #send letter function
+    pass
 @celery.task
-def send_letter(letter, email_to):
-    body={'letter':letter}
-    message = MessageSchema(
-    subject='Your Love letter',
-    recipients=[email_to],
-    template_body=body,
-    subtype=MessageType.html,
-)
-    fm = FastMail(env_config)
+def send_letter(letter, recepient, id):
     try:
-        fm.send_message(message, template_name='love_letter_email.html')
-        return True
+        send_email(letter, recepient)
+        db=SessionLocal()
+        letter=db.query(Letter).filter(Letter.id==id).first()
+        letter.is_sent=True
+        letter.date_sent=datetime.now(tz=timezone.utc)
+        db.commit()
+        db.refresh(letter)
+        return f'letter sent-- id: {id}'
     except:
-        return False
-
+        return f'letter failed to send-- id: {id}'
 
 
 
@@ -39,7 +41,7 @@ def send_scheduled_letters():
     schedules=db.query(Schedule).filter(Schedule.completed== False,Schedule.schedule_time <= datetime.now(tz=timezone.utc)).all()
     if schedules:
         for schedule in schedules:
-                send_letter.delay(schedule.letter.letter, schedule.letter.receiver.email)
+                send_letter.delay(schedule.letter.letter, schedule.letter.receiver.email, schedule.letter.id)
                 schedule.completed=True
                 db.commit()
                 db.refresh(schedule)
