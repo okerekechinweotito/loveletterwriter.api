@@ -5,7 +5,7 @@ from fastapi import Depends
 from ..dependencies import get_current_user
 from ..schemas import ProductReviews,PydanticReview
 from ..models import ProductReview as ProductReviewModel
-from fastapi_paginate import Page, add_pagination, paginate
+from fastapi_pagination import Page, add_pagination, paginate
 from datetime import datetime
 router = APIRouter(tags=['product_review'],prefix="/review")
 
