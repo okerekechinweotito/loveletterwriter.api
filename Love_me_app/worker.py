@@ -31,9 +31,9 @@ def send_email(user, letter, recepient):
  ​    response=​​sg​.​send​(​message​)
      return response.body
 @celery.task
-def send_letter(letter, recepient, id):
+def send_letter(user, letter, recepient, id):
     try:
-        send_email(letter, recepient)
+        send_email(user, letter, recepient)
         db=SessionLocal()
         letter=db.query(Letter).filter(Letter.id==id).first()
         letter.date_sent=datetime.now(tz=timezone.utc)
