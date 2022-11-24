@@ -54,7 +54,7 @@ def send_scheduled_letters():
 celery.conf.beat_schedule= { 
     'send_sceduled_letters':{ 
         'task': 'Love_me_app.worker.send_scheduled_letters',
-        'schedule':1,
+        'schedule':120,
 
     }
 
