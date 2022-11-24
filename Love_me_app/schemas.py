@@ -113,6 +113,12 @@ class UserDetails(UserBase):
 
     class Config:
         orm_mode=True
+
+class UserUpdate(UserBase):
+    image:str
+
+    class Config:
+        orm_mode=True
 from dotenv import load_dotenv
 import os 
 load_dotenv()
@@ -128,6 +134,6 @@ class Settings(BaseModel):
     authjwt_cookie_samesite:str ='lax'
 
 
-@AuthJWT.load_config
+#
 def get_config():
     return Settings()

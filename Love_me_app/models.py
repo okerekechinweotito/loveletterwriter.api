@@ -24,7 +24,7 @@ class User(Base):
     ai_trainer_value = relationship('AiTrainerValue', back_populates='user')
     transaction = relationship('Transaction', back_populates='user')
     reset_pass = relationship('ResetPass', back_populates='user')
-
+    image = Column(String)
 
 class Receiver(Base):
     __tablename__ = "receivers"
