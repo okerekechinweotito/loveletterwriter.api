@@ -45,6 +45,7 @@ async def completed(requests:Request,stripe_signature:str = Header(),user:dict=D
         end_date = datetime.now() + relativedelta(months=int(end))
         profile.is_sub_active = True
         profile.sub_end_date = end_date
+        profile.plan_type = event.data.object.metadata.plan_type
         db.add(data)
         try:
             db.commit()
