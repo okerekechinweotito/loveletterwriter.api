@@ -6,7 +6,7 @@ class User(BaseModel):
     first_name:str
     last_name:str
     password:str
-    email:str
+    email:EmailStr
     facebook_id:str
     google_id:str
     is_sub_active:bool
@@ -15,16 +15,16 @@ class User(BaseModel):
     date_created:datetime
 
 class DisplayReceiver(BaseModel):
+    id:int
     name:str
-    email:str
+    email:EmailStr
     phone_number:str
-    user_id:int
     date_created:datetime
     class Config:
         orm_mode=True
 class Receiver(BaseModel):
     name:str
-    email:str
+    email:EmailStr
     phone_number:str
 
 class Letter(BaseModel):
@@ -126,6 +126,14 @@ class Settings(BaseModel):
     authjwt_refresh_cookie_key:str='refresh_token'
     authjwt_cookie_csrf_protect: bool = False
     authjwt_cookie_samesite:str ='lax'
+
+class ContactUs(BaseModel):
+    name:str
+    email:EmailStr
+    messages:str
+
+class SendLetter(BaseModel):
+    letter:str
 
 
 @AuthJWT.load_config

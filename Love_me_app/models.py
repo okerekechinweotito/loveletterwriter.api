@@ -17,6 +17,7 @@ class User(Base):
     is_sub_active = Column(Boolean, default=False)
     sub_end_date = Column(DateTime)
     is_reminder = Column(Boolean, default=False)
+    free_trial = Column(Boolean,default=True)
     date_created = Column(DateTime, default=datetime.utcnow())
     receiver = relationship('Receiver', back_populates='sender')
     letter = relationship('Letter', back_populates='writer')
