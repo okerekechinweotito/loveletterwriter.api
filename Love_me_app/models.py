@@ -16,6 +16,7 @@ class User(Base):
     google_id = Column(String)
     is_sub_active = Column(Boolean, default=False)
     sub_end_date = Column(DateTime)
+    plan_type = Column(String)
     is_reminder = Column(Boolean, default=False)
     date_created = Column(DateTime, default=datetime.utcnow())
     receiver = relationship('Receiver', back_populates='sender')
