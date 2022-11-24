@@ -6,7 +6,7 @@ class User(BaseModel):
     first_name:str
     last_name:str
     password:str
-    email:str
+    email:EmailStr
     facebook_id:str
     google_id:str
     is_sub_active:bool
@@ -15,16 +15,16 @@ class User(BaseModel):
     date_created:datetime
 
 class DisplayReceiver(BaseModel):
+    id:int
     name:str
-    email:str
+    email:EmailStr
     phone_number:str
-    user_id:int
     date_created:datetime
     class Config:
         orm_mode=True
 class Receiver(BaseModel):
     name:str
-    email:str
+    email:EmailStr
     phone_number:str
 
 class Letter(BaseModel):
@@ -133,6 +133,7 @@ class Settings(BaseModel):
     authjwt_cookie_csrf_protect: bool = False
     authjwt_cookie_samesite:str ='lax'
 
+
 class Letter(BaseModel):
     id:int
     receiver_id:int
@@ -154,6 +155,15 @@ class Schedule_Letter(BaseModel):
 
     class Config:
         orm_mode=True
+
+class ContactUs(BaseModel):
+    name:str
+    email:EmailStr
+    messages:str
+
+class SendLetter(BaseModel):
+    letter:str
+
 
 @AuthJWT.load_config
 def get_config():

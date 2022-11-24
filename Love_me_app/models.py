@@ -19,6 +19,7 @@ class User(Base):
     plan_type = Column(String)
     is_reminder = Column(Boolean, default=False)
     date_created = Column(DateTime(timezone=True), server_default=func.now())
+    free_trial = Column(Boolean,default=True)
     receiver = relationship('Receiver', back_populates='sender')
     letter = relationship('Letter', back_populates='writer')
     schedule = relationship('Schedule', back_populates='user')
