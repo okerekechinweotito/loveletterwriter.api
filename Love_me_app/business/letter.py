@@ -30,7 +30,7 @@ class LetterBusiness:
 
         # get receiver name
         receiver = 'anonymous'
-        found_receiver = db.query(models.Receiver).filter(models.Receiver.id == receiver_id).first()
+        found_receiver = db.query(models.Receiver).filter(models.Receiver.id == receiver_id, models.Receiver.user_id == user_id).first()
         if found_receiver:
             receiver = found_receiver.name
 

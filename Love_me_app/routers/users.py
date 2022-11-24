@@ -178,3 +178,6 @@ async def update_profile(request: schemas.UserUpdate,
 #     file.close()
 #     file_url = "localhost:8000"+generated_name[1:]
 #     return{'status':'successful', 'filename':file_url}
+    return {"User successfully updated"}
+        
+  
