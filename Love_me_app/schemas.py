@@ -109,7 +109,7 @@ class Login(BaseModel):
     email:EmailStr
     password:str
 class UserDetails(UserBase):
-    id: str
+    id: int
     first_name:str
     last_name:str
     is_sub_active:bool
