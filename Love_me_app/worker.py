@@ -5,7 +5,8 @@ from .models import Schedule
 from datetime import datetime, timezone
 from .models import Schedule, Letter
 from .database import  SessionLocal
-# from .send_email import env_config
+from​ ​sendgrid​ ​import​ ​SendGridAPIClient 
+​from​ ​sendgrid​.​helpers​.​mail​ ​import​ ​Mail 
 from dotenv import load_dotenv
 
 
@@ -15,10 +16,20 @@ load_dotenv()
 celery=Celery(__name__, broker=os.getenv('CELERY_BROKER_URL', None))
 
 
-def send_email(letter, recepient):
+def send_email(user, letter, recepient):
 
-    #send letter function
-    pass
+     
+ ​    ​SMTP_HOST_SENDER​ ​=​'simeoneumoh@gmail.com' 
+  
+ ​    ​message​ ​=​ ​Mail​( 
+ ​    ​from_email​=​SMTP_HOST_SENDER​, 
+ ​    ​to_emails​=​f"​{​recepient​}​"​, 
+ ​    ​subject​=​f"Letter from ​{​user}​"​, 
+ ​    ​html_content​=​f"<p>​{​letter​}​</p>"​)  ​    ​
+ ​    SENDGRID_API_KEY​ ​=​ ​os​.​getenv​(​'SENDGRID_API_KEY'​)  
+ ​    sg​ ​=​ ​SendGridAPIClient​(​SENDGRID_API_KEY​) 
+ ​    response=​​sg​.​send​(​message​)
+     return response.body
 @celery.task
 def send_letter(letter, recepient, id):
     try:
@@ -40,7 +51,7 @@ def send_scheduled_letters():
     schedules=db.query(Schedule).filter(Schedule.completed== False,Schedule.schedule_time <= datetime.now(tz=timezone.utc)).all()
     if schedules:
         for schedule in schedules:
-                send_letter.delay(schedule.letter.letter, schedule.letter.receiver.email, schedule.letter.id)
+                send_letter.delay(schedule.letter.receiver.name, schedule.letter.letter, schedule.letter.receiver.email, schedule.letter.id)
                 schedule.completed=True
                 db.commit()
                 db.refresh(schedule)
