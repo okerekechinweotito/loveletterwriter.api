@@ -23,7 +23,7 @@ def get_current_user(Authorize:AuthJWT=Depends(), db:Session=Depends(get_db), ac
         user=UserCrud.get_user_by_id(db, user_id)
         return user
     except:
-        return None
+        raise exception
 
 
 def get_user_sub_is_active(user:dict=Depends(get_current_user)):

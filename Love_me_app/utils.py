@@ -73,7 +73,9 @@ openai.api_key = os.getenv("OPENAI_API_KEY", None)
 # Setup SES
 FROM_EMAIL = os.getenv("FROM_EMAIL")
 AWS_REGION = os.getenv("AWS_REGION")
+
 email_client = boto3.client("ses", region_name=AWS_REGION)
+
 
 
 
