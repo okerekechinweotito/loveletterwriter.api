@@ -44,7 +44,7 @@ def Login( response:Response,login:schemas.Login,Authorize:AuthJWT=Depends() ,db
 
 @router.post('/refresh-token', tags=['auth'], summary='enpoint to get new access token')
 def refresh_token(response:Response,Authorization:AuthJWT=Depends(), refresh_token:str=Cookie(default=None), Bearer:str=Header(default=None)):
-    '''
+    '''+
     To get new access token the refresh token giving during signup must be passed in the header or sent with the cookie.
     its preferable to pass to make use of the cookie because it's httponly which prevents clients from accessing it.
     '''

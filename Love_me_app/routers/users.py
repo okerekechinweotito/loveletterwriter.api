@@ -117,21 +117,18 @@ def user_me(user:dict=Depends(get_current_user)):
         "is_active": user.is_sub_active,
         "is_reminder": user.is_reminder,
         "date_joined": user.date_created,
-        "sub end":user.sub_end_date
+        "sub end":user.sub_end_date,
+        
     }
 
 
 """
-endpoint to update user profile by getting the current user email and updating their profile.
+endpoint to update user profile picture by getting the current user email and updating their profile.
 """
-@router.patch("/update-user-profile/",)
-async def update_profile(request: schemas.UserUpdate,
-    file: UploadFile = File(...), 
-    user:dict=Depends(get_current_user), 
-    db:Session = Depends(get_db)):
-
+@router.post("/upload/profile_picture/")       
+async def upload_profile_picture(file: UploadFile = File(...),user:dict=Depends(get_current_user)):
     if not user:
-        raise HTTPException(status_code=401, detail="user not found")
+        raise HTTPException(status_code=404, detail=f"User not found")
     FILEPATH = "./static/profile_images/"
     filename = file.filename
     extension= filename.split(".")[1]
@@ -143,41 +140,15 @@ async def update_profile(request: schemas.UserUpdate,
 
     with open(generated_name, 'wb') as file:
         file.write(file_content)
+
     #PILLOW IMAGE RESIZE
     img = Image.open(generated_name)
     resized_image = img.resize(size=(200, 200))
     resized_image.save(generated_name)
     
     file.close()
-    file_url = "localhost:8000"+generated_name[1:]
-    request.image = file_url
-    profile = db.query(models.User).filter(models.User.id)
-    profile.update(request.dict(exclude_unset=True))
-    db.commit()
-    return {"User Profile successfully updated"}
-# @router.post("/upload/profile_picture/")       
-# async def upload_profile_picture(file: UploadFile = File(...),
-#                                          user:dict=Depends(get_current_user)):
-#     FILEPATH = "./static/profile_images/"
-#     filename = file.filename
-#     extension= filename.split(".")[1]
-#     if extension not in ['png', 'jpg']:
-#         return {'status': "error", 'detail':"Image type not allowed"}
-#     token_name= secrets.token_hex(8)+"."+extension
-#     generated_name=FILEPATH + token_name
-#     file_content= await file.read()
-
-#     with open(generated_name, 'wb') as file:
-#         file.write(file_content)
-
-#     #PILLOW IMAGE RESIZE
-#     img = Image.open(generated_name)
-#     resized_image = img.resize(size=(200, 200))
-#     resized_image.save(generated_name)
+    file_url = "https://api.loveme.hng.tech"+generated_name[1:]
+    return{'status':'Profile Image Added', 'image':file_url}
     
-#     file.close()
-#     file_url = "localhost:8000"+generated_name[1:]
-#     return{'status':'successful', 'filename':file_url}
-    return {"User successfully updated"}
         
   

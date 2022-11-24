@@ -129,10 +129,9 @@ from dotenv import load_dotenv
 import os 
 load_dotenv()
 from fastapi_jwt_auth import AuthJWT
-SECRET_KEY='random'
 
 class Settings(BaseModel):
-    authjwt_secret_key: str = SECRET_KEY
+    authjwt_secret_key: str = os.getenv("SECRET_KEY")
     authjwt_token_location:set ={'cookies','headers'}
     authjwt_access_cookie_key:str='access_token'
     authjwt_refresh_cookie_key:str='refresh_token'
@@ -140,6 +139,6 @@ class Settings(BaseModel):
     authjwt_cookie_samesite:str ='lax'
 
 
-#
+@AuthJWT.load_config
 def get_config():
     return Settings()
