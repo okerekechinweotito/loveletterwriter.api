@@ -109,11 +109,13 @@ class Login(BaseModel):
     email:EmailStr
     password:str
 class UserDetails(UserBase):
-    id: str
+    id: int
     first_name:str
     last_name:str
     is_sub_active:bool
-    sub_end_date:Union[datetime, None]=None
+    sub_end_date:Union[datetime, None]
+    plan_type:Union[str, None]
+    free_trial:bool
     is_reminder:bool
     date_created:datetime
 
@@ -150,6 +152,10 @@ class Letter(BaseModel):
     class Config:
         orm_mode=True
  
+class LoginDetails(BaseModel):
+    access_token:str
+    refresh_token:str
+    user:UserDetails
 
 class Schedule_Letter(BaseModel):
     id:int
