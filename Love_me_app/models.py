@@ -16,6 +16,7 @@ class User(Base):
     google_id = Column(String)
     is_sub_active = Column(Boolean, default=False)
     sub_end_date = Column(DateTime)
+    plan_type = Column(String)
     is_reminder = Column(Boolean, default=False)
     free_trial = Column(Boolean,default=True)
     date_created = Column(DateTime, default=datetime.utcnow())
@@ -25,6 +26,7 @@ class User(Base):
     ai_trainer_value = relationship('AiTrainerValue', back_populates='user')
     transaction = relationship('Transaction', back_populates='user')
     reset_pass = relationship('ResetPass', back_populates='user')
+    product_review = relationship('ProductReview', back_populates='user')
 
 
 class Receiver(Base):
@@ -132,3 +134,14 @@ class BlackListedTokens(Base):
     token = Column(String)
     expiry_date = Column(String)
     blacklisted_on = Column(DateTime(timezone=True), server_default=func.now())
+
+class ProductReview(Base):
+    __tablename__ = "product_reviews"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    review = Column(String)
+    date_created = Column(DateTime(timezone=True), server_default=func.now())
+    user = relationship('User', back_populates='product_review')
+ 
+    
+

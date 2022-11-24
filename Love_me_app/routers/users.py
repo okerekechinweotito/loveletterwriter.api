@@ -108,7 +108,8 @@ def user_me(user:dict=Depends(get_current_user)):
         "is_active": user.is_sub_active,
         "is_reminder": user.is_reminder,
         "date_joined": user.date_created,
-        "sub end":user.sub_end_date
+        "sub end":user.sub_end_date,
+        "plan_type":user.plan_type
     }
 
 
@@ -124,3 +125,4 @@ def update_profile(request: schemas.UserBase, user:dict=Depends(get_current_user
     db.commit()
     return {"User successfully updated"}
         
+  

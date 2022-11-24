@@ -70,6 +70,12 @@ class Transaction(BaseModel):
     class config:
         orm_mode = True
         
+class SubscriptionBase(BaseModel):
+    name:str
+    description:str
+    months:str
+    amount:float
+
 
 class ResetPass(BaseModel):
     pin:str
@@ -139,3 +145,22 @@ class SendLetter(BaseModel):
 @AuthJWT.load_config
 def get_config():
     return Settings()
+
+class ProductReviews(BaseModel):
+    review:str
+   
+    
+    # user: List[ProductReview]
+   
+    class Config:
+        orm_mode = True
+
+
+class PydanticReview(BaseModel):
+    review:str
+    id: int
+    # first_name: str
+    
+    class Config:
+        orm_mode = True
+
