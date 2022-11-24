@@ -15,6 +15,7 @@ class Environ:
     TEMPLATE_FOLDER = os.getenv('TEMPLATE_FOLDER')
     TEMPLATE_NAME = os.getenv('TEMPLATE_NAME')
 
+
 env_config = ConnectionConfig(
    MAIL_USERNAME=Environ.MAIL_USERNAME,
     MAIL_PASSWORD=Environ.MAIL_PASSWORD,
@@ -25,6 +26,7 @@ env_config = ConnectionConfig(
     USE_CREDENTIALS=True,
     TEMPLATE_FOLDER=Environ.TEMPLATE_FOLDER
  )
+
 
 
 async def password_reset_email(subject: str, email_to: str, body: dict):

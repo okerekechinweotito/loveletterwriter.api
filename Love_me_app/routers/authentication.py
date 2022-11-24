@@ -11,7 +11,7 @@ from datetime import timedelta
 from ..dependencies import google_auth
 
 
-router=APIRouter(tags=['auth'])
+router=APIRouter(tags=['auth'],prefix="/api/v1/auth")
 authjwt_secret_key = "random"
 
 @router.post('/signup/', response_model=schemas.UserDetails, summary='endpoint for users to signup', status_code=201, tags=['auth'])
