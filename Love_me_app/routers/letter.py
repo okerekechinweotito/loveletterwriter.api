@@ -35,6 +35,7 @@ async def generate_letter(receiver_id,user:dict=Depends(get_current_user), db:Se
                 }
     return api_response
 
+
 @router.get("/")
 async def get_all_letter(user:dict = Depends(get_current_user), db:Session=Depends(get_db)):
     # raise a user not found error if user details is not correct
@@ -50,7 +51,6 @@ def get_sent_letter(user:dict=Depends(get_current_user), db:Session=Depends(get_
     sent_letters = []
     if user:
         # get all sent letters from database
-        # letters = db.query(models.Letter).filter(models.Letter.date_sent).order_by(models.Letter.date_sent).all()
         letters = db.query(models.Letter).all()
         for letter in letters:
             # loop through eachother to check if date sent is not null
