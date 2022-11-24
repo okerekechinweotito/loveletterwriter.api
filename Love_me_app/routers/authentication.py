@@ -25,7 +25,7 @@ def signup(user:schemas.UserCreate, db:Session=Depends(get_db)):
     return user_crud.create_user(db, user)
 
 
-@router.post('/login', status_code=200, tags=['auth'], summary='endpoint to login users')
+@router.post('/login', status_code=200, tags=['auth'], response_model=schemas.LoginDetails,summary='endpoint to login users')
 def Login( response:Response,login:schemas.Login,Authorize:AuthJWT=Depends() ,db:Session=Depends(get_db)):
     '''
     if authentication is sucessful access_token and refresh_token will be given which should be passed in the header or sent with the cookie to access protected resource.
@@ -39,8 +39,7 @@ def Login( response:Response,login:schemas.Login,Authorize:AuthJWT=Depends() ,db
     refresh_token=Authorize.create_refresh_token(subject=user.id, expires_time=timedelta(days=REFRESH_TOKEN_LIFETIME))
     response.set_cookie(key='access_token',value=access_token, expires=access_cookies_time, max_age=access_cookies_time, httponly=True)
     response.set_cookie(key='refresh_token',value=refresh_token, expires=refresh_cookies_time, max_age=refresh_cookies_time, httponly=True)
-    return {'access_token':access_token, 'refresh_token':refresh_token}
-
+    return {'access_token':access_token, 'refresh_token':refresh_token, 'user':user}
 
 @router.post('/refresh-token', tags=['auth'], summary='enpoint to get new access token')
 def refresh_token(response:Response,Authorization:AuthJWT=Depends(), refresh_token:str=Cookie(default=None), Bearer:str=Header(default=None)):
