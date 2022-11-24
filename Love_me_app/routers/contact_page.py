@@ -24,7 +24,7 @@ def contact_us(payload:schemas.ContactUs, user:dict=Depends(get_current_user), d
     message = Mail(
     from_email=SMTP_HOST_SENDER,
     to_emails="contact.lovemeapp@gmail.com",
-    subject="",
+    subject="User Enquiry",
     html_content=f"<p>This email is from {name},{email}</p><p>{messages}</p>")
     try:
         SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY') 
