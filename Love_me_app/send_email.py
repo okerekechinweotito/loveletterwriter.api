@@ -12,7 +12,7 @@ class Environ:
     MAIL_PORT = os.getenv('MAIL_PORT')
     MAIL_SERVER = os.getenv('MAIL_SERVER')
     MAIL_FROM_NAME = os.getenv('MAIN_FROM_NAME')
-    TEMPLATE_FOLDER = 'Templates'
+    TEMPLATE_FOLDER = os.getenv('TEMPLATE_FOLDER')
     TEMPLATE_NAME = os.getenv('TEMPLATE_NAME')
 
 

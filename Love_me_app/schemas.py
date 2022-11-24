@@ -130,7 +130,6 @@ class Settings(BaseModel):
 class Letter(BaseModel):
     id:int
     receiver_id:int
-    user_id:int
     letter:str
     date_created:datetime
 

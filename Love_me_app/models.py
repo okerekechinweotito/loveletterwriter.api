@@ -47,7 +47,6 @@ class Letter(Base):
     title = Column(TEXT)
     letter = Column(TEXT)
     date_created = Column(DateTime(timezone=True), server_default=func.now())
-    is_sent=Column(Boolean, default=False)
     date_sent=Column(DateTime, nullable=True)
     writer = relationship('User', back_populates='letter')
     receiver = relationship('Receiver', back_populates='letter')

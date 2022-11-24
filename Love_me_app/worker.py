@@ -25,7 +25,6 @@ def send_letter(letter, recepient, id):
         send_email(letter, recepient)
         db=SessionLocal()
         letter=db.query(Letter).filter(Letter.id==id).first()
-        letter.is_sent=True
         letter.date_sent=datetime.now(tz=timezone.utc)
         db.commit()
         db.refresh(letter)
@@ -45,9 +44,9 @@ def send_scheduled_letters():
                 schedule.completed=True
                 db.commit()
                 db.refresh(schedule)
-        return True
+        return 'Scheduled letters available'
     else: 
-        return False
+        return 'No scheduled letters'
 
             
 
@@ -55,7 +54,7 @@ def send_scheduled_letters():
 celery.conf.beat_schedule= { 
     'send_sceduled_letters':{ 
         'task': 'Love_me_app.worker.send_scheduled_letters',
-        'schedule':120,
+        'schedule':1,
 
     }
 
