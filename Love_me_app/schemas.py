@@ -55,7 +55,6 @@ class Subscription(BaseModel):
     name:str
     description:str
     months:int
-    total_sms:int
     amount:float
     date_created:datetime
 
@@ -71,6 +70,12 @@ class Transaction(BaseModel):
     class config:
         orm_mode = True
         
+class SubscriptionBase(BaseModel):
+    name:str
+    description:str
+    months:str
+    amount:float
+
 
 class ResetPass(BaseModel):
     pin:str
@@ -118,10 +123,10 @@ from dotenv import load_dotenv
 import os 
 load_dotenv()
 from fastapi_jwt_auth import AuthJWT
-SECRET_KEY=os.getenv("SECRET_KEY")
+SECRET_KEY='random'
 
 class Settings(BaseModel):
-    authjwt_secret_key=SECRET_KEY
+    authjwt_secret_key: str = SECRET_KEY
     authjwt_token_location:set ={'cookies','headers'}
     authjwt_access_cookie_key:str='access_token'
     authjwt_refresh_cookie_key:str='refresh_token'

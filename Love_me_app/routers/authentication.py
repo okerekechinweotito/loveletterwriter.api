@@ -12,7 +12,7 @@ from ..dependencies import google_auth
 
 
 router=APIRouter(tags=['auth'])
-
+authjwt_secret_key = "random"
 
 @router.post('/signup/', response_model=schemas.UserDetails, summary='endpoint for users to signup', status_code=201, tags=['auth'])
 def signup(user:schemas.UserCreate, db:Session=Depends(get_db)):
