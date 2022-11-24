@@ -41,7 +41,7 @@ async def get_all_letter(user:dict = Depends(get_current_user), db:Session=Depen
     if not user :
         raise HTTPException(status_code=401, detail="User not Found") 
     # get all user letters from the database
-    letters = db.query(models.Letter).filter(models.Letter.user_id).order_by(models.Letter.date_created).all()
+    letters = db.query(models.Letter).order_by(models.Letter.date_created).all()
     return letters
     
 
@@ -50,15 +50,16 @@ def get_sent_letter(user:dict=Depends(get_current_user), db:Session=Depends(get_
     sent_letters = []
     if user:
         # get all sent letters from database
-        letters = db.query(models.Letter).filter(models.Letter.user_id).filter(models.Letter.date_sent).order_by(models.Letter.date_sent).all()
+        # letters = db.query(models.Letter).filter(models.Letter.date_sent).order_by(models.Letter.date_sent).all()
+        letters = db.query(models.Letter).all()
         for letter in letters:
             # loop through eachother to check if date sent is not null
             if letter.date_sent != None:
-                letter.append(sent_letters)
-        return sent_letters
+                sent_letters.append(letter)
+            return sent_letters
 
     else:
-        raise HTTPException(status_code=401, detail="User not Found")
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
 
 
