@@ -27,7 +27,7 @@ db = get_db()
 router=APIRouter(tags=['User'],prefix="/api/v1/user/me")
 
 #StaticFiles Configuration
-router.mount("/static", StaticFiles(directory="Love_me_app/static"), name="static")
+router.mount("/static", StaticFiles(directory="static"), name="static")
 
 #Function to get current user
 def get_current_user(Authorize:AuthJWT=Depends(), db:Session=Depends(get_db), access_token:str=Cookie(default=None),Bearer=Header(default=None)):
