@@ -49,15 +49,6 @@ async def SubscriptionPlans(db: Session = Depends(get_db)):
     return plans
 
 
-@router.patch("/api/v1/subscription/{plan_id}",description="edit plans")
-async def UpdateSubscription(plan_id:int,request: schemas.SubscriptionBase,db:Session = Depends(get_db)):
-    plans = db.query(models.Subscription).filter(models.Subscription.id == plan_id)
-    plans.update(request.dict(exclude_unset=True))
-    db.commit()
-    return {"User successfully updated"}
-
-
-
 
 @router.post("/api/v1/subscription/checkout/{plan_id}")
 async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = Depends(get_current_user)):
@@ -83,7 +74,7 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
                 },
                 payment_method_types =["card"],
                     line_items =[{
-                        'price':'price_1M5TfuGYYMC7FKsIAO8k3YN2',
+                        'price':os.getenv("SWEET_PLAN_ID"),
                         'quantity':1,
                     }
                     ]
@@ -102,7 +93,7 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
                 },
                 payment_method_types =["card"],
                     line_items =[{
-                        'price':'price_1M5ThaGYYMC7FKsIYViZMmtm',
+                        'price':os.getenv("ADVANCE_PLAN_ID"),
                         'quantity':1,
                     }
                     ]
@@ -122,7 +113,7 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
                 },
                 payment_method_types =["card"],
                     line_items =[{
-                        'price':'price_1M5TiIGYYMC7FKsITCqacRIS',
+                        'price':os.getenv("PRO_PLAN_ID"),
                         'quantity':1,
                         
                     }
@@ -137,3 +128,13 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
 @router.get("/success")
 async def successful(request:Request):
     return {"success":"success"}
+
+
+@router.patch("/api/v1/subscription/{plan_id}",description="edit plans")
+async def UpdateSubscription(plan_id:int,request: schemas.SubscriptionBase,db:Session = Depends(get_db)):
+    plans = db.query(models.Subscription).filter(models.Subscription.id == plan_id)
+    plans.update(request.dict(exclude_unset=True))
+    db.commit()
+    return {"User successfully updated"}
+
+

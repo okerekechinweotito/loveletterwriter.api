@@ -7,7 +7,8 @@ env/
 venv/
 /venv
 project.db 
-
+/alembic
+alembic/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

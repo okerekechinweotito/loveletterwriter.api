@@ -6,7 +6,7 @@ class User(BaseModel):
     first_name:str
     last_name:str
     password:str
-    email:str
+    email:EmailStr
     facebook_id:str
     google_id:str
     is_sub_active:bool
@@ -15,16 +15,16 @@ class User(BaseModel):
     date_created:datetime
 
 class DisplayReceiver(BaseModel):
+    id:int
     name:str
-    email:str
+    email:EmailStr
     phone_number:str
-    user_id:int
     date_created:datetime
     class Config:
         orm_mode=True
 class Receiver(BaseModel):
     name:str
-    email:str
+    email:EmailStr
     phone_number:str
 
 class Letter(BaseModel):
@@ -109,29 +109,76 @@ class Login(BaseModel):
     email:EmailStr
     password:str
 class UserDetails(UserBase):
-    id: str
+    id: int
     first_name:str
     last_name:str
     is_sub_active:bool
-    sub_end_date:Union[datetime, None]=None
+    sub_end_date:Union[datetime, None]
+    plan_type:Union[str, None]
+    free_trial:bool
     is_reminder:bool
     date_created:datetime
 
+    class Config:
+        orm_mode=True
+
+class UserUpdate(UserBase):
+    image:str
+
+        
     class Config:
         orm_mode=True
 from dotenv import load_dotenv
 import os 
 load_dotenv()
 from fastapi_jwt_auth import AuthJWT
-SECRET_KEY='random'
+SECRET_KEY=os.getenv('SECRET_KEY', 'secret')
 
 class Settings(BaseModel):
-    authjwt_secret_key: str = SECRET_KEY
+    authjwt_secret_key: str = os.getenv("SECRET_KEY")
     authjwt_token_location:set ={'cookies','headers'}
     authjwt_access_cookie_key:str='access_token'
     authjwt_refresh_cookie_key:str='refresh_token'
     authjwt_cookie_csrf_protect: bool = False
     authjwt_cookie_samesite:str ='lax'
+
+
+class Letter(BaseModel):
+    id:int
+    receiver_id:int
+    letter:str
+    title:str
+    date_created:datetime
+
+    class Config:
+        orm_mode=True
+ 
+class LoginDetails(BaseModel):
+    access_token:str
+    refresh_token:str
+    user:UserDetails
+    
+    class Config:
+        orm_mode=True
+
+class Schedule_Letter(BaseModel):
+    id:int
+    schedule_time:datetime
+    date_created:datetime
+    letter:Letter
+
+
+
+    class Config:
+        orm_mode=True
+
+class ContactUs(BaseModel):
+    name:str
+    email:EmailStr
+    messages:str
+
+class SendLetter(BaseModel):
+    letter:str
 
 
 @AuthJWT.load_config
@@ -156,3 +203,9 @@ class PydanticReview(BaseModel):
     class Config:
         orm_mode = True
 
+class RoleApplication(BaseModel):
+    full_name: str
+    email: str
+    linked_in: str
+    cover_letter: bytes
+    cv: bytes

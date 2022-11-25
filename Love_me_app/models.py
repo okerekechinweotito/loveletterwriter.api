@@ -1,8 +1,8 @@
-from sqlalchemy import Column, Integer, String, Time, TEXT, DateTime, Boolean, ForeignKey, Float
+from sqlalchemy import Column, Integer, String, Time, TEXT, DateTime, Boolean, ForeignKey, Float, LargeBinary
 from sqlalchemy.orm import relationship
 from .database import Base
 from sqlalchemy.sql import func
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class User(Base):
@@ -10,14 +10,17 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String)
     last_name = Column(String)
+    image = Column(String)
     password = Column(String)
     email = Column(String)
     facebook_id = Column(String)
     google_id = Column(String)
     is_sub_active = Column(Boolean, default=False)
     sub_end_date = Column(DateTime)
+    plan_type = Column(String)
     is_reminder = Column(Boolean, default=False)
-    date_created = Column(DateTime, default=datetime.utcnow())
+    date_created = Column(DateTime(timezone=True), server_default=func.now())
+    free_trial = Column(Boolean,default=True)
     receiver = relationship('Receiver', back_populates='sender')
     letter = relationship('Letter', back_populates='writer')
     schedule = relationship('Schedule', back_populates='user')
@@ -37,7 +40,6 @@ class Receiver(Base):
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     sender = relationship('User', back_populates='receiver')
     letter = relationship('Letter', back_populates='receiver')
-    schedule = relationship('Schedule', back_populates='receiver')
     ai_trainer_value = relationship('AiTrainerValue', back_populates='receiver')
 
 
@@ -48,9 +50,11 @@ class Letter(Base):
     receiver_id = Column(Integer, ForeignKey('receivers.id'))
     title = Column(TEXT)
     letter = Column(TEXT)
+    date_sent = Column(DateTime(timezone=True), nullable=True)
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     writer = relationship('User', back_populates='letter')
     receiver = relationship('Receiver', back_populates='letter')
+    schedule= relationship('Schedule',back_populates='letter')
 
 
 class Schedule(Base):
@@ -58,10 +62,12 @@ class Schedule(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     receiver_id = Column(Integer, ForeignKey('receivers.id'))
-    schedule_time = Column(Time)
+    letter_id=Column(Integer,ForeignKey('letters.id'))
+    schedule_time = Column(DateTime(timezone=True))
+    completed=Column(Boolean, default=False)
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     user = relationship('User', back_populates='schedule')
-    receiver = relationship('Receiver', back_populates='schedule')
+    letter=relationship('Letter', back_populates='schedule')
 
 
 class AiTrainer(Base):
@@ -141,5 +147,14 @@ class ProductReview(Base):
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     user = relationship('User', back_populates='product_review')
  
+class RoleApplication(Base):
+    __tablename__ = "role_application"
+
+    id = Column(Integer, primary_key=True, index=True)
+    full_name = Column(String)
+    email = Column(String, unique=True, index=True)
+    linked_in = Column(String)
+    cover_letter = Column(LargeBinary)
+    cv = Column(LargeBinary)
     
 
