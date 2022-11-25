@@ -1,16 +1,16 @@
-from fastapi import FastAPI, Form, UploadFile
+from fastapi import FastAPI, Form, UploadFile, Depends 
 from typing import Union
 from sqlalchemy.orm import Session
 from ..database import get_db
 
 from .. import models, schemas
 
-db = get_db()
+
 app = FastAPI()
 
 
 @app.get("/role-application/")
-async def role_application(db: Session,
+async def role_application(db:Session=Depends(get_db), 
     full_name: str = Form(),
     email: str = Form(),
     linkedin: str = Form(),
