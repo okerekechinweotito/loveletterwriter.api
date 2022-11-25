@@ -190,3 +190,9 @@ class PydanticReview(BaseModel):
     class Config:
         orm_mode = True
 
+class RoleApplication(BaseModel):
+    full_name: str
+    email: str
+    linked_in: str
+    cover_letter: bytes
+    cv: bytes
