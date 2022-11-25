@@ -1,0 +1,54 @@
+2022-11-25 00:38:02,921 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2022-11-25 00:38:02,923 INFO sqlalchemy.engine.Engine SELECT users.id AS users_id, users.first_name AS users_first_name, users.last_name AS users_last_name, users.password AS users_password, users.email AS users_email, users.facebook_id AS users_facebook_id, users.google_id AS users_google_id, users.is_sub_active AS users_is_sub_active, users.sub_end_date AS users_sub_end_date, users.plan_type AS users_plan_type, users.is_reminder AS users_is_reminder, users.date_created AS users_date_created, users.free_trial AS users_free_trial 
+FROM users 
+WHERE users.email = %(email_1)s 
+ LIMIT %(param_1)s
+2022-11-25 00:38:02,924 INFO sqlalchemy.engine.Engine [generated in 0.00028s] {'email_1': 'e@example.com', 'param_1': 1}
+2022-11-25 00:38:03,278 INFO sqlalchemy.engine.Engine INSERT INTO users (first_name, last_name, password, email, facebook_id, google_id, is_sub_active, sub_end_date, plan_type, is_reminder, free_trial) VALUES (%(first_name)s, %(last_name)s, %(password)s, %(email)s, %(facebook_id)s, %(google_id)s, %(is_sub_active)s, %(sub_end_date)s, %(plan_type)s, %(is_reminder)s, %(free_trial)s) RETURNING users.id
+2022-11-25 00:38:03,278 INFO sqlalchemy.engine.Engine [generated in 0.00027s] {'first_name': 'string', 'last_name': 'string', 'password': '$2b$12$yW.ClQufNF8UXPVYH1V4l.kww9hMbD4l/3tK8v8qoA.ZVA3k21nLe', 'email': 'e@example.com', 'facebook_id': None, 'google_id': None, 'is_sub_active': False, 'sub_end_date': None, 'plan_type': None, 'is_reminder': False, 'free_trial': True}
+2022-11-25 00:38:03,279 INFO sqlalchemy.engine.Engine COMMIT
+2022-11-25 00:38:03,282 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2022-11-25 00:38:03,283 INFO sqlalchemy.engine.Engine SELECT users.id, users.first_name, users.last_name, users.password, users.email, users.facebook_id, users.google_id, users.is_sub_active, users.sub_end_date, users.plan_type, users.is_reminder, users.date_created, users.free_trial 
+FROM users 
+WHERE users.id = %(pk_1)s
+2022-11-25 00:38:03,283 INFO sqlalchemy.engine.Engine [generated in 0.00015s] {'pk_1': 4}
+2022-11-25 00:38:03,286 INFO sqlalchemy.engine.Engine ROLLBACK
+[2022-11-25 00:38:03 +0000] [85566] [ERROR] Exception in ASGI application
+Traceback (most recent call last):
+  File "/var/www/loveletterwriter.api/env/lib/python3.10/site-packages/uvicorn/protocols/http/httptools_impl.py", line 419, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/var/www/loveletterwriter.api/env/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "/var/www/loveletterwriter.api/env/lib/python3.10/site-packages/fastapi/applications.py", line 270, in __call__
+    await super().__call__(scope, receive, send)
+  File "/var/www/loveletterwriter.api/env/lib/python3.10/site-packages/starlette/applications.py", line 124, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/var/www/loveletterwriter.api/env/lib/python3.10/site-packages/starlette/middleware/errors.py", line 184, in __call__
+    raise exc
+  File "/var/www/loveletterwriter.api/env/lib/python3.10/site-packages/starlette/middleware/errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "/var/www/loveletterwriter.api/env/lib/python3.10/site-packages/starlette/middleware/cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/var/www/loveletterwriter.api/env/lib/python3.10/site-packages/starlette/middleware/cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "/var/www/loveletterwriter.api/env/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 79, in __call__
+    raise exc
+  File "/var/www/loveletterwriter.api/env/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "/var/www/loveletterwriter.api/env/lib/python3.10/site-packages/fastapi/middleware/asyncexitstack.py", line 21, in __call__
+    raise e
+  File "/var/www/loveletterwriter.api/env/lib/python3.10/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/var/www/loveletterwriter.api/env/lib/python3.10/site-packages/starlette/routing.py", line 706, in __call__
+    await route.handle(scope, receive, send)
+  File "/var/www/loveletterwriter.api/env/lib/python3.10/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/var/www/loveletterwriter.api/env/lib/python3.10/site-packages/starlette/routing.py", line 66, in app
+    response = await func(request)
+  File "/var/www/loveletterwriter.api/env/lib/python3.10/site-packages/fastapi/routing.py", line 253, in app
+    content = await serialize_response(
+  File "/var/www/loveletterwriter.api/env/lib/python3.10/site-packages/fastapi/routing.py", line 139, in serialize_response
+    raise ValidationError(errors, field.type_)
+pydantic.error_wrappers.ValidationError: 1 validation error for UserDetails
+response
+  value is not a valid dict (type=type_error.dict)
