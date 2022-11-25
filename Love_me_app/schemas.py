@@ -114,10 +114,13 @@ class UserDetails(UserBase):
     last_name:str
     is_sub_active:bool
     sub_end_date:Union[datetime, None]
-#    plan_type:Union[str, None]
-#    free_trial:bool
-#    is_reminder:bool
-#    date_created:datetime
+    plan_type:Union[str, None]
+    free_trial:bool
+    is_reminder:bool
+    date_created:datetime
+        
+    class Config:
+        orm_mode=True
 from dotenv import load_dotenv
 import os 
 load_dotenv()
@@ -147,6 +150,9 @@ class LoginDetails(BaseModel):
     access_token:str
     refresh_token:str
     user:UserDetails
+    
+    class Config:
+        orm_mode=True
 
 class Schedule_Letter(BaseModel):
     id:int
