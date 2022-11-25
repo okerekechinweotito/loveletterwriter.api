@@ -16,11 +16,12 @@ from sqlalchemy.orm import Session
 
 
 router = APIRouter(tags=['transactions'])
-
+stripe.api_key = os.getenv("STRIPE_API_KEY")
 
 
 @router.post("/completed",description="transaction webhook")
-async def completed(requests:Request,stripe_signature:str = Header(),user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
+async def completed(requests:Request,stripe_signature:str = Header(), db:Session = Depends(get_db)):
+ 
     payload =await requests.body()
     sig_header = stripe_signature
     endpoint_secret = os.getenv("ENDPOINT_SECRET")

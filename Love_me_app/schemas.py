@@ -125,6 +125,7 @@ class UserDetails(UserBase):
 class UserUpdate(UserBase):
     image:str
 
+        
     class Config:
         orm_mode=True
 from dotenv import load_dotenv
@@ -156,6 +157,9 @@ class LoginDetails(BaseModel):
     access_token:str
     refresh_token:str
     user:UserDetails
+    
+    class Config:
+        orm_mode=True
 
 class Schedule_Letter(BaseModel):
     id:int
