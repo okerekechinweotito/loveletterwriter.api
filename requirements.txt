@@ -1,3 +1,4 @@
+aiofiles==22.1.0
 aiosmtplib==1.1.7
 anyio==3.6.2
 astroid==2.12.12
@@ -52,7 +53,9 @@ packaging==21.3
 pandas==1.5.1
 pandas-stubs==1.5.1.221024
 passlib==1.7.4
+Pillow==9.3.0
 platformdirs==2.5.4
+psycopg2==2.9.5
 pluggy==0.13.1
 psycopg2-binary==2.9.5
 py==1.11.0

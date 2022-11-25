@@ -10,6 +10,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String)
     last_name = Column(String)
+    image = Column(String)
     password = Column(String)
     email = Column(String)
     facebook_id = Column(String)

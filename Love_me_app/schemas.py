@@ -118,6 +118,13 @@ class UserDetails(UserBase):
     free_trial:bool
     is_reminder:bool
     date_created:datetime
+
+    class Config:
+        orm_mode=True
+
+class UserUpdate(UserBase):
+    image:str
+
         
     class Config:
         orm_mode=True
@@ -128,7 +135,7 @@ from fastapi_jwt_auth import AuthJWT
 SECRET_KEY=os.getenv('SECRET_KEY', 'secret')
 
 class Settings(BaseModel):
-    authjwt_secret_key: str = SECRET_KEY
+    authjwt_secret_key: str = os.getenv("SECRET_KEY")
     authjwt_token_location:set ={'cookies','headers'}
     authjwt_access_cookie_key:str='access_token'
     authjwt_refresh_cookie_key:str='refresh_token'
