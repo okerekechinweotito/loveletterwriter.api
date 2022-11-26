@@ -65,7 +65,7 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
                 success_url = success_url,
                 cancel_url = cancel_url,
                 mode='subscription',
-                customer_email= user.email'
+                customer_email= user.email,
                 metadata = {
                     'user_id':user.id,
                     'user_name':user.first_name,
@@ -85,7 +85,7 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
                 success_url = success_url,
                 cancel_url = cancel_url,
                 mode='subscription',
-                customer_email= user.email'
+                customer_email= user.email,
                 metadata = {
                     'user_id':user.id,
                     'user_name':user.first_name,
@@ -105,7 +105,7 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
                 success_url = success_url,
                 cancel_url = cancel_url,
                 mode='subscription',
-                customer_email= user.email'
+                customer_email= user.email,
                 metadata = {
                     'user_id':user.id,
                     'user_name':user.first_name,
