@@ -103,7 +103,7 @@ class UserBase(BaseModel):
     email: EmailStr
 
 class UserCreate(UserBase):
-    password:str=Field(min_length=8, description='password minimum length is 8 characters')
+    password:str=Field(min_length=6, description='password minimum length is 8 characters')
 
 class Login(BaseModel):
     email:EmailStr
