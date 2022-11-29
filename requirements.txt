@@ -1,5 +1,6 @@
 aiofiles==22.1.0
 aiosmtplib==1.1.7
+alembic==1.8.1
 amqp==5.1.1
 anyio==3.6.2
 astroid==2.12.12
@@ -54,8 +55,10 @@ Jinja2==3.1.2
 jmespath==1.0.1
 kombu==5.2.4
 lazy-object-proxy==1.8.0
+Mako==1.2.4
 MarkupSafe==2.1.1
 mccabe==0.7.0
+mysql-connector-python==8.0.31
 numpy==1.23.5
 oauth2client==4.1.3
 openai==0.25.0
@@ -70,6 +73,7 @@ platformdirs==2.5.4
 pluggy==0.13.1
 prometheus-client==0.15.0
 prompt-toolkit==3.0.33
+protobuf==3.20.1
 psycopg2-binary==2.9.5
 py==1.11.0
 pyasn1==0.4.8
@@ -122,4 +126,3 @@ wcwidth==0.2.5
 Werkzeug==2.2.2
 wrapt==1.14.1
 wsproto==1.2.0
-mysql-connector-python
