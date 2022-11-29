@@ -147,4 +147,8 @@ class ProductReview(Base):
     user = relationship('User', back_populates='product_review')
  
     
+class MailSubscriber(Base):
+    __tablename__ = "mail_subscribers"
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(255))
 

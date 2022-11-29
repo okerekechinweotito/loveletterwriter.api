@@ -187,3 +187,5 @@ class PydanticReview(BaseModel):
     class Config:
         orm_mode = True
 
+class MailSubscriber(BaseModel):
+    email: EmailStr = Field(...)
