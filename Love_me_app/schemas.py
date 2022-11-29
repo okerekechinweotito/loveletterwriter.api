@@ -189,3 +189,4 @@ class PydanticReview(BaseModel):
 
 class MailSubscriber(BaseModel):
     email: EmailStr = Field(...)
+    
