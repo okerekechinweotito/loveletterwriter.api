@@ -46,7 +46,7 @@ def get_reviews( db:Session = Depends(get_db)):
 def delete_review(review_id, user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
     current_user = user
     if current_user is not None:
-        review = db.query(ProductReviewModel).filter(ProductReviewModel.user==current_user).filter(id==review_id).first()
+        review = db.query(ProductReviewModel).filter(ProductReviewModel.id==review_id).first()
   
         if review is not None:
             

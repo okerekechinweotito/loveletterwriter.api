@@ -16,9 +16,18 @@ from .. import schemas, models
 from ..database import get_db
 from ..dependencies import get_current_user
 
+# Image Upload
+from fastapi import File, UploadFile
+import secrets
+from fastapi.staticfiles import StaticFiles
+from PIL import Image
+
 #Initialize router and db
 db = get_db()
 router=APIRouter(tags=['User'],prefix="/api/v1/user/me")
+
+#StaticFiles Configuration
+router.mount("/static", StaticFiles(directory="static"), name="static")
 
 #Function to get current user
 def get_current_user(Authorize:AuthJWT=Depends(), db:Session=Depends(get_db), access_token:str=Cookie(default=None),Bearer=Header(default=None)):
@@ -109,14 +118,13 @@ def user_me(user:dict=Depends(get_current_user)):
         "is_reminder": user.is_reminder,
         "date_joined": user.date_created,
         "sub end":user.sub_end_date,
-        "plan_type":user.plan_type
+        "plan_type":user.plan_type,
+        
     }
-
-
 """
 endpoint to update user profile by getting the current user email and updating their profile.
 """
-@router.patch("/",)
+@router.patch("/")
 def update_profile(request: schemas.UserBase, user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=401, detail="user not found")
@@ -124,5 +132,35 @@ def update_profile(request: schemas.UserBase, user:dict=Depends(get_current_user
     profile.update(request.dict(exclude_unset=True))
     db.commit()
     return {"User successfully updated"}
+
+
+"""
+endpoint to update user profile picture by getting the current user email and updating their profile.
+"""
+@router.patch("/upload/profile_picture/")       
+async def upload_profile_picture(file: UploadFile = File(...),user:dict=Depends(get_current_user)):
+    if not user:
+       raise HTTPException(status_code=404, detail=f"User not found")
+    FILEPATH = "./static/profile_images/"
+    filename = file.filename
+    extension= filename.split(".")[1]
+    if extension not in ['png', 'jpg']:
+        return {'status': "error", 'detail':"Image type not allowed"}
+    token_name= secrets.token_hex(8)+"."+extension
+    generated_name=FILEPATH + token_name
+    file_content= await file.read()
+
+    with open(generated_name, 'wb') as file:
+        file.write(file_content)
+
+    #PILLOW IMAGE RESIZE
+    img = Image.open(generated_name)
+    resized_image = img.resize(size=(200, 200))
+    resized_image.save(generated_name)
+    
+    file.close()
+    file_url = "https://api.loveme.hng.tech"+generated_name[1:]
+    return{'status':'Profile Image Added', 'image':file_url}
+    
         
   

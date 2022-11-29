@@ -103,20 +103,29 @@ class UserBase(BaseModel):
     email: EmailStr
 
 class UserCreate(UserBase):
-    password:str=Field(min_length=8, description='password minimum length is 8 characters')
+    password:str=Field(min_length=6, description='password minimum length is 8 characters')
 
 class Login(BaseModel):
     email:EmailStr
     password:str
 class UserDetails(UserBase):
-    id: str
+    id: int
     first_name:str
     last_name:str
     is_sub_active:bool
-    sub_end_date:Union[datetime, None]=None
+    sub_end_date:Union[datetime, None]
+    plan_type:Union[str, None]
+    free_trial:bool
     is_reminder:bool
     date_created:datetime
 
+    class Config:
+        orm_mode=True
+
+class UserUpdate(UserBase):
+    image:str
+
+        
     class Config:
         orm_mode=True
 from dotenv import load_dotenv
@@ -126,7 +135,7 @@ from fastapi_jwt_auth import AuthJWT
 SECRET_KEY=os.getenv('SECRET_KEY', 'secret')
 
 class Settings(BaseModel):
-    authjwt_secret_key: str = SECRET_KEY
+    authjwt_secret_key: str = os.getenv("SECRET_KEY")
     authjwt_token_location:set ={'cookies','headers'}
     authjwt_access_cookie_key:str='access_token'
     authjwt_refresh_cookie_key:str='refresh_token'
@@ -144,6 +153,13 @@ class Letter(BaseModel):
     class Config:
         orm_mode=True
  
+class LoginDetails(BaseModel):
+    access_token:str
+    refresh_token:str
+    user:UserDetails
+    
+    class Config:
+        orm_mode=True
 
 class Schedule_Letter(BaseModel):
     id:int
@@ -187,6 +203,13 @@ class PydanticReview(BaseModel):
     class Config:
         orm_mode = True
 
+class RoleApplication(BaseModel):
+    full_name: str
+    email: str
+    linked_in: str
+    cover_letter: bytes
+    cv: bytes
+    
 class MailSubscriber(BaseModel):
     email: EmailStr = Field(...)
     
