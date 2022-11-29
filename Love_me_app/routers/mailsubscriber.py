@@ -7,7 +7,7 @@ from .. import schemas, models
 router = APIRouter(tags=["mailsubscribers"], prefix="/api/v1/subscriber")
 
 @router.post("/")
-async def subscriber(subscriber: schemas.MailSubscriber, db:Session=Depends(get_db)):
+def register_subscriber(subscriber: schemas.MailSubscriber, db:Session=Depends(get_db)):
     # check if email already exist
     exists_subscriber = db.query(models.MailSubscriber).filter_by(email=subscriber.email).first() is not None
     if exists_subscriber:
@@ -22,7 +22,7 @@ async def subscriber(subscriber: schemas.MailSubscriber, db:Session=Depends(get_
 
 
 @router.get("/")
-async def get_subscribers(db:Session=Depends(get_db)):
+def get_subscribers(db:Session=Depends(get_db)):
     all_subscribers = db.query(models.MailSubscriber).all()
     return all_subscribers
 
