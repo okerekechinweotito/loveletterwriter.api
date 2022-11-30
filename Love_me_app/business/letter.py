@@ -138,8 +138,7 @@ class LetterBusiness:
         prompt_word = ' who is their '+relationship+'. This letter should sound '+feelings
 
         prompt_word_ai = "Use these keywords [" + key_words + "] and this sentence ["+custom_words +"] to write a love letter from "\
-                      + name + " to " + partner_name + prompt_word + '. Date and time of letter is '\
-                      + str(datetime.datetime.now())
+                      + name + " to " + partner_name + prompt_word + '.'
 
         response2 = openai.Completion.create(
             engine="text-davinci-003",
