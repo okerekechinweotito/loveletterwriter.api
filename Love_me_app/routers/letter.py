@@ -95,7 +95,7 @@ def send_letter(payload:schemas.SendLetter,receiver_id,user:dict=Depends(get_cur
 
 
 @router.post("/translate/language")
-def translate_letter(payload:schemas.TranslateLetter,user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
+def translate_letter(payload:schemas.TranslateLetter,user:dict=Depends(get_current_user)):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Please log in")
     openai.api_key = os.getenv("OPENAI_API_KEY")
