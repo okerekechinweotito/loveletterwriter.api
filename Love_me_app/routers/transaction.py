@@ -23,8 +23,8 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
  
     payload =await requests.body()
     sig_header = stripe_signature
-    # endpoint_secret = os.getenv("ENDPOINT_SECRET")
-    endpoint_secret = 'whsec_9408e100f9b71cae7e32ce9f54927bb1f2f76a88dfe62d9793e5d0ce16617066'
+    endpoint_secret = os.getenv("ENDPOINT_SECRET")
+
     event = None
     try:
         event = stripe.Webhook.construct_event(
