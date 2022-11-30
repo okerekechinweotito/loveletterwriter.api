@@ -217,7 +217,9 @@ class TranslateLetter(BaseModel):
  
 class MailSubscriber(BaseModel):
     email: EmailStr = Field(...)
-
+    
+    class Config:
+        orm_mode = True
 
 class GenerateLetter(BaseModel):
     partner_name: str
