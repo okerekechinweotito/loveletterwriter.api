@@ -209,6 +209,9 @@ class RoleApplication(BaseModel):
     linked_in: str
     cover_letter: bytes
     cv: bytes
+ 
+class MailSubscriber(BaseModel):
+    email: EmailStr = Field(...)
 
 
 class GenerateLetter(BaseModel):

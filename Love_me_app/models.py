@@ -157,4 +157,9 @@ class RoleApplication(Base):
     cover_letter = Column(LargeBinary)
     cv = Column(LargeBinary)
     
+class MailSubscriber(Base):
+    __tablename__ = "mail_subscribers"
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(255))
+    
 
