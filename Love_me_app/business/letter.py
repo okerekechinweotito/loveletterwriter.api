@@ -109,6 +109,38 @@ class LetterBusiness:
 
     @staticmethod
     def generate_custom_letter(user_id, item, db):
+        # check that request params are not empty
+        partner_name = 'anonymous'
+        name = 'anonymous'
+        relationship = 'friend'
+        feelings = 'romantic'
+        custom_words = 'live together'
+        key_words = 'love,cool'
+        prompt_word = ''
+
+        if item.partner_name:
+            partner_name = item.partner_name
+        if item.name:
+            name = item.name
+        if item.relationship:
+            relationship = item.relationship
+        if item.feelings:
+            feelings = item.feelings
+        if item.custom_words:
+            custom_words = item.custom_words
+        if item.key_words:
+            key_words = ''
+            for word in item.key_words:
+                key_words = key_words + word +', '
+            # remove last space and comma
+            key_words = key_words[:-2]
+
+
+
+
+
+
+
         response_object = {
             'status': 0,
             'message': ''
