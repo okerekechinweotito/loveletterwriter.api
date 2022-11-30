@@ -151,9 +151,31 @@ class LetterBusiness:
             presence_penalty=0.0
         )
 
-
-        response_object = {
-            'status': 0,
-            'message': 'Letter was not generated. Please try again later.'
-        }
+        if response2['choices'][0]['text']:
+            new_letter = models.Letter(
+                user_id=user_id,
+                title=response2['choices'][0]['text'].strip().split('\n', 1)[0].rstrip(','),
+                letter=response2['choices'][0]['text'].strip(),
+                date_created=datetime.datetime.now()
+            )
+            db.add(new_letter)
+            try:
+                db.commit()
+                db.refresh(new_letter)
+                response_object = {
+                    'status': 1,
+                    'letter': response2['choices'][0]['text'],
+                    'message': 'Letter was generated and saved.'
+                }
+            except Exception as e:
+                response_object = {
+                    'status': 0,
+                    'letter': response2['choices'][0]['text'],
+                    'message': 'Letter was generated but was not saved. Please try again later'
+                }
+        else:
+            response_object = {
+                'status': 0,
+                'message': 'Letter was not generated. Please try again later.'
+            }
         return response_object
