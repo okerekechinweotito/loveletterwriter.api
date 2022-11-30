@@ -47,7 +47,7 @@ class Letter(Base):
     __tablename__ = "letters"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id'))
-    receiver_id = Column(Integer, ForeignKey('receivers.id'))
+    receiver_id = Column(Integer, ForeignKey('receivers.id'), nullable=True)
     title = Column(TEXT)
     letter = Column(TEXT)
     date_sent = Column(DateTime(timezone=True), nullable=True)
