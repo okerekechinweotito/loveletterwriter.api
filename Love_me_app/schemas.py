@@ -101,6 +101,7 @@ class UserBase(BaseModel):
     first_name: str
     last_name:str
     email: EmailStr
+    free_trial: bool 
 
 class UserCreate(UserBase):
     password:str=Field(min_length=6, description='password minimum length is 8 characters')
