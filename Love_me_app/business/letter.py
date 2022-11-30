@@ -141,14 +141,19 @@ class LetterBusiness:
                       + name + " to " + partner_name + prompt_word + '. Date and time of letter is '\
                       + str(datetime.datetime.now())
 
-
-
-
-
+        response2 = openai.Completion.create(
+            engine="text-davinci-002",
+            prompt=prompt_word_ai,
+            temperature=0.7,
+            max_tokens=256,
+            top_p=1.0,
+            frequency_penalty=0.0,
+            presence_penalty=0.0
+        )
 
 
         response_object = {
             'status': 0,
-            'message': prompt_word_ai
+            'message': 'Letter was not generated. Please try again later.'
         }
         return response_object
