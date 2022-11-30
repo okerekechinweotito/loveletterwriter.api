@@ -106,3 +106,74 @@ class LetterBusiness:
                 'message': 'Letter was not generated. Please try again later.'
             }
         return response_object
+
+    @staticmethod
+    def generate_custom_letter(user_id, item, db):
+        # check that request params are not empty
+        partner_name = 'anonymous'
+        name = 'anonymous'
+        relationship = 'friend'
+        feelings = 'romantic'
+        custom_words = 'live together'
+        key_words = 'love,cool'
+
+        if item.partner_name:
+            partner_name = item.partner_name
+        if item.name:
+            name = item.name
+        if item.relationship:
+            relationship = item.relationship
+        if item.feelings:
+            feelings = item.feelings
+        if item.custom_words:
+            custom_words = item.custom_words
+        if item.key_words:
+            key_words = ''
+            for word in item.key_words:
+                key_words = key_words + word +', '
+            # remove last space and comma
+            key_words = key_words[:-2]
+
+        # form the prompt word for the AI trainer
+        prompt_word = ' who is their '+relationship+'. This letter should sound '+feelings
+
+        prompt_word_ai = "Use these keywords [" + key_words + "] and this sentence ["+custom_words +"] to write a love letter from "\
+                      + name + " to " + partner_name + prompt_word + '.'
+
+        response2 = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=prompt_word_ai,
+            temperature=0.7,
+            max_tokens=256,
+            top_p=1.0,
+            frequency_penalty=0.0,
+            presence_penalty=0.0
+        )
+        if response2['choices'][0]['text']:
+            new_letter = models.Letter(
+                user_id=user_id,
+                title=response2['choices'][0]['text'].strip().split('\n', 1)[0].rstrip(','),
+                letter=response2['choices'][0]['text'].strip(),
+                date_created=datetime.datetime.now()
+            )
+            db.add(new_letter)
+            try:
+                db.commit()
+                db.refresh(new_letter)
+                response_object = {
+                    'status': 1,
+                    'letter': response2['choices'][0]['text'],
+                    'message': 'Letter was generated and saved.'
+                }
+            except Exception as e:
+                response_object = {
+                    'status': 0,
+                    'letter': response2['choices'][0]['text'],
+                    'message': 'Letter was generated but was not saved. Please try again later'
+                }
+        else:
+            response_object = {
+                'status': 0,
+                'message': 'Letter was not generated. Please try again later.'
+            }
+        return response_object

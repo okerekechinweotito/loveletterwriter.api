@@ -12,10 +12,12 @@ jobs:
     - uses: actions/checkout@v3
     - name: Go to folder
       run: |
-        cd /var/www/loveletterwriter.api
+        cd /home/idimmusix/loveletterwriter.api
         source env/bin/activate
         git switch update/dev
         git pull
         pip install -r "requirements.txt"
+        alembic revision --autogenerate -m "${{ github. event. head_commit. message }}"
+        alembic upgrade head
     - name: restart server
       run: sudo systemctl restart hng
