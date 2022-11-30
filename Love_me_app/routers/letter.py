@@ -34,8 +34,9 @@ async def generate_letter(receiver_id,user:dict=Depends(get_current_user), db:Se
                 }
     return api_response
 
+
 @router.post("/")
-async def generate_custom_letter(user:dict=Depends(get_current_user), db:Session = Depends(get_db),):
+async def generate_custom_letter(item: schemas.GenerateLetter, user:dict=Depends(get_current_user), db:Session = Depends(get_db),):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Please log in")
     return {}
