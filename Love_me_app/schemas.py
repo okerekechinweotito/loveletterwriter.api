@@ -209,7 +209,15 @@ class RoleApplication(BaseModel):
     linked_in: str
     cover_letter: bytes
     cv: bytes
-    
+ 
 class MailSubscriber(BaseModel):
     email: EmailStr = Field(...)
-    
+
+
+class GenerateLetter(BaseModel):
+    partner_name: str
+    name: str
+    relationship: str
+    feelings: str
+    custom_words: Union[str, None] = None
+    key_words: list = []

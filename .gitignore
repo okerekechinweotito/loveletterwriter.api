@@ -6,7 +6,8 @@ env/
 .venv
 venv/
 /venv
-project.db 
+/project.db 
+project.db/
 /alembic
 alembic/
 
