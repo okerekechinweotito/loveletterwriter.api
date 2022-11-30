@@ -126,11 +126,6 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
 
 
 
-@router.get("/success")
-async def successful(request:Request):
-    return {"success":"success"}
-
-
 @router.patch("/api/v1/subscription/{plan_id}",description="edit plans")
 async def UpdateSubscription(plan_id:int,request: schemas.SubscriptionBase,db:Session = Depends(get_db)):
     plans = db.query(models.Subscription).filter(models.Subscription.id == plan_id)
