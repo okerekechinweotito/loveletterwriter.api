@@ -75,7 +75,7 @@ def send_letter(payload:schemas.SendLetter,receiver_id,user:dict=Depends(get_cur
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Receiver does not exist")
     receiver_email = receiver.email
 
-    SMTP_HOST_SENDER ='simeoneumoh@gmail.com'
+    SMTP_HOST_SENDER = os.getenv('SMTP_HOST_SENDER')
 
     message = Mail(
     from_email=SMTP_HOST_SENDER,
@@ -94,8 +94,8 @@ def send_letter(payload:schemas.SendLetter,receiver_id,user:dict=Depends(get_cur
     return {'Sent successfully'}
 
 
-@router.post("/translate")
-def translate_letter(payload:schemas.TranslateLetter,user:dict=Depends(get_current_user)):
+@router.post("/translate/language")
+def translate_letter(payload:schemas.TranslateLetter,user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Please log in")
     openai.api_key = os.getenv("OPENAI_API_KEY")
