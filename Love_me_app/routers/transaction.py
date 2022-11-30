@@ -55,7 +55,7 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
             print(str(e))
         print("saved to data base..........................................")
         
-    if event['type'] == 'customer.subscription.deleted':
+    elif event['type'] == 'customer.subscription.deleted':
 
         """this here checks if sub is expired and updates user's records accordingly"""
 
