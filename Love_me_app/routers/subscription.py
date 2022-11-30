@@ -4,9 +4,7 @@ from ..dependencies import get_current_user
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from ..import models
-import json
 from ..database import get_db
-from datetime import timedelta
 from dotenv import load_dotenv
 import os 
 load_dotenv()
@@ -141,3 +139,20 @@ async def UpdateSubscription(plan_id:int,request: schemas.SubscriptionBase,db:Se
     return {"User successfully updated"}
 
 
+
+
+
+@router.post("/api/v1/subscription/free-trial")
+async def SubscriptionTrial(db: Session = Depends(get_db),user:dict = Depends(get_current_user)):
+    profile = db.query(models.User).filter(models.User.id == user.id)
+    if profile.free_trial:
+        pass
+    
+
+
+
+
+#to cancel subscription when user's end date is reached
+
+# def Cancel_subscription(db:Session = Depends(get_db),user:dict = Depends(get_current_user)):
+#     print(user.sub_end_date,user.is_active,user.is_sub_active,user.is_reminder,user.free_trial)
