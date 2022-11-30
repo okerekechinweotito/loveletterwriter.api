@@ -19,13 +19,13 @@ def contact_us(payload:schemas.ContactUs, user:dict=Depends(get_current_user), d
     email=payload.email
     messages=payload.messages
 
-    SMTP_HOST_SENDER ='simeoneumoh@gmail.com'
+    SMTP_HOST_SENDER = os.getenv('SMTP_HOST_SENDER')
 
     message = Mail(
     from_email=SMTP_HOST_SENDER,
     to_emails="contact.lovemeapp@gmail.com",
     subject="User Enquiry",
-    html_content=f"<p>This email is from {name},{email}</p><p>{messages}</p>")
+    html_content=f"<p>This email is from {name} with the email address,{email}</p><p>{messages}</p>")
     try:
         SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY') 
         sg = SendGridAPIClient(SENDGRID_API_KEY)
