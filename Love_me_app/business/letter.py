@@ -142,7 +142,7 @@ class LetterBusiness:
                       + str(datetime.datetime.now())
 
         response2 = openai.Completion.create(
-            engine="text-davinci-002",
+            engine="text-davinci-003",
             prompt=prompt_word_ai,
             temperature=0.7,
             max_tokens=256,
@@ -150,7 +150,6 @@ class LetterBusiness:
             frequency_penalty=0.0,
             presence_penalty=0.0
         )
-
         if response2['choices'][0]['text']:
             new_letter = models.Letter(
                 user_id=user_id,
