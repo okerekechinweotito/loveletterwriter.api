@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-# from fastapi_pagination import Page, paginate, add_pagination
 from Love_me_app.database import get_db
 from sqlalchemy.orm import Session
 from .. import schemas, models
 
 
 router = APIRouter(tags=["mailsubscribers"], prefix="/api/v1/subscriber")
-# add_pagination(router)
+
 
 @router.post("/")
 def register_subscriber(subscriber: schemas.MailSubscriber, db:Session=Depends(get_db)):
@@ -37,4 +36,4 @@ def get_subscribers(db:Session=Depends(get_db), page_num: int = 1, page_size: in
     # return paginated subscribers
     return all_subscribers[start:end]
 
-# add_pagination(router)
+
