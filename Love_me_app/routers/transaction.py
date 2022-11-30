@@ -1,6 +1,5 @@
 from fastapi import APIRouter,Depends,Request,Header,HTTPException
 from sqlalchemy.orm import Session
-from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from ..import models
 from ..dependencies import get_current_user
@@ -47,12 +46,15 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
         profile.is_sub_active = True
         profile.sub_end_date = end_date
         profile.plan_type = event.data.object.metadata.plan_type
+        profile.free_trial = False 
         db.add(data)
         try:
             db.commit()
         except Exception as e:
             print(str(e))
         print("saved to data base..........................................")
+        
+
 
     print('Handled event type {}'.format(event['type']))
     
