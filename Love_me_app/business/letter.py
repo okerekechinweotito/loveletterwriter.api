@@ -116,7 +116,6 @@ class LetterBusiness:
         feelings = 'romantic'
         custom_words = 'live together'
         key_words = 'love,cool'
-        prompt_word = ''
 
         if item.partner_name:
             partner_name = item.partner_name
@@ -135,6 +134,13 @@ class LetterBusiness:
             # remove last space and comma
             key_words = key_words[:-2]
 
+        # form the prompt word for the AI trainer
+        prompt_word = ' who is their '+relationship+'. This letter should sound '+feelings
+
+        prompt_word_ai = "Use these keywords [" + key_words + "] and this sentence ["+custom_words +"] to write a love letter from "\
+                      + name + " to " + partner_name + prompt_word + '. Date and time of letter is '\
+                      + str(datetime.datetime.now())
+
 
 
 
@@ -143,6 +149,6 @@ class LetterBusiness:
 
         response_object = {
             'status': 0,
-            'message': ''
+            'message': prompt_word_ai
         }
         return response_object

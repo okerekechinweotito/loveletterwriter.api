@@ -46,7 +46,7 @@ async def generate_custom_letter(item: schemas.GenerateLetter, user:dict=Depends
     if user.is_sub_active == True:
         api_response = LetterBusiness.generate_custom_letter(user_id, item, db)
     else:
-        if user.free_trial == True:
+        if user.free_trial == False:
             api_response = LetterBusiness.generate_custom_letter(user_id, item, db)
             user.free_trial = False
             try:
