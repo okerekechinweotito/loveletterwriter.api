@@ -106,3 +106,11 @@ class LetterBusiness:
                 'message': 'Letter was not generated. Please try again later.'
             }
         return response_object
+
+    @staticmethod
+    def generate_custom_letter(user_id, item, db):
+        response_object = {
+            'status': 0,
+            'message': ''
+        }
+        return response_object
