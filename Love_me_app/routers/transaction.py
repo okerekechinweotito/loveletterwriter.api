@@ -23,7 +23,8 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
  
     payload =await requests.body()
     sig_header = stripe_signature
-    endpoint_secret = os.getenv("ENDPOINT_SECRET")
+    # endpoint_secret = os.getenv("ENDPOINT_SECRET")
+    endpoint_secret = 'whsec_9408e100f9b71cae7e32ce9f54927bb1f2f76a88dfe62d9793e5d0ce16617066'
     event = None
     try:
         event = stripe.Webhook.construct_event(
@@ -39,9 +40,9 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
             ref_no = event.data.object.id,
             date_created = datetime.utcfromtimestamp(int(event.data.object.created)).strftime('%Y-%m-%d %H:%M:%S')
         )
-        idh = int(event.data.object.metadata.user_id)
+        object_id = int(event.data.object.metadata.user_id)
         end = event.data.object.metadata.month
-        profile = db.query(models.User).filter(models.User.id==idh).first()
+        profile = db.query(models.User).filter(models.User.id==object_id).first()
         end_date = datetime.now() + relativedelta(months=int(end))
         profile.is_sub_active = True
         profile.sub_end_date = end_date
@@ -54,7 +55,19 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
             print(str(e))
         print("saved to data base..........................................")
         
+    if event['type'] == 'customer.subscription.deleted':
 
+        """this here checks if sub is expired and updates user's records accordingly"""
+
+        email = event.data.object.email
+        profile = db.query(models.User).filter(models.User.email==email).first()
+        profile.is_sub_active = False
+        profile.sub_end_date = None
+        try:
+            db.commit()
+        except Exception as e:
+            print(str(e))
+        print("saved to data base..........................................")
 
     print('Handled event type {}'.format(event['type']))
     
