@@ -27,12 +27,39 @@ async def generate_letter(receiver_id,user:dict=Depends(get_current_user), db:Se
         if user.free_trial == True:
             api_response = LetterBusiness.generate_letter(user_id, receiver_id,db)
             user.free_trial = False
-            db.commit()
+            try:
+                db.commit()
+            except Exception as e:
+                print(str(e))
         else:
             api_response = {
                     'status': 0,
                     'message': 'Please subscribe to be able to generate letter'
                 }
+    return api_response
+
+
+@router.post("/")
+async def generate_custom_letter(item: schemas.GenerateLetter, user:dict=Depends(get_current_user), db:Session = Depends(get_db),):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Please log in")
+    user_id = user.id
+    if user.is_sub_active == True:
+        api_response = LetterBusiness.generate_custom_letter(user_id, item, db)
+    else:
+        # if user.free_trial == True:
+        if True:
+            api_response = LetterBusiness.generate_custom_letter(user_id, item, db)
+            user.free_trial = False
+            try:
+                db.commit()
+            except Exception as e:
+                print(str(e))
+        else:
+            api_response = {
+                'status': 0,
+                'message': 'Please subscribe to be able to generate letter'
+            }
     return api_response
 
 
