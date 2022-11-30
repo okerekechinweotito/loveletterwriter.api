@@ -8,6 +8,7 @@ from ..dependencies import get_current_user
 from ..import schemas,models
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+import openai
 
 # initialize router
 
@@ -91,3 +92,16 @@ def send_letter(payload:schemas.SendLetter,receiver_id,user:dict=Depends(get_cur
     except Exception as e:
         print(e.message)
     return {'Sent successfully'}
+
+
+@router.post("/translate")
+def translate_letter(payload:schemas.TranslateLetter,user:dict=Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Please log in")
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+
+    language = payload.language
+    letter = payload.letter
+    response = openai.Completion.create(engine = "text-davinci-002",prompt = f"Translate to {language}/n/n{letter}",
+                                        temperature = 0,max_tokens = 200,top_p = 1,frequency_penalty = 0,presence_penalty = 0)
+    return {response.choices[0].text}
