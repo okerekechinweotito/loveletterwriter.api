@@ -26,7 +26,10 @@ async def generate_letter(receiver_id,user:dict=Depends(get_current_user), db:Se
         if user.free_trial == True:
             api_response = LetterBusiness.generate_letter(user_id, receiver_id,db)
             user.free_trial = False
-            db.commit()
+            try:
+                db.commit()
+            except Exception as e:
+                print(str(e))
         else:
             api_response = {
                     'status': 0,
