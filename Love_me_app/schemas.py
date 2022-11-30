@@ -14,6 +14,7 @@ class User(BaseModel):
     is_reminder:bool
     date_created:datetime
 
+
 class DisplayReceiver(BaseModel):
     id:int
     name:str
@@ -221,3 +222,9 @@ class GenerateLetter(BaseModel):
     feelings: str
     custom_words: Union[str, None] = None
     key_words: list = []
+
+
+
+class AdminCreate(UserCreate):
+    is_admin: bool
+    role: str

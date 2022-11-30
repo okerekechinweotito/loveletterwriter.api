@@ -28,6 +28,7 @@ class User(Base):
     transaction = relationship('Transaction', back_populates='user')
     reset_pass = relationship('ResetPass', back_populates='user')
     product_review = relationship('ProductReview', back_populates='user')
+    #is_admin = Boolean(default=False)
 
 
 class Receiver(Base):
