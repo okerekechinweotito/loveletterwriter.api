@@ -228,3 +228,7 @@ class GenerateLetter(BaseModel):
     feelings: str
     custom_words: Union[str, None] = None
     key_words: list = []
+
+
+class ChatBot(BaseModel):
+    question: str
