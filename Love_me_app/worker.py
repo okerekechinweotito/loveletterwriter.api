@@ -18,7 +18,7 @@ from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 
 env_config = ConnectionConfig(
    MAIL_USERNAME='livingstonemaxwell971@gmail.com',
-    MAIL_PASSWORD=os.getenv('MAIL_PASSWORD'),
+    MAIL_PASSWORD=os.getenv('MAIL2_PASSWORD'),
     MAIL_FROM='livingstonemaxwell971@gmail.com',
     MAIL_PORT=587,
     MAIL_SERVER='smtp.gmail.com',
