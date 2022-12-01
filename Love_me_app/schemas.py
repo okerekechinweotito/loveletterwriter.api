@@ -7,6 +7,7 @@ class User(BaseModel):
     first_name:str
     last_name:str
     password:str
+    image:str
     email:EmailStr
     facebook_id:str
     google_id:str
@@ -59,6 +60,7 @@ class Subscription(BaseModel):
     months:int
     amount:float
     date_created:datetime
+    plan_id:str
 
     class config:
         orm_mode = True
@@ -77,6 +79,7 @@ class SubscriptionBase(BaseModel):
     description:str
     months:str
     amount:float
+    plan_id:str
 
 
 class ResetPass(BaseModel):
@@ -124,7 +127,7 @@ class UserDetails(UserBase):
     class Config:
         orm_mode=True
 
-class UserUpdate(UserBase):
+class ImageUpdate(BaseModel):
     image:str
 
         
@@ -211,10 +214,16 @@ class RoleApplication(BaseModel):
     linked_in: str
     cover_letter: bytes
     cv: bytes
+
+class TranslateLetter(BaseModel):
+    language:str
+    letter:str
  
 class MailSubscriber(BaseModel):
     email: EmailStr = Field(...)
-
+    
+    class Config:
+        orm_mode = True
 
 class GenerateLetter(BaseModel):
     partner_name: str
@@ -260,3 +269,9 @@ class Statistics(BaseModel):
     users: int
     letters: int
     admins:int
+class Feedback(BaseModel):
+    is_helpfull: bool
+    feedback: str
+
+class ChatBot(BaseModel):
+    question: str
