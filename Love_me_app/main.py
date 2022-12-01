@@ -4,7 +4,7 @@ from .database import engine
 from fastapi.middleware.cors import CORSMiddleware
 from .import models
 from .database import engine
-from .routers import ai_trainer,authentication,letter,receiver,schedule,subscription,transaction,users,product_review,dashboard,contact_page,mailsubscriber, role_application, feedback
+from .routers import ai_trainer,authentication,letter,receiver,schedule,subscription,transaction,users,product_review,dashboard,contact_page,mailsubscriber, role_application, feedback,admin
 
 
 tags_metadata = [
@@ -64,6 +64,7 @@ app.include_router(dashboard.router)
 app.include_router(product_review.router)
 app.include_router(role_application.router)
 app.include_router(mailsubscriber.router)
+app.include_router(admin.router)
 app.include_router(feedback.router)
 
 @app.get("/")

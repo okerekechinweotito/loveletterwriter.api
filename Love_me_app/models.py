@@ -182,6 +182,23 @@ class MailSubscriber(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String(255))
 
+
+
+class Admin(Base):
+    __tablename__ = "administrators"
+    id = Column(Integer, primary_key=True, index=True)
+    first_name = Column(String(255))
+    last_name = Column(String(255))
+    email = Column(String(255),unique=True)
+    password = Column(String(255))
+    role = Column(String(255))
+    approved = Column(Boolean, default=False)
+    
+
+
+
+    
+
 class Feedback(Base):
     __tablename__ = "feedback_response"
     id = Column(Integer, primary_key=True, index=True)
