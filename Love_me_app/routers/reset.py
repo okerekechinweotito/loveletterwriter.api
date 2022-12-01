@@ -36,7 +36,7 @@ def send_reset_email(payload:schemas.PassReset,db:Session = Depends(get_db),):
     from_email=SMTP_HOST_SENDER,
     to_emails=f"{email}",
     subject=f"Password Reset",
-    html_content=f"<p>Here is your reset {token}</p>")
+    html_content=f"<p>Here is your reset token: {token}</p>")
     try:
         SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY') 
         sg = SendGridAPIClient(SENDGRID_API_KEY)
@@ -46,7 +46,7 @@ def send_reset_email(payload:schemas.PassReset,db:Session = Depends(get_db),):
         print(response.headers)
     except Exception as e:
         print(e.message)
-    return {'Sent successfully'}
+    return {'Token Sent successfully to your email'}
 
 @router.post('/validate_token')
 def validate_token(payload:schemas.ValidateResetToken,db:Session = Depends(get_db)):
@@ -64,7 +64,7 @@ def validate_token(payload:schemas.ValidateResetToken,db:Session = Depends(get_d
     if not is_valid:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Invalid token")
     
-    return {"Token Validated"}
+    return {"Token Validated, Go on to password reset"}
 
 @router.post('/password_reset')
 def password_reset(payload:schemas.NewPassword,db:Session = Depends(get_db)):
@@ -75,9 +75,8 @@ def password_reset(payload:schemas.NewPassword,db:Session = Depends(get_db)):
     user = UserCrud.get_user_by_email(db,email)
     new_password = hash_password(new_password)
     user.password = new_password
-    reset_token.delete(synchronize_session=False)
+    db.query(models.PasswordResetToken).filter(models.PasswordResetToken.token == token).delete(synchronize_session=False)
     db.commit()
     
     return {'Password Reset successful'}
 
-    
