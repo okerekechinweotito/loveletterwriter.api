@@ -74,6 +74,9 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
             print(str(e))
         print("saved to data base..........................................")
 
+    elif event['type'] == 'customer.subscription.trial_will_end':
+        print(event)
+
     print('Handled event type {}'.format(event['type']))
     
 
