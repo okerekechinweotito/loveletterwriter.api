@@ -118,7 +118,24 @@ class Transaction(Base):
     user = relationship('User',back_populates='transaction')
     subscription = relationship('Subscription',back_populates='transaction')
 
-    
+
+
+class Customer(Base):
+    """to store stripe customer id"""
+    __tablename__ = 'customer'
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    customer_id = Column(String(255))
+
+
+class CustomerSubscription(Base):
+    """to store stripe customer id"""
+    __tablename__ = 'customer_subscription'
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    subscription_id = Column(String(255))
+
+
     
 
 class ResetPass(Base):

@@ -81,3 +81,60 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
 async def transactions_data(db: Session = Depends(get_db)):
     plans = db.query(models.Transaction).all()
     return plans
+
+
+@router.post("/api/v1/transaction/create-customer/")
+async def create_customer_object(user:dict = Depends(get_current_user),db: Session = Depends(get_db)):
+    if user:
+        CUSTOMER_EMAIL = user.email
+        CUSTOMER_NAME = f'{user.first_name}  {user.last_name}'
+        try:
+            # create customer_id for the current user
+            customer = stripe.Customer.create(
+                email=CUSTOMER_EMAIL,
+                name=CUSTOMER_NAME,
+            )
+            insert_id = models.Customer(user_id=user.id, customer_id=customer['id'])
+            db.add(insert_id)
+            db.commit()
+            db.refresh(insert_id)
+
+            return {"Customer_id": customer['id']}
+
+        except Exception as e:
+            return {"status_code": 403, "error": e.args}
+   
+    return HTTPException(status_code=401, detail="Please Login")
+
+
+
+@router.post("/api/v1/transaction/create-subscription/")
+async def create_subscription_object(user:dict = Depends(get_current_user),db: Session = Depends(get_db)):
+    id = user.id
+    users = db.query(models.Customer).filter(models.Customer.user_id == id).first()
+    CUSTOMER_ID = users.customer_id
+
+    try:
+        subscription = stripe.Subscription.create(
+                customer=CUSTOMER_ID,
+                items=[{
+                    "price": os.getenv("SWEET_PLAN_ID")
+                }],
+                payment_behavior="default_incomplete",
+                payment_settings={"save_default_payment_method": "on_subscription"},
+                expand=["latest_invoice.payment_intent"]
+        )
+        insert_sub = models.CustomerSubscription(user_id=id, subscription_id=subscription.id)
+        db.add(insert_sub)
+        db.commit()
+        db.refresh(insert_sub)
+
+        return {
+                "subscriptionId": subscription.id, "clientSecret": subscription.latest_invoice.payment_intent.client_secret
+        }
+
+    except Exception as e:
+        return {"statusCode": 403, "error": e.args }
+  
+
+
