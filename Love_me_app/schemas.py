@@ -209,3 +209,7 @@ class RoleApplication(BaseModel):
     linked_in: str
     cover_letter: bytes
     cv: bytes
+
+class ChatBot(BaseModel):
+    email:EmailStr
+    message:str

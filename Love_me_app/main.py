@@ -4,7 +4,7 @@ from .database import engine
 from fastapi.middleware.cors import CORSMiddleware
 from .import models
 from .database import engine
-from .routers import ai_trainer,authentication,letter,receiver,schedule,subscription,transaction,users,product_review,dashboard,contact_page, role_application
+from .routers import ai_trainer,authentication,letter,receiver,schedule,subscription,transaction,users,product_review,dashboard,contact_page, role_application,chatbot
 
 
 tags_metadata = [
@@ -28,9 +28,13 @@ tags_metadata = [
         "name": "receiver",
         "description": "Operations related to the receiver of the love letters",
     },
-      {
+    {
         "name": "contact",
         "description": "The Operation related to our contact page in the love letter writer app",
+    },
+    {
+        "name": "chat",
+        "description": "The Operation related to our chat bot in the love letter writer app",
     },
 ]
 
@@ -59,6 +63,7 @@ app.include_router(contact_page.router)
 app.include_router(dashboard.router)
 app.include_router(product_review.router)
 app.include_router(role_application.router)
+app.include_router(chatbot.router)
 
 @app.get("/")
 def get():
