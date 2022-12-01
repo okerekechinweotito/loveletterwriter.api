@@ -224,7 +224,15 @@ class GenerateLetter(BaseModel):
     key_words: list = []
 
 
-
-class AdminCreate(UserCreate):
-    is_admin: bool
+class Admin(BaseModel):
+    first_name:str
+    last_name:str
+    email:EmailStr
     role: str
+    
+class AdminCreate(Admin):
+    password:str
+    
+
+class AdminDetails(Admin):
+    id: int
