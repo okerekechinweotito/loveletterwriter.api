@@ -28,6 +28,7 @@ class User(Base):
     transaction = relationship('Transaction', back_populates='user')
     reset_pass = relationship('ResetPass', back_populates='user')
     product_review = relationship('ProductReview', back_populates='user')
+    feedback = relationship('Feedback', back_populates='user')
 
 
 class Receiver(Base):
@@ -162,4 +163,13 @@ class MailSubscriber(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String(255))
     
+class Feedback(Base):
+    __tablename__ = "feedback_response"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    is_helpfull = Column(Boolean)
+    feedback = Column(String(255))
+    user = relationship('User', back_populates='feedback')
+
+
 
