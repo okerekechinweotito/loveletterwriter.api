@@ -47,7 +47,7 @@ class Letter(Base):
     __tablename__ = "letters"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id'))
-    receiver_id = Column(Integer, ForeignKey('receivers.id'))
+    receiver_id = Column(Integer, ForeignKey('receivers.id'), nullable=True)
     title = Column(TEXT)
     letter = Column(TEXT)
     date_sent = Column(DateTime(timezone=True), nullable=True)
@@ -173,5 +173,10 @@ class RoleApplication(Base):
     linked_in = Column(String(255))
     cover_letter = Column(LargeBinary)
     cv = Column(LargeBinary)
+    
+class MailSubscriber(Base):
+    __tablename__ = "mail_subscribers"
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(255))
     
 
