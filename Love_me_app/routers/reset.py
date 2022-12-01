@@ -6,6 +6,7 @@ from ..database import get_db
 from ..crud import UserCrud
 from ..import schemas,models
 from ..dependencies import get_current_user
+from ..utils import hash_password
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 import uuid
@@ -67,11 +68,15 @@ def validate_token(payload:schemas.ValidateResetToken,db:Session = Depends(get_d
 
 @router.post('/password_reset')
 def password_reset(payload:schemas.NewPassword,db:Session = Depends(get_db)):
-    password = payload.password
+    new_password = payload.password
     token = payload.token
     reset_token = db.query(models.PasswordResetToken).filter(models.PasswordResetToken.token == token).first()
     email = reset_token.email
     user = UserCrud.get_user_by_email(db,email)
+    new_password = hash_password(new_password)
+    user.password = new_password
+    db.commit()
+    return {'Password Reset successful'}
     
      
 
