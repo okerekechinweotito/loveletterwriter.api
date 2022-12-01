@@ -97,6 +97,7 @@ class Subscription(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255))
     description = Column(String(255))
+    plan_id = Column(String(255))
     months = Column(Integer)
     amount = Column(Float)
     date_created = Column(DateTime)
