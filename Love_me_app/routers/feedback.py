@@ -3,21 +3,25 @@ from fastapi import APIRouter,status,HTTPException
 from fastapi.params import Depends
 from sqlalchemy.orm import Session 
 from ..database import get_db
+from ..import models 
 from ..import schemas
 from ..dependencies import get_current_user
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
-router=APIRouter(tags=['contact'],prefix="/api/v1/contact_us")
+
+router=APIRouter(tags=['feedback'],prefix="/api/v1/feedback")
 
 @router.post('/')
-def contact_us(payload:schemas.ContactUs, user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
-    user = user
+async def feedback(payload:schemas.Feedback, user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Please log in")
-    name=payload.name
-    email=payload.email
-    messages=payload.messages
+        raise HTTPException(status_code=401, detail="please login")
+    data = models.Feedback(
+        is_helpfull = payload.is_helpfull, feedback= payload.feedback)
+
+    db.add(data)
+    db.commit()
+
 
     SMTP_HOST_SENDER = os.getenv('SMTP_HOST_SENDER')
 
@@ -25,7 +29,7 @@ def contact_us(payload:schemas.ContactUs, user:dict=Depends(get_current_user), d
     from_email=SMTP_HOST_SENDER,
     to_emails="contact.lovemeapp@gmail.com",
     subject="User Enquiry",
-    html_content=f"<p>This email is from {name} with the email address,{email}</p><p>{messages}</p>")
+    html_content=f"<p>This email is from {user.first_name} with the email address,{user.email}</p><p>{payload.feedback}</p>")
     try:
         SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY') 
         sg = SendGridAPIClient(SENDGRID_API_KEY)
@@ -34,5 +38,10 @@ def contact_us(payload:schemas.ContactUs, user:dict=Depends(get_current_user), d
         print(response.body)
         print(response.headers)
     except Exception as e:
-        print(e.message)
+        print(e)
     return {'Sent successfully'}
+
+@router.get("/api/v1/feedback")
+async def Responsefeedback(user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
+    details  = db.query(models.Feedback).all()
+    return details

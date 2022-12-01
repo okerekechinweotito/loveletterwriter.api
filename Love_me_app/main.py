@@ -4,7 +4,7 @@ from .database import engine
 from fastapi.middleware.cors import CORSMiddleware
 from .import models
 from .database import engine
-from .routers import ai_trainer,authentication,letter,receiver,schedule,subscription,transaction,users,product_review,dashboard,contact_page, role_application,reset
+from .routers import ai_trainer,authentication,letter,receiver,schedule,subscription,transaction,users,product_review,dashboard,contact_page,mailsubscriber, role_application, feedback, admin, reset
 
 
 tags_metadata = [
@@ -36,6 +36,10 @@ tags_metadata = [
         "name": "reset_password",
         "description": "Operations related to reseting password in the love letter writer app",
     },
+    {
+        "name": "chat_bot",
+        "description": "The Operation related to chat bot",
+    },
 ]
 
 app = FastAPI(
@@ -64,6 +68,9 @@ app.include_router(dashboard.router)
 app.include_router(product_review.router)
 app.include_router(role_application.router)
 app.include_router(reset.router)
+app.include_router(mailsubscriber.router)
+app.include_router(admin.router)
+app.include_router(feedback.router)
 
 @app.get("/")
 def get():
