@@ -101,7 +101,6 @@ class UserBase(BaseModel):
     first_name: str
     last_name:str
     email: EmailStr
-    free_trial: bool 
 
 class UserCreate(UserBase):
     password:str=Field(min_length=6, description='password minimum length is 8 characters')
@@ -228,3 +227,7 @@ class GenerateLetter(BaseModel):
     feelings: str
     custom_words: Union[str, None] = None
     key_words: list = []
+
+
+class ChatBot(BaseModel):
+    question: str
