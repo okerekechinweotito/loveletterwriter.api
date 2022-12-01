@@ -1,3 +1,4 @@
+from enum import Enum
 from pydantic import BaseModel, Field, EmailStr
 from datetime import datetime,date,time
 
@@ -223,16 +224,39 @@ class GenerateLetter(BaseModel):
     custom_words: Union[str, None] = None
     key_words: list = []
 
+class RoleName(str, Enum):
+    admin = "admin"
+    editor = "editor"
+    contributor = "contributor"
 
 class Admin(BaseModel):
     first_name:str
     last_name:str
     email:EmailStr
-    role: str
+    role: RoleName
+
+    class Config:
+        orm_mode=True
     
 class AdminCreate(Admin):
     password:str
     
-
 class AdminDetails(Admin):
     id: int
+    approved: bool
+
+class AdminLoginDetails(BaseModel):
+    access_token:str
+    refresh_token:str
+    user:Admin
+    
+    class Config:
+        orm_mode=True
+
+
+
+class Statistics(BaseModel):
+    mail_subscribers: int
+    users: int
+    letters: int
+    admins:int
