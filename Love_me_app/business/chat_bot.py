@@ -19,7 +19,7 @@ class ChatBotBusiness:
             total_chat = 0
             for chat in found_all_chat:
                 if total_chat == 0:
-                    history_chat = history_chat+ "\n\nHuman: My name is '+name+'. Greet me and ask me how you can help me today.\nAI: "+str(chat.ai)
+                    history_chat = history_chat+ "\n\nHuman: My name is "+name+". Greet me and ask me how you can help me today.\nAI: "+str(chat.ai)
                 else:
                     history_chat = history_chat+ "\n\nHuman: "+str(chat.human)+".\nAI: "+str(chat.ai)
                 total_chat = total_chat + 1
@@ -29,6 +29,7 @@ class ChatBotBusiness:
             chat_msg = 'My name is '+name+'. Greet me and ask me how you can help me today.'
             gpt_prompt = "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly.\n\nHuman: "+chat_msg+".\nAI:"
 
+        print(gpt_prompt)
         response2 = openai.Completion.create(
             engine="text-davinci-003",
             prompt=gpt_prompt,
@@ -44,14 +45,14 @@ class ChatBotBusiness:
             response_object = {
                 'status': 1,
                 'answer': response2['choices'][0]['text'],
-                'message': 'Letter was not generated. Please try again later.'
+                'message': 'Chat found'
             }
         else:
             ai_response = 'Sorry, i dont know that answer.'
             response_object = {
                 'status': 0,
                 'answer': 'Sorry, i dont know that answer.',
-                'message': 'Letter was not generated. Please try again later.'
+                'message': 'Chat not found'
             }
         if found_all_chat:
             human_ques = item.question
