@@ -131,7 +131,6 @@ class ResetPass(Base):
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     user = relationship('User', back_populates='reset_pass')
 
-
 class BlackListedTokens(Base):
     __tablename__ = "black_listed_tokens"
     id = Column(Integer, primary_key=True, index=True)
@@ -156,5 +155,12 @@ class RoleApplication(Base):
     linked_in = Column(String(255))
     cover_letter = Column(LargeBinary)
     cv = Column(LargeBinary)
-    
+
+class PasswordResetToken(Base):
+    __tablename__ = "password_reset"
+    id = Column(Integer,primary_key=True, index=True)
+    token = Column(String(255))
+    email = Column(String(255),unique=True)
+    expiry_time = Column(DateTime)
+
 

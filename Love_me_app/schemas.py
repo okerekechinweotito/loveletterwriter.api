@@ -210,6 +210,12 @@ class RoleApplication(BaseModel):
     cover_letter: bytes
     cv: bytes
 
-class ChatBot(BaseModel):
-    email:EmailStr
-    message:str
+class PassReset(BaseModel):
+    email:EmailStr 
+
+class ValidateResetToken(BaseModel):
+    token:str
+
+class NewPassword(BaseModel):
+    token:str
+    password:str
