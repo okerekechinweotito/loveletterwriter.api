@@ -215,6 +215,15 @@ class RoleApplication(BaseModel):
     cover_letter: bytes
     cv: bytes
 
+class PassReset(BaseModel):
+    email:EmailStr 
+
+class ValidateResetToken(BaseModel):
+    token:str
+
+class NewPassword(BaseModel):
+    token:str
+    password:str
 class TranslateLetter(BaseModel):
     language:str
     letter:str
