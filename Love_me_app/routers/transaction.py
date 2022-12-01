@@ -25,6 +25,7 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
     payload =await requests.body()
     sig_header = stripe_signature
     endpoint_secret = os.getenv("ENDPOINT_SECRET")
+    
 
     event = None
     try:
@@ -60,8 +61,11 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
 
         """this here checks if sub is expired and updates user's records accordingly"""
 
-        email = event.data.object.email
-        profile = db.query(models.User).filter(models.User.email==email).first()
+        customer = event.data.object.customer
+        
+        cus_profile = db.query(models.Customer).filter(models.Customer.customer_id==customer).first()
+
+        profile = db.query(models.User).filter(models.User.id == cus_profile.user_id).first()
         profile.is_sub_active = False
         profile.sub_end_date = None
         try:
@@ -110,31 +114,52 @@ async def create_customer_object(user:dict = Depends(get_current_user),db: Sessi
 
 @router.post("/api/v1/transaction/create-subscription/")
 async def create_subscription_object(user:dict = Depends(get_current_user),db: Session = Depends(get_db)):
-    id = user.id
-    users = db.query(models.Customer).filter(models.Customer.user_id == id).first()
-    CUSTOMER_ID = users.customer_id
+    if user:
 
-    try:
-        subscription = stripe.Subscription.create(
+        id = user.id
+        users = db.query(models.Customer).filter(models.Customer.user_id == id).first()
+        CUSTOMER_ID = users.customer_id
+
+        try:
+            subscription = stripe.Subscription.create(
+                    customer=CUSTOMER_ID,
+                    items=[{
+                        "price": os.getenv("SWEET_PLAN_ID")
+                    }],
+                    payment_behavior="default_incomplete",
+                    payment_settings={"save_default_payment_method": "on_subscription"},
+                    expand=["latest_invoice.payment_intent"]
+            )
+            insert_sub = models.CustomerSubscription(user_id=id, subscription_id=subscription.id)
+            db.add(insert_sub)
+            db.commit()
+            db.refresh(insert_sub)
+            print(subscription)
+
+            return {
+                    "subscriptionId": subscription.id, "clientSecret": subscription.latest_invoice.payment_intent.client_secret
+            }
+
+        except Exception as e:
+            return {"statusCode": 403, "error": e.args }
+    return {"please login"}
+
+
+@router.post('/api/v1/transaction/customer-portal/', tags=["Customer"],)
+async def customer_portal( user:dict=Depends(get_current_user),db: Session = Depends(get_db)):
+    if user:
+        id = user.id
+        users = db.query(models.Customer).filter(models.Customer.user_id == id).first()
+        CUSTOMER_ID = users.customer_id
+
+        try:
+            session = stripe.billing_portal.Session.create(
                 customer=CUSTOMER_ID,
-                items=[{
-                    "price": os.getenv("SWEET_PLAN_ID")
-                }],
-                payment_behavior="default_incomplete",
-                payment_settings={"save_default_payment_method": "on_subscription"},
-                expand=["latest_invoice.payment_intent"]
-        )
-        insert_sub = models.CustomerSubscription(user_id=id, subscription_id=subscription.id)
-        db.add(insert_sub)
-        db.commit()
-        db.refresh(insert_sub)
+                return_url='https://loveme.hng.tech'
+            )
+            return {"status_code": 303, "Session_url(note: user is redirected to this url)": session.url}
 
-        return {
-                "subscriptionId": subscription.id, "clientSecret": subscription.latest_invoice.payment_intent.client_secret
-        }
+        except Exception as e:
+                return{"status_Code": 200, "errors": e.args}
 
-    except Exception as e:
-        return {"statusCode": 403, "error": e.args }
-  
-
-
+    return HTTPException(status_Code=401, detail="invalid request")

@@ -51,7 +51,8 @@ async def SubscriptionPlans(db: Session = Depends(get_db)):
 @router.post("/api/v1/subscription/checkout/{plan_id}")
 async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = Depends(get_current_user)):
 
-  
+    users = db.query(models.Customer).filter(models.Customer.user_id == user.id).first()
+    CUSTOMER_ID = users.customer_id
     stripe.api_key = os.getenv("STRIPE_API_KEY")
 
     querr = db.query(models.Subscription).filter_by(id=plan_id).first()
@@ -63,8 +64,8 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
             sessions = stripe.checkout.Session.create(
                 success_url = success_url,
                 cancel_url = cancel_url,
+                customer=CUSTOMER_ID,
                 mode='subscription',
-                customer_email= user.email,
                 payment_method_collection= "if_required",
                 metadata = {
                     'user_id':user.id,
@@ -85,7 +86,7 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
                 success_url = success_url,
                 cancel_url = cancel_url,
                 mode='subscription',
-                customer_email= user.email,
+                customer=CUSTOMER_ID,
                 payment_method_collection= "if_required",
                 metadata = {
                     'user_id':user.id,
@@ -106,7 +107,7 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
                 success_url = success_url,
                 cancel_url = cancel_url,
                 mode='subscription',
-                customer_email= user.email,
+                customer=CUSTOMER_ID,
                 payment_method_collection= "if_required",
                 metadata = {
                     'user_id':user.id,
