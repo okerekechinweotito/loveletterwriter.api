@@ -51,6 +51,7 @@ async def SubscriptionPlans(db: Session = Depends(get_db)):
 @router.post("/api/v1/subscription/checkout/{plan_id}")
 async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = Depends(get_current_user)):
 
+  
     stripe.api_key = os.getenv("STRIPE_API_KEY")
 
     querr = db.query(models.Subscription).filter_by(id=plan_id).first()
