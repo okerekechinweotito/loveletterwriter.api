@@ -15,20 +15,20 @@ load_dotenv()
 celery=Celery(__name__, broker=os.getenv('CELERY_BROKER_URL', None))
 
 
-def send_email(user, letter, recepient):
+# def send_email(user, letter, recepient):
 
      
-    SMTP_HOST_SENDER ='simeoneumoh@gmail.com'
+#     SMTP_HOST_SENDER ='simeoneumoh@gmail.com'
 
-    message = Mail(
-    from_email=SMTP_HOST_SENDER,
-    to_emails=f"{recepient}",
-    subject=f"Letter from {user}",
-    html_content=f"<p>{letter}</p>")
-    SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY') 
-    sg = SendGridAPIClient(SENDGRID_API_KEY)
-    response = sg.send(message)
-    return response.body
+#     message = Mail(
+#     from_email=SMTP_HOST_SENDER,
+#     to_emails=f"{recepient}",
+#     subject=f"Letter from {user}",
+#     html_content=f"<p>{letter}</p>")
+#     SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY') 
+#     sg = SendGridAPIClient(SENDGRID_API_KEY)
+#     response = sg.send(message)
+#     return response.body
 @celery.task
 def send_letter(user, letter, recepient, id):
     try:
@@ -38,9 +38,9 @@ def send_letter(user, letter, recepient, id):
         letter.date_sent=datetime.now(tz=timezone.utc)
         db.commit()
         db.refresh(letter)
-        return f'letter sent-- id: {id}'
+        return f'letter sent id: {id}'
     except:
-        return f'letter failed to send-- id: {id}'
+        return f'letter failed to send id: {id}'
 
 
 
@@ -56,7 +56,7 @@ def send_scheduled_letters():
                 db.refresh(schedule)
         return 'Scheduled letters available'
     else: 
-        return 'No scheduled letters'
+        return 'No scheduled letters available'
 
             
 
@@ -64,7 +64,7 @@ def send_scheduled_letters():
 celery.conf.beat_schedule= { 
     'send_sceduled_letters':{ 
         'task': 'Love_me_app.worker.send_scheduled_letters',
-        'schedule':120,
+        'schedule':60,
 
     }
 
