@@ -6,6 +6,7 @@ class User(BaseModel):
     first_name:str
     last_name:str
     password:str
+    image:str
     email:EmailStr
     facebook_id:str
     google_id:str
@@ -57,6 +58,7 @@ class Subscription(BaseModel):
     months:int
     amount:float
     date_created:datetime
+    plan_id:str
 
     class config:
         orm_mode = True
@@ -75,6 +77,7 @@ class SubscriptionBase(BaseModel):
     description:str
     months:str
     amount:float
+    plan_id:str
 
 
 class ResetPass(BaseModel):
@@ -101,7 +104,6 @@ class UserBase(BaseModel):
     first_name: str
     last_name:str
     email: EmailStr
-    free_trial: bool 
 
 class UserCreate(UserBase):
     password:str=Field(min_length=6, description='password minimum length is 8 characters')
@@ -123,7 +125,7 @@ class UserDetails(UserBase):
     class Config:
         orm_mode=True
 
-class UserUpdate(UserBase):
+class ImageUpdate(BaseModel):
     image:str
 
         
@@ -232,3 +234,6 @@ class GenerateLetter(BaseModel):
 class Feedback(BaseModel):
     is_helpfull: bool
     feedback: str
+
+class ChatBot(BaseModel):
+    question: str

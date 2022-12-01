@@ -25,7 +25,8 @@ async def subscribe(subscription:schemas.Subscription,db: Session = Depends(get_
         description=subscription.description,
         months=subscription.months,
         amount=subscription.amount,
-        date_created=subscription.date_created
+        date_created=subscription.date_created,
+        plan_id = subscription.plan_id
     )
     db.add(data)
     try:
@@ -49,79 +50,46 @@ async def SubscriptionPlans(db: Session = Depends(get_db)):
 
 
 @router.post("/api/v1/subscription/checkout/{plan_id}")
-async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = Depends(get_current_user)):
+async def subscribe_plan(plan_id:str,db: Session = Depends(get_db),user:dict = Depends(get_current_user)):
 
+    users = db.query(models.Customer).filter(models.Customer.user_id == user.id).first()
+    CUSTOMER_ID = users.customer_id
     stripe.api_key = os.getenv("STRIPE_API_KEY")
 
-    querr = db.query(models.Subscription).filter_by(id=plan_id).first()
+    querr = db.query(models.Subscription).filter(plan_id==plan_id).first()
     plans = querr
     if not user:
         raise HTTPException(status_code=401, detail="please signin")
     else:   
-        if plans.name == "sweet love":
-            sessions = stripe.checkout.Session.create(
-                success_url = success_url,
-                cancel_url = cancel_url,
-                mode='subscription',
-                customer_email= user.email,
-                metadata = {
-                    'user_id':user.id,
-                    'user_name':user.first_name,
-                    'user_email':user.email,
-                    'plan_type':plans.name,
-                    'month':plans.months
-                },
-                payment_method_types =["card"],
-                    line_items =[{
-                        'price':os.getenv("SWEET_PLAN_ID"),
-                        'quantity':1,
-                    }
-                    ]
-                )
-        elif plans.name == "Advanced":
-            sessions = stripe.checkout.Session.create(
-                success_url = success_url,
-                cancel_url = cancel_url,
-                mode='subscription',
-                customer_email= user.email,
-                metadata = {
-                    'user_id':user.id,
-                    'user_name':user.first_name,
-                    'user_email':user.email,
-                    'plan_type':plans.name,
-                    'month':plans.months
-                },
-                payment_method_types =["card"],
-                    line_items =[{
-                        'price':os.getenv("ADVANCE_PLAN_ID"),
-                        'quantity':1,
-                    }
-                    ]
-                )
-        elif plans.name == "Pro gratifying":
-            sessions = stripe.checkout.Session.create(
-                success_url = success_url,
-                cancel_url = cancel_url,
-                mode='subscription',
-                customer_email= user.email,
-                metadata = {
-                    'user_id':user.id,
-                    'user_name':user.first_name,
-                    'user_email':user.email,
-                    'plan_type':plans.name,
-                    'month':plans.months
-                    
-                },
-                payment_method_types =["card"],
-                    line_items =[{
-                        'price':os.getenv("PRO_PLAN_ID"),
-                        'quantity':1,
-                        
-                    }
-                    ]
-                )
+        try:
 
-    return {"url":sessions['url']}
+            sessions = stripe.checkout.Session.create(
+                success_url = success_url,
+                cancel_url = cancel_url,
+                customer=CUSTOMER_ID,
+                mode='subscription',
+                subscription_data = {
+                    'trial_period_days':1},
+                payment_method_collection= "always",
+                metadata = {
+                    'user_id':user.id,
+                    'user_name':user.first_name,
+                    'user_email':user.email,
+                    'plan_type':plans.name,
+                    'month':plans.months
+                },
+                payment_method_types =["card"],
+                    line_items =[{
+                        'price':plan_id,
+                        'quantity':1,
+                    }
+                    ]
+                )
+            return {"url":sessions['url']}
+        except Exception as e:
+            print(e)
+
+        # return {"url":sessions['url']}
 
 
 
@@ -136,18 +104,3 @@ async def UpdateSubscription(plan_id:int,request: schemas.SubscriptionBase,db:Se
 
 
 
-
-@router.post("/api/v1/subscription/free-trial")
-async def SubscriptionTrial(db: Session = Depends(get_db),user:dict = Depends(get_current_user)):
-    profile = db.query(models.User).filter(models.User.id == user.id)
-    if profile.free_trial:
-        pass
-    
-
-
-
-
-#to cancel subscription when user's end date is reached
-
-# def Cancel_subscription(db:Session = Depends(get_db),user:dict = Depends(get_current_user)):
-#     print(user.sub_end_date,user.is_active,user.is_sub_active,user.is_reminder,user.free_trial)
