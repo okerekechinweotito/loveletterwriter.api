@@ -77,7 +77,5 @@ def password_reset(payload:schemas.NewPassword,db:Session = Depends(get_db)):
     user.password = new_password
     db.commit()
     return {'Password Reset successful'}
-    
-     
 
     
