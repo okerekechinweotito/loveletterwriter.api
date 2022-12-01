@@ -102,9 +102,10 @@ class UserBase(BaseModel):
     first_name: str
     last_name:str
     email: EmailStr
+    free_trial: bool 
 
 class UserCreate(UserBase):
-    password:str=Field(min_length=8, description='password minimum length is 8 characters')
+    password:str=Field(min_length=6, description='password minimum length is 8 characters')
 
 class Login(BaseModel):
     email:EmailStr
@@ -210,3 +211,25 @@ class RoleApplication(BaseModel):
     linked_in: str
     cover_letter: bytes
     cv: bytes
+
+class TranslateLetter(BaseModel):
+    language:str
+    letter:str
+ 
+class MailSubscriber(BaseModel):
+    email: EmailStr = Field(...)
+    
+    class Config:
+        orm_mode = True
+
+class GenerateLetter(BaseModel):
+    partner_name: str
+    name: str
+    relationship: str
+    feelings: str
+    custom_words: Union[str, None] = None
+    key_words: list = []
+
+
+class ChatBot(BaseModel):
+    question: str
