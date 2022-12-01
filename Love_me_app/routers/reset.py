@@ -75,7 +75,9 @@ def password_reset(payload:schemas.NewPassword,db:Session = Depends(get_db)):
     user = UserCrud.get_user_by_email(db,email)
     new_password = hash_password(new_password)
     user.password = new_password
+    reset_token.delete(synchronize_session=False)
     db.commit()
+    
     return {'Password Reset successful'}
 
     
