@@ -6,6 +6,7 @@ class User(BaseModel):
     first_name:str
     last_name:str
     password:str
+    image:str
     email:EmailStr
     facebook_id:str
     google_id:str
@@ -122,7 +123,7 @@ class UserDetails(UserBase):
     class Config:
         orm_mode=True
 
-class UserUpdate(UserBase):
+class ImageUpdate(BaseModel):
     image:str
 
         
