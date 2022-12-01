@@ -58,6 +58,7 @@ class Subscription(BaseModel):
     months:int
     amount:float
     date_created:datetime
+    plan_id:str
 
     class config:
         orm_mode = True
@@ -76,6 +77,7 @@ class SubscriptionBase(BaseModel):
     description:str
     months:str
     amount:float
+    plan_id:str
 
 
 class ResetPass(BaseModel):

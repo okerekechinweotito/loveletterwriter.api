@@ -97,6 +97,7 @@ class Subscription(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255))
     description = Column(String(255))
+    plan_id = Column(String(255))
     months = Column(Integer)
     amount = Column(Float)
     date_created = Column(DateTime)
@@ -118,7 +119,24 @@ class Transaction(Base):
     user = relationship('User',back_populates='transaction')
     subscription = relationship('Subscription',back_populates='transaction')
 
-    
+
+
+class Customer(Base):
+    """to store stripe customer id"""
+    __tablename__ = 'customer'
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer)
+    customer_id = Column(String(255))
+
+
+class CustomerSubscription(Base):
+    """to store stripe customer id"""
+    __tablename__ = 'customer_subscription'
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer)
+    subscription_id = Column(String(255))
+
+
     
 
 class ResetPass(Base):
