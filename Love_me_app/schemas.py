@@ -213,8 +213,7 @@ class RoleApplication(BaseModel):
 
 class GenerateLetter(BaseModel):
     partner_name: str
-    name: str
+    occasion: str
     relationship: str
-    feelings: str
+    inscription: str
     custom_words: Union[str, None] = None
-    key_words: list = []
