@@ -9,7 +9,6 @@ pipeline {
                         }
 		}
 		stage("restart server"){
-            
                        steps {
                         sh 'sudo systemctl restart hng'
                        }
