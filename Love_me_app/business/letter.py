@@ -91,6 +91,7 @@ class LetterBusiness:
                 db.refresh(new_letter)
                 response_object = {
                     'status': 1,
+                    'id' :new_letter.id, 
                     'letter': response2['choices'][0]['text'],
                     'message': 'Letter was generated and saved.'
                 }
