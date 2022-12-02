@@ -13,6 +13,5 @@ pipeline {
                         sh 'sudo systemctl restart hng'
                        }
                  }
-		
     }
 }
