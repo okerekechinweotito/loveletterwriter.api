@@ -1,3 +1,4 @@
+from enum import Enum
 from pydantic import BaseModel, Field, EmailStr
 from datetime import datetime,date,time
 
@@ -14,6 +15,7 @@ class User(BaseModel):
     sub_end_date:datetime
     is_reminder:bool
     date_created:datetime
+
 
 class DisplayReceiver(BaseModel):
     id:int
@@ -58,6 +60,7 @@ class Subscription(BaseModel):
     months:int
     amount:float
     date_created:datetime
+    plan_id:str
 
     class config:
         orm_mode = True
@@ -76,6 +79,7 @@ class SubscriptionBase(BaseModel):
     description:str
     months:str
     amount:float
+    plan_id:str
 
 
 class ResetPass(BaseModel):
@@ -211,6 +215,15 @@ class RoleApplication(BaseModel):
     cover_letter: bytes
     cv: bytes
 
+class PassReset(BaseModel):
+    email:EmailStr 
+
+class ValidateResetToken(BaseModel):
+    token:str
+
+class NewPassword(BaseModel):
+    token:str
+    password:str
 class TranslateLetter(BaseModel):
     language:str
     letter:str
@@ -223,12 +236,50 @@ class MailSubscriber(BaseModel):
 
 class GenerateLetter(BaseModel):
     partner_name: str
-    name: str
+    occasion: str
     relationship: str
-    feelings: str
+    inscription: str
     custom_words: Union[str, None] = None
-    key_words: list = []
 
+class RoleName(str, Enum):
+    admin = "admin"
+    editor = "editor"
+    contributor = "contributor"
+
+class Admin(BaseModel):
+    first_name:str
+    last_name:str
+    email:EmailStr
+    role: RoleName
+
+    class Config:
+        orm_mode=True
+    
+class AdminCreate(Admin):
+    password:str
+    
+class AdminDetails(Admin):
+    id: int
+    approved: bool
+
+class AdminLoginDetails(BaseModel):
+    access_token:str
+    refresh_token:str
+    user:Admin
+    
+    class Config:
+        orm_mode=True
+
+
+
+class Statistics(BaseModel):
+    mail_subscribers: int
+    users: int
+    letters: int
+    admins:int
+class Feedback(BaseModel):
+    is_helpfull: bool
+    feedback: str
 
 class ChatBot(BaseModel):
     question: str
