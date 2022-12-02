@@ -5,7 +5,7 @@ pipeline {
 
 		stage("setup backend"){
 			steps {
-                            sh "cp -rn /home/jenkins&&cd /home/jenkins/loveletterwriter.api&&git switch update/dev&&./env/bin/activate&&pip install -r 'requirements.txt'&&alembic revision --autogenerate -m '${env.BUILD_ID}'&&alembic upgrade head"     
+                            sh "cp -rn . /home/jenkins&&cd /home/jenkins/loveletterwriter.api&&git switch update/dev&&./env/bin/activate&&pip install -r 'requirements.txt'&&alembic revision --autogenerate -m '${env.BUILD_ID}'&&alembic upgrade head"     
                         }
 		}
 		stage("restart server"){
