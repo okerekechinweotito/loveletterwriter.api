@@ -21,14 +21,13 @@ class DisplayReceiver(BaseModel):
     id:int
     name:str
     email:EmailStr
-    phone_number:str
     date_created:datetime
     class Config:
         orm_mode=True
 class Receiver(BaseModel):
     name:str
     email:EmailStr
-    phone_number:str
+
 
 class Letter(BaseModel):
     user_id:int

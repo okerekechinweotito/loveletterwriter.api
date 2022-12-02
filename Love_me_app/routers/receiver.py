@@ -9,18 +9,36 @@ from fastapi_jwt_auth import AuthJWT
 
 router = APIRouter(tags=['receiver'],prefix="/api/v1/receiver")
 
-@router.post('/',response_model= schemas.DisplayReceiver)
-def create_receiver(payload: schemas.Receiver, user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
-    user = user
-    if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Please log in")
+@router.post('/{letter_id}/',response_model= schemas.DisplayReceiver)
+def create_receiver(payload: schemas.Receiver,letter_id:int, user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
+    obj=db.query(models.Letter).filter(models.Letter.id==letter_id, models.Letter.user_id ==user.id).first()
+    if not obj:
+        raise HTTPException(detail='this letter does not exists', status_code=404)
 
-    new_receiver = models.Receiver(name=payload.name,email=payload.email,phone_number=payload.phone_number,
+    new_receiver = models.Receiver(name=payload.name,email=payload.email,phone_number='pop',
                                   user_id=user.id)
     db.add(new_receiver)
     db.commit()
     db.refresh(new_receiver)
+    obj.receiver_id=new_receiver.id
+    db.commit()
+    db.refresh(obj)
     return new_receiver
+
+@router.post('/{letter_id}/{receiver_id}',response_model= schemas.DisplayReceiver)
+def use_old_receiver(letter_id:int, receiver_id:int,user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
+    letter=db.query(models.Letter).filter(models.Letter.id==letter_id, models.Letter.user_id ==user.id).first()
+    receiver=db.query(models.Receiver).filter(models.Receiver.id==receiver_id, models.Receiver.user_id ==user.id).first()
+    if not letter:
+        raise HTTPException(detail='this letter does not exists', status_code=404)
+    if not receiver:
+                raise HTTPException(detail='this receiver does not exists', status_code=404)
+    letter.receiver_id=receiver_id
+    db.commit()
+    db.refresh(letter)
+    return receiver
+
+
 
 @router.get('/{receiver_id}',response_model=schemas.DisplayReceiver)
 def get_receiver(id, response: Response,user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
