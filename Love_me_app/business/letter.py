@@ -191,17 +191,21 @@ class LetterBusiness:
                 response_object = {
                     'status': 1,
                     'letter': response2['choices'][0]['text'],
+                    'letter_id': new_letter.id,
                     'message': 'Letter was generated and saved.'
                 }
             except Exception as e:
                 response_object = {
                     'status': 0,
                     'letter': response2['choices'][0]['text'],
+                    'letter_id': 0,
                     'message': 'Letter was generated but was not saved. Please try again later'
                 }
         else:
             response_object = {
                 'status': 0,
+                'letter': '',
+                'letter_id': 0,
                 'message': 'Letter was not generated. Please try again later.'
             }
         return response_object
