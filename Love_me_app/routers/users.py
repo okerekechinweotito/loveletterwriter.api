@@ -27,8 +27,6 @@ from PIL import Image
 db = get_db()
 router=APIRouter(tags=['User'],prefix="/api/v1/user/me")
 
-#StaticFiles Configuration
-router.mount("/static", StaticFiles(directory="static"), name="static")
 
 #Function to get current user
 def get_current_user(Authorize:AuthJWT=Depends(), db:Session=Depends(get_db), access_token:str=Cookie(default=None),Bearer=Header(default=None)):
@@ -139,9 +137,11 @@ def update_profile(request: schemas.UserBase, user:dict=Depends(get_current_user
 """
 function to process user profile picture to string(url)
 """
-@router.post("/upload-image")      
-async def upload_profile_picture(file: UploadFile = File(...)):
-    FILEPATH = "./static/profile_images/"
+@router.post("/upload/profile_picture/")       
+async def upload_profile_picture(file: UploadFile = File(...),user:dict=Depends(get_current_user)):
+    if not user:
+       raise HTTPException(status_code=404, detail=f"User not found")
+    FILEPATH = "./static/"
     filename = file.filename
     extension= filename.split(".")[1]
     if extension not in ['png', 'jpg']:
@@ -161,6 +161,7 @@ async def upload_profile_picture(file: UploadFile = File(...)):
     file.close()
     file_url = generated_name[1:]
     return file_url
+    
 
 """
 endpoint to update user profile picture by getting the current user email and updating their profile.
