@@ -136,11 +136,8 @@ def update_profile(request: schemas.UserBase, user:dict=Depends(get_current_user
 
 """
 function to process user profile picture to string(url)
-"""
-@router.post("/upload/profile_picture/")       
-async def upload_profile_picture(file: UploadFile = File(...),user:dict=Depends(get_current_user)):
-    if not user:
-       raise HTTPException(status_code=404, detail=f"User not found")
+"""      
+async def get_image_url(file: UploadFile = File(...)):
     FILEPATH = "./static/"
     filename = file.filename
     extension= filename.split(".")[1]
@@ -166,12 +163,13 @@ async def upload_profile_picture(file: UploadFile = File(...),user:dict=Depends(
 """
 endpoint to update user profile picture by getting the current user email and updating their profile.
 """    
-@router.post('/add-image',)   
-async def picture_update(request:schemas.ImageUpdate, user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
+@router.post('/upload-image',)   
+async def upload_image(image: UploadFile = File(...), user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
     if not user:
         raise  HTTPException(status_code=404, detail="User not found")
     current_user= db.query(models.User).filter(models.User.id == user.id)
-    updated_image= current_user.update({models.User.image: request.image}, synchronize_session=False)
+    image_url = await get_image_url(image)
+    current_user.update({models.User.image: image_url}, synchronize_session=False)
     db.commit()
     db.close()
-    return {'profile_image': updated_image, "details":"Check Your Profile.." }
+    return {'profile_image': image_url, "details":"Check Your Profile.." }
