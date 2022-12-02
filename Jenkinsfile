@@ -5,7 +5,7 @@ pipeline {
 
 		stage("setup backend"){
 			steps {
-                            sh "cp -fr . /home/jenkins/loveletterwriter.api&&cd /home/jenkins/loveletterwriter.api&&git remote -v &&git@github.com:workshopapps/loveletterwriter.api&&source env/bin/activate&&pip install --upgrade pip&&pip install -r 'requirements.txt'&&alembic revision --autogenerate -m '${env.BUILD_ID}'&&alembic upgrade head"     
+                            sh "cd /home/jenkins/loveletterwriter.api&&git remote -v &sudo git pull git@github.com:workshopapps/loveletterwriter.api&&sudo git switch update/dev&&sudo chown -R jenkins:idimmusix .&&source env/bin/activate&&pip install --upgrade pip&&pip install -r 'requirements.txt'&&alembic revision --autogenerate -m '${env.BUILD_ID}'&&alembic upgrade head"     
                         }
 		}
 		stage("restart server"){
