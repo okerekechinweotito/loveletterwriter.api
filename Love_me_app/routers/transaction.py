@@ -115,8 +115,8 @@ async def create_customer_object(user:dict = Depends(get_current_user),db: Sessi
 
 
 
-@router.post("/api/v1/transaction/create-subscription/")
-async def create_subscription_object(user:dict = Depends(get_current_user),db: Session = Depends(get_db)):
+@router.post("/api/v1/transaction/create-subscription/{plan_id}")
+async def create_subscription_object(plan_id:str,user:dict = Depends(get_current_user),db: Session = Depends(get_db)):
     if user:
 
         id = user.id
@@ -127,7 +127,7 @@ async def create_subscription_object(user:dict = Depends(get_current_user),db: S
             subscription = stripe.Subscription.create(
                     customer=CUSTOMER_ID,
                     items=[{
-                        "price": os.getenv("SWEET_PLAN_ID")
+                        "price": plan_id
                     }],
                     payment_behavior="default_incomplete",
                     payment_settings={"save_default_payment_method": "on_subscription"},
