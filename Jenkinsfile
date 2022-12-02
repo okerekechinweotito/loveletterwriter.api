@@ -7,7 +7,7 @@ pipeline {
 
 			steps {
 				
-                                sh "#!/usr/bin/env -S bash sudo ls /home/idimmusix/&&sudo cp -rn /home/idimmusix/loveletterwriter.api/* .&&./env/bin/activate&&pip install -r 'requirements.txt'&&alembic revision --autogenerate -m '${env.BUILD_ID}'&&alembic upgrade head"
+                                sh "#!/bin/bash sudo ls /home/idimmusix/&&sudo cp -rn /home/idimmusix/loveletterwriter.api/* .&&./env/bin/activate&&pip install -r 'requirements.txt'&&alembic revision --autogenerate -m '${env.BUILD_ID}'&&alembic upgrade head"
                                 sh 'sudo cp -rn . /home/idimmusix/loveletterwriter.api'
                 }
 			}
