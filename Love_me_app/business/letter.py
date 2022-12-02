@@ -210,3 +210,23 @@ class LetterBusiness:
                 'message': 'Letter was not generated. Please try again later.'
             }
         return response_object
+
+    @staticmethod
+    def get_letter(user_id, letter_id, db):
+        found_letter = db.query(models.Letter).filter(models.Letter.id == letter_id).first()
+        if found_letter:
+            response_object = {
+                'status': 1,
+                'id': found_letter.id,
+                'title': found_letter.title,
+                'letter': found_letter.letter,
+                'date_created': str(found_letter.date_created),
+                'message': 'Letter found.'
+            }
+        else:
+            response_object = {
+                'status': 0,
+                'message': 'Letter not found'
+            }
+        return response_object
+
