@@ -25,7 +25,6 @@ class DisplayReceiver(BaseModel):
     class Config:
         orm_mode=True
 class Receiver(BaseModel):
-    name:str
     email:EmailStr
 
 
