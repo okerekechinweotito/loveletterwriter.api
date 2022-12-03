@@ -47,8 +47,8 @@ async def generate_custom_letter(item: schemas.GenerateLetter, user:dict=Depends
     if user.is_sub_active == True:
         api_response = LetterBusiness.generate_custom_letter(user_id, item, db)
     else:
-        # if user.free_trial == True:
-        if True:
+        if user.free_trial == True:
+        #if True:
             api_response = LetterBusiness.generate_custom_letter(user_id, item, db)
             user.free_trial = False
             try:
@@ -60,6 +60,15 @@ async def generate_custom_letter(item: schemas.GenerateLetter, user:dict=Depends
                 'status': 0,
                 'message': 'Please subscribe to be able to generate letter'
             }
+    return api_response
+
+
+@router.get("/{letter_id}")
+async def get_a_letter(letter_id,user:dict=Depends(get_current_user), db:Session = Depends(get_db),):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Please log in")
+    user_id = user.id
+    api_response = LetterBusiness.get_letter(user_id, letter_id,db)
     return api_response
 
 

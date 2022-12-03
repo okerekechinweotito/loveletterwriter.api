@@ -13,9 +13,8 @@ from sendgrid.helpers.mail import Mail
 router=APIRouter(tags=['feedback'],prefix="/api/v1/feedback")
 
 @router.post('/')
-async def feedback(payload:schemas.Feedback, user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
-    if not user:
-        raise HTTPException(status_code=401, detail="please login")
+async def feedback(payload:schemas.Feedback,  db:Session = Depends(get_db)):
+    
     data = models.Feedback(
         is_helpfull = payload.is_helpfull, feedback= payload.feedback)
 
@@ -28,8 +27,8 @@ async def feedback(payload:schemas.Feedback, user:dict=Depends(get_current_user)
     message = Mail(
     from_email=SMTP_HOST_SENDER,
     to_emails="contact.lovemeapp@gmail.com",
-    subject="User Enquiry",
-    html_content=f"<p>This email is from {user.first_name} with the email address,{user.email}</p><p>{payload.feedback}</p>")
+    subject="Feedback",
+    html_content=f"<p>{payload.feedback}</p>")
     try:
         SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY') 
         sg = SendGridAPIClient(SENDGRID_API_KEY)
@@ -42,6 +41,6 @@ async def feedback(payload:schemas.Feedback, user:dict=Depends(get_current_user)
     return {'Sent successfully'}
 
 @router.get("/api/v1/feedback")
-async def Responsefeedback(user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
+async def Responsefeedback( db:Session = Depends(get_db)):
     details  = db.query(models.Feedback).all()
     return details

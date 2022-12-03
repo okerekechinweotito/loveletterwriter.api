@@ -21,14 +21,12 @@ class DisplayReceiver(BaseModel):
     id:int
     name:str
     email:EmailStr
-    phone_number:str
     date_created:datetime
     class Config:
         orm_mode=True
 class Receiver(BaseModel):
-    name:str
     email:EmailStr
-    phone_number:str
+
 
 class Letter(BaseModel):
     user_id:int
@@ -236,11 +234,10 @@ class MailSubscriber(BaseModel):
 
 class GenerateLetter(BaseModel):
     partner_name: str
-    name: str
+    occasion: str
     relationship: str
-    feelings: str
+    inscription: str
     custom_words: Union[str, None] = None
-    key_words: list = []
 
 class RoleName(str, Enum):
     admin = "admin"
