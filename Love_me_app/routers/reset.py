@@ -24,11 +24,26 @@ def send_reset_email(payload:schemas.PassReset,db:Session = Depends(get_db),):
     user = UserCrud.get_user_by_email(db,email)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="There is no user with this email")
-    token = uuid.uuid4().hex[:6].upper()
-    new_token = models.PasswordResetToken(token=token,email=email,expiry_time=get_expires_at(15))
-    db.add(new_token)
-    db.commit()
-    db.refresh(new_token)
+    
+    new_token = db.query(models.PasswordResetToken).filter(models.PasswordResetToken.email == email).first()
+    if new_token:
+        if new_token.expiry_time >= datetime.now():
+            token_record = new_token
+        else:
+            db.query(models.PasswordResetToken).filter(models.PasswordResetToken.email == email).delete(synchronize_session=False)
+            db.commit()
+            token = uuid.uuid4().hex[:6].upper()
+            token_record = models.PasswordResetToken(token=token,email=email,expiry_time=get_expires_at(15))
+            db.add(token_record)
+            db.commit()
+            db.refresh(token_record)
+
+    else:
+        token = uuid.uuid4().hex[:6].upper()
+        token_record = models.PasswordResetToken(token=token,email=email,expiry_time=get_expires_at(15))
+        db.add(token_record)
+        db.commit()
+        db.refresh(token_record)
     
     SMTP_HOST_SENDER = os.getenv("SMTP_HOST_SENDER")
 
@@ -36,7 +51,7 @@ def send_reset_email(payload:schemas.PassReset,db:Session = Depends(get_db),):
     from_email=SMTP_HOST_SENDER,
     to_emails=f"{email}",
     subject=f"Password Reset",
-    html_content=f"<p>Here is your reset token: {token}</p>")
+    html_content=f"<p>Here is your reset token: {token_record.token}</p>")
     try:
         SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY') 
         sg = SendGridAPIClient(SENDGRID_API_KEY)
