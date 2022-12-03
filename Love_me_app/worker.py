@@ -1,5 +1,5 @@
 import os
-from fastapi_mail import FastMail, MessageSchema, MessageType
+from fastapi_mail import FastMail, MessageSchema
 from celery import Celery
 from .models import Schedule
 from datetime import datetime, timezone
