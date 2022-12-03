@@ -68,8 +68,6 @@ async def subscribe_plan(plan_id:str,db: Session = Depends(get_db),user:dict = D
                 cancel_url = cancel_url,
                 customer=CUSTOMER_ID,
                 mode='subscription',
-                subscription_data = {
-                    'trial_period_days':1},
                 payment_method_collection= "always",
                 metadata = {
                     'user_id':user.id,
