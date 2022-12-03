@@ -24,8 +24,8 @@ env_config = ConnectionConfig(
     MAIL_SERVER='smtp.gmail.com',
     MAIL_FROM_NAME='LOVEME',
     USE_CREDENTIALS=True,
-    MAIL_SSL_TLS=False,
-    MAIL_STARTTLS=True,
+    #MAIL_SSL_TLS=False,
+    #MAIL_STARTTLS=True,
     TEMPLATE_FOLDER='templates',
  )
 
