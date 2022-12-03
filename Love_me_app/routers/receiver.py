@@ -15,7 +15,7 @@ def create_receiver(payload: schemas.Receiver,letter_id:int, user:dict=Depends(g
     if not obj:
         raise HTTPException(detail='this letter does not exists', status_code=404)
 
-    new_receiver = models.Receiver(name=payload.name,email=payload.email,phone_number='pop',
+    new_receiver = models.Receiver(name=f"{user.first_name} {user.last_name}",email=payload.email,phone_number='pop',
                                   user_id=user.id)
     db.add(new_receiver)
     db.commit()
