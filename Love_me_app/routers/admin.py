@@ -8,7 +8,7 @@ from fastapi_jwt_auth import AuthJWT
 from datetime import timedelta
 from fastapi.responses import Response
 from fastapi_pagination import Page,add_pagination,paginate
-router = APIRouter(tags=['Admin'],prefix="/api/v1/admin")
+router = APIRouter(prefix="/api/v1/admin")
 
 SECRET_KEY='secret'
 ALGORITHM='HS256'
@@ -140,13 +140,16 @@ def delete_multiple_entries_mail_list(db:Session, entries:list):
         
 
 
-@router.post('/signup', response_model=AdminDetails)
-def create_admin_(admin_:AdminCreate,db:Session=Depends(get_db)):
-    admin = Admin(**admin_.dict())
-    new_admin = create_admin(db=db,admin=admin)
-    return new_admin
+@router.post('/signup',tags=['Admin'], response_model=AdminDetails)
+def create_admin_(admin_:AdminCreate,user:dict=Depends(get_current_user),db:Session=Depends(get_db)):
+    current_user = user
+    if current_user is not None:
+        admin = Admin(**admin_.dict())
+        new_admin = create_admin(db=db,admin=admin)
+        return new_admin
+    raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired')
 
-@router.post('/login',response_model=AdminLoginDetails)
+@router.post('/login',response_model=AdminLoginDetails,tags=["Admin Auth"])
 def log_admin(login:Login,response:Response, db:Session=Depends(get_db),authorize:AuthJWT=Depends()):
     user=authenticate(db=db, password=login.password, email=login.email)
     access_token=authorize.create_access_token(subject=user['id'], expires_time=timedelta(minutes=ACCESS_TOKEN_LIFETIME_MINUTES))
@@ -156,7 +159,21 @@ def log_admin(login:Login,response:Response, db:Session=Depends(get_db),authoriz
     return {'access_token':access_token, 'refresh_token':refresh_token, 'user':user}
 
 
-@router.post('/logout')
+
+@router.post('/refresh-token',tags=["Admin Auth"])
+def refresh_token(response:Response,authorization:AuthJWT=Depends(), refresh_token:str=Cookie(default=None), Bearer:str=Header(default=None)):
+    
+    try:
+        authorization.jwt_refresh_token_required()
+        current_user=authorization.get_jwt_subject()
+        access_token=authorization.create_access_token(current_user)
+        response.set_cookie(key='access_token',value=access_token, expires=access_cookies_time, max_age=access_cookies_time, httponly=True)
+        return {'access_token':access_token}
+    except:
+        raise HTTPException(status_code=401, detail='invalid refresh token or token has expired')
+
+
+@router.post('/logout',tags=["Admin Auth"])
 def log_out(authorize_: AuthJWT=Depends()):
     logout(authorize=authorize_)
 
@@ -173,7 +190,7 @@ def approve(admin_id,user:dict=Depends(get_current_user),db:Session= Depends(get
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Not found")
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired')
 
-@router.get('/statistics', response_model=Statistics)
+@router.get('/statistics',tags=['Admin'] ,response_model=Statistics)
 def return_statistics(user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
     if current_user is not None:
@@ -188,7 +205,7 @@ def return_statistics(user:dict=Depends(get_current_user),db:Session= Depends(ge
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
     
 
-@router.get('/admins/all', response_model=Page[AdminDetails])
+@router.get('/admins/all',tags=['Admin'] ,response_model=Page[AdminDetails])
 def return_admin_list(user:dict=Depends(get_current_user),db:Session= Depends(get_db),skip: int=0, limit:int = 15):
     current_user = user
     if current_user is not None:
@@ -197,7 +214,7 @@ def return_admin_list(user:dict=Depends(get_current_user),db:Session= Depends(ge
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
 
-@router.get('/subscribers/all', response_model=Page[UserDetails])
+@router.get('/subscribers/all',tags=['Admin'] ,response_model=Page[UserDetails])
 def return_subscriber_list(user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
     if current_user is not None:
@@ -206,7 +223,7 @@ def return_subscriber_list(user:dict=Depends(get_current_user),db:Session= Depen
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
 
-@router.delete('/{admin_id}')
+@router.delete('/{admin_id}',tags=['Admin'])
 def delete_single_admin(admin_id,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
     if current_user is not None:
@@ -215,7 +232,7 @@ def delete_single_admin(admin_id,user:dict=Depends(get_current_user),db:Session=
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
 
-@router.delete('/user/{user_id}')
+@router.delete('/user/{user_id}',tags=['Admin'])
 def delete_single_user(user_id,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
     if current_user is not None:
@@ -230,7 +247,7 @@ def delete_single_user(user_id,user:dict=Depends(get_current_user),db:Session= D
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
 
-@router.delete('/user/mail/{user_id}')
+@router.delete('/user/mail/{user_id}',tags=['Admin'])
 def delete_single_mail_subscriber(user_id,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
     if current_user is not None:
@@ -245,7 +262,7 @@ def delete_single_mail_subscriber(user_id,user:dict=Depends(get_current_user),db
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
-@router.post('/admin/del')
+@router.post('/admin/del',tags=['Admin'])
 def delete_multi_admins(admins:list,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
     print(current_user)
@@ -256,7 +273,7 @@ def delete_multi_admins(admins:list,user:dict=Depends(get_current_user),db:Sessi
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='Access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
 
-@router.post('/multiple/users/mail/')
+@router.post('/multiple/users/mail/',tags=['Admin'])
 def delete_multiple_mail_subscribers(multiple_ids:list,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
     if current_user is not None:
@@ -266,7 +283,7 @@ def delete_multiple_mail_subscribers(multiple_ids:list,user:dict=Depends(get_cur
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
 
-@router.post('/multiple/users/')
+@router.post('/multiple/users/',tags=['Admin'])
 def delete_multiple_users(multiple_ids:list,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
     if current_user is not None:
@@ -275,7 +292,35 @@ def delete_multiple_users(multiple_ids:list,user:dict=Depends(get_current_user),
     else:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
-          
+
+
+@router.get('/initial',tags=['Intial'])
+def execute_initial_admin(db:Session= Depends(get_db)):
+    new_admin = Admin(
+    first_name = "junior",
+    last_name = "admin",
+    email = "junioradmin@gmail.com",
+    password = hash_password("string"),
+    role = "admin",
+    approved = True,
+    )
+    user = get_admin_mail(db=db, email=new_admin.email)
+    if user is None:
+        try:
+            db.add(new_admin)
+            db.commit()
+            db.refresh(new_admin)
+            return {"initial created"}
+        except Exception as e:
+            print(e)
+    else:
+        return {"Already exists"}
+        
+
+
+
+
+
 
 
     
