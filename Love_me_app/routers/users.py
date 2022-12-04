@@ -129,8 +129,11 @@ def update_profile(request: schemas.UserBase, user:dict=Depends(get_current_user
     if not user:
         raise HTTPException(status_code=401, detail="user not found")
     profile = db.query(models.User).filter(models.User.id==user.id).first()
-    profile.update(request.dict(exclude_unset=True))
+    profile.email=request.email
+    profile.first_name=request.first_name
+    profile.last_name=request.last_name
     db.commit()
+    db.refresh(profile)
     return {"User successfully updated"}
 
 
