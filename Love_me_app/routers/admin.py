@@ -56,8 +56,8 @@ def logout(authorize:AuthJWT):
         "Logged Out",
     }
 
-def get_subscribers( db:Session = Depends(get_db),skip: int=0, limit:int = 15):
-    return db.query(User).offset(skip).limit(limit).all()
+def get_subscribers( db:Session = Depends(get_db)):
+    return db.query(User).all()
 
 def get_mail_subscribers( db:Session = Depends(get_db),skip: int=0, limit:int = 15):
     return db.query(MailSubscriber).offset(skip).limit(limit).all()
@@ -197,10 +197,10 @@ def return_admin_list(user:dict=Depends(get_current_user),db:Session= Depends(ge
 
 
 @router.get('/subscribers/all', response_model=Page[UserDetails])
-def return_subscriber_list(user:dict=Depends(get_current_user),db:Session= Depends(get_db),skip: int=0, limit:int = 15):
+def return_subscriber_list(user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
     if current_user is not None:
-        users = get_subscribers(db=db, skip=skip, limit=limit)
+        users = get_subscribers(db=db)
         return paginate(users)
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
