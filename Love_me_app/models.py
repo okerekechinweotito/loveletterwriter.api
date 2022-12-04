@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, unique=True)
     first_name = Column(String(255))
     last_name = Column(String(255))
     image = Column(String(255))
