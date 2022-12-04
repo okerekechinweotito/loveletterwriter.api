@@ -8,10 +8,14 @@ from fastapi_jwt_auth import AuthJWT
 from datetime import timedelta
 from fastapi.responses import Response
 from fastapi_pagination import Page,add_pagination,paginate
+
+from dotenv import load_dotenv
+import os
+load_dotenv()
+
 router = APIRouter(prefix="/api/v1/admin")
 
-SECRET_KEY='secret'
-ALGORITHM='HS256'
+
 ACCESS_TOKEN_LIFETIME_MINUTES= 43200
 REFRESH_TOKEN_LIFETIME=14
 access_cookies_time=ACCESS_TOKEN_LIFETIME_MINUTES * 60
@@ -296,11 +300,12 @@ def delete_multiple_users(multiple_ids:list,user:dict=Depends(get_current_user),
 
 @router.get('/initial',tags=['Intial'])
 def execute_initial_admin(db:Session= Depends(get_db)):
+    password_ = os.getenv("SUPER_ADMIN_PASSWORD")
     new_admin = Admin(
     first_name = "junior",
     last_name = "admin",
-    email = "junioradmin@gmail.com",
-    password = hash_password("string"),
+    email = os.getenv("SUPER_ADMIN_EMAIL"),
+    password = hash_password(password_),
     role = "admin",
     approved = True,
     )
