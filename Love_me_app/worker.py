@@ -66,7 +66,7 @@ def send_scheduled_letters():
     schedules=db.query(Schedule).filter(Schedule.completed== False,Schedule.schedule_time <= datetime.now()).all()
     if schedules:
         for schedule in schedules:
-                send_letter.delay(schedule.letter.receiver.name, schedule.letter.letter, schedule.letter.receiver.email, schedule.letter.id)
+                send_letter.delay(f"{schedule.user.first_name} {schedule.user.last_name}", schedule.letter.letter, schedule.letter.receiver.email, schedule.letter.id)
                 schedule.completed=True
                 db.commit()
                 db.refresh(schedule)
