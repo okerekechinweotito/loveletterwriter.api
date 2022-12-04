@@ -7,12 +7,12 @@ from datetime import datetime, timezone
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True, unique=True)
+    id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String(255))
     last_name = Column(String(255))
     image = Column(String(255))
     password = Column(String(255))
-    email = Column(String(255))
+    email = Column(String(255), unique=True)
     facebook_id = Column(String(255))
     google_id = Column(String(255))
     is_sub_active = Column(Boolean, default=False)
