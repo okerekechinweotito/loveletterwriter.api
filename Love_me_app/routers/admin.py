@@ -113,8 +113,9 @@ def delete_multiple_entries_admin(db:Session, entries:list):
         except Exception as e:
             return {"Error": e}
     else:
+
         db.commit()
-    return {"Entries deleted"}
+        return {"Entries deleted"}
 
 def delete_multiple_entries_users(db:Session, entries):
     for id in entries:
@@ -247,9 +248,12 @@ def delete_single_mail_subscriber(user_id,user:dict=Depends(get_current_user),db
 @router.post('/admin/del')
 def delete_multi_admins(admins:list,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
+    print(current_user)
     if current_user is not None:
         delete_multiple_entries_admin(db=db, entries=admins)
-    raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
+        return {"Entries deleted"}
+    else:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='Access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
 
 @router.post('/multiple/users/mail/')
@@ -257,7 +261,9 @@ def delete_multiple_mail_subscribers(multiple_ids:list,user:dict=Depends(get_cur
     current_user = user
     if current_user is not None:
         delete_multiple_entries_mail_list(db=db, entries=multiple_ids)
-    raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
+        return {"Entries deleted"}
+    else:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
 
 @router.post('/multiple/users/')
@@ -265,7 +271,9 @@ def delete_multiple_users(multiple_ids:list,user:dict=Depends(get_current_user),
     current_user = user
     if current_user is not None:
         delete_multiple_entries_users(db=db, entries=multiple_ids)
-    raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
+        return {"Entries deleted"}
+    else:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
           
 
