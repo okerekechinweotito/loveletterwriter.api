@@ -128,6 +128,9 @@ endpoint to update user profile by getting the current user email and updating t
 def update_profile(request: schemas.UserBase, user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=401, detail="user not found")
+    if UserCrud.get_user_by_email(db, request.email):
+        raise HTTPException(status_code=400, detail="user with this email already exists")
+ 
     profile = db.query(models.User).filter(models.User.id==user.id).first()
     profile.email=request.email
     profile.first_name=request.first_name
