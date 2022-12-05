@@ -12,7 +12,7 @@ class User(Base):
     last_name = Column(String(255))
     image = Column(String(255))
     password = Column(String(255))
-    email = Column(String(255))
+    email = Column(String(255), unique=True)
     facebook_id = Column(String(255))
     google_id = Column(String(255))
     is_sub_active = Column(Boolean, default=False)

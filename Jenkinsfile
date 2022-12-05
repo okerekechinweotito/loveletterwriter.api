@@ -14,5 +14,13 @@ pipeline {
                         sh 'sudo systemctl restart hng'
                        }
                  }
+        }
+        post {
+        failure {
+            emailext attachLog: true, 
+            to: 'contact.lovemeapp@gmail.com, idimmusix@gmail.com',
+            subject: '${BUILD_TAG} Build failed',
+            body: '${BUILD_TAG} Build Failed \nMore Info can be found here: ${BUILD_URL} or in the log file below'
+        }
     }
 }

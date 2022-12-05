@@ -11,10 +11,7 @@ from sendgrid.helpers.mail import Mail
 router=APIRouter(tags=['contact'],prefix="/api/v1/contact_us")
 
 @router.post('/')
-def contact_us(payload:schemas.ContactUs, user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
-    user = user
-    if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Please log in")
+def contact_us(payload:schemas.ContactUs):
     name=payload.name
     email=payload.email
     messages=payload.messages
