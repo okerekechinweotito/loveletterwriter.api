@@ -106,7 +106,7 @@ class UserBase(BaseModel):
     first_name: str
     last_name:str
     email: EmailStr
-    recovery_email:EmailStr
+    recovery_email:Union[EmailStr, None]
     twitter_id:Union[str, None]
     facebook_id:Union[str, None]
 
