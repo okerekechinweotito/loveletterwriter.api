@@ -114,6 +114,9 @@ def user_me(user:dict=Depends(get_current_user)):
         "lastname": user.last_name,
         "email": user.email,
         "image":user.image,
+        "recovery_email": user.recovery_email,
+        "facebook_id": user.facebook_id,
+        "twitter_id": user.twitter_id,
         "is_active": user.is_sub_active,
         "is_reminder": user.is_reminder,
         "date_joined": user.date_created,
@@ -133,6 +136,9 @@ def update_profile(request: schemas.UserBase, user:dict=Depends(get_current_user
         profile.email=request.email
         profile.first_name=request.first_name
         profile.last_name=request.last_name
+        profile.recovery_mail=request.recovery_email
+        profile.twitter_id=request.twitter_id
+        profile.facebook_id=request.facebook_id
         db.commit()
         db.refresh(profile)
         return {"User successfully updated"}
@@ -144,6 +150,9 @@ def update_profile(request: schemas.UserBase, user:dict=Depends(get_current_user
     profile.email=request.email
     profile.first_name=request.first_name
     profile.last_name=request.last_name
+    profile.recovery_mail=request.recovery_email
+    profile.twitter_id=request.twitter_id
+    profile.facebook_id=request.facebook_id
     db.commit()
     db.refresh(profile)
     return {"User successfully updated"}

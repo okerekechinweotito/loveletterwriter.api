@@ -9,8 +9,10 @@ class User(BaseModel):
     password:str
     image:str
     email:EmailStr
-    facebook_id:str
+    recovery_email:Union[EmailStr, None]
+    facebook_id:Union[str, None]
     google_id:str
+    twitter_id:Union[str, None]
     is_sub_active:bool
     sub_end_date:datetime
     is_reminder:bool
@@ -104,6 +106,9 @@ class UserBase(BaseModel):
     first_name: str
     last_name:str
     email: EmailStr
+    recovery_email:EmailStr
+    twitter_id:Union[str, None]
+    facebook_id:Union[str, None]
 
 class UserCreate(UserBase):
     password:str=Field(min_length=6, description='password minimum length is 8 characters')
@@ -115,6 +120,9 @@ class UserDetails(UserBase):
     id: int
     first_name:str
     last_name:str
+    recovery_email: Union[EmailStr, None]
+    twitter_id: Union[str, None]
+    facebook_id: Union[str, None]
     is_sub_active:bool
     sub_end_date:Union[datetime, None]
     plan_type:Union[str, None]
