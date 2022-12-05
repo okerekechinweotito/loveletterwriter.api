@@ -24,7 +24,8 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
  
     payload =await requests.body()
     sig_header = stripe_signature
-    endpoint_secret = os.getenv("ENDPOINT_SECRET")
+    # endpoint_secret = os.getenv("ENDPOINT_SECRET")
+    endpoint_secret = 'whsec_9408e100f9b71cae7e32ce9f54927bb1f2f76a88dfe62d9793e5d0ce16617066'
     
 
     event = None
@@ -42,6 +43,11 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
             ref_no = event.data.object.id,
             date_created = datetime.utcfromtimestamp(int(event.data.object.created)).strftime('%Y-%m-%d %H:%M:%S')
         )
+        rrr = db.query(models.CustomerSubscription).filter(models.CustomerSubscription.subscription_id == event.data.object.subscription,models.CustomerSubscription.user_id == event.data.object.metadata.user_id).scalar() is not None
+        print(rrr)
+        insert_sub = models.CustomerSubscription(user_id=event.data.object.metadata.user_id, subscription_id=event.data.object.subscription)
+        db.add(insert_sub)
+        
         object_id = int(event.data.object.metadata.user_id)
         end = event.data.object.metadata.month
         profile = db.query(models.User).filter(models.User.id==object_id).first()
@@ -56,6 +62,7 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
         except Exception as e:
             print(str(e))
         print("saved to data base..........................................")
+        # print(event.data.object.subscription)
         
     elif event['type'] == 'customer.subscription.deleted':
 
@@ -73,9 +80,10 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
         except Exception as e:
             print(str(e))
         print("saved to data base..........................................")
+        print(event.data.object)
 
     elif event['type'] == 'customer.subscription.trial_will_end':
-        print(event)
+        print(event.data.object)
 
     print('Handled event type {}'.format(event['type']))
     
@@ -115,37 +123,37 @@ async def create_customer_object(user:dict = Depends(get_current_user),db: Sessi
 
 
 
-@router.post("/api/v1/transaction/create-subscription/{plan_id}")
-async def create_subscription_object(plan_id:str,user:dict = Depends(get_current_user),db: Session = Depends(get_db)):
-    if user:
+# @router.post("/api/v1/transaction/create-subscription/{plan_id}")
+# async def create_subscription_object(plan_id:str,user:dict = Depends(get_current_user),db: Session = Depends(get_db)):
+#     if user:
 
-        id = user.id
-        users = db.query(models.Customer).filter(models.Customer.user_id == id).first()
-        CUSTOMER_ID = users.customer_id
+#         id = user.id
+#         users = db.query(models.Customer).filter(models.Customer.user_id == id).first()
+#         CUSTOMER_ID = users.customer_id
 
-        try:
-            subscription = stripe.Subscription.create(
-                    customer=CUSTOMER_ID,
-                    items=[{
-                        "price": plan_id
-                    }],
-                    payment_behavior="default_incomplete",
-                    payment_settings={"save_default_payment_method": "on_subscription"},
-                    expand=["latest_invoice.payment_intent"]
-            )
-            insert_sub = models.CustomerSubscription(user_id=id, subscription_id=subscription.id)
-            db.add(insert_sub)
-            db.commit()
-            db.refresh(insert_sub)
-            print(subscription)
+#         try:
+#             subscription = stripe.Subscription.create(
+#                     customer=CUSTOMER_ID,
+#                     items=[{
+#                         "price": plan_id
+#                     }],
+#                     payment_behavior="default_incomplete",
+#                     payment_settings={"save_default_payment_method": "on_subscription"},
+#                     expand=["latest_invoice.payment_intent"]
+#             )
+#             insert_sub = models.CustomerSubscription(user_id=id, subscription_id=subscription.id)
+#             db.add(insert_sub)
+#             db.commit()
+#             db.refresh(insert_sub)
+#             print(subscription)
 
-            return {
-                    "subscriptionId": subscription.id, "clientSecret": subscription.latest_invoice.payment_intent.client_secret
-            }
+#             return {
+#                     "subscriptionId": subscription.id, "clientSecret": subscription.latest_invoice.payment_intent.client_secret
+#             }
 
-        except Exception as e:
-            return {"statusCode": 403, "error": e.args }
-    return {"please login"}
+#         except Exception as e:
+#             return {"statusCode": 403, "error": e.args }
+#     return {"please login"}
 
 
 @router.post('/api/v1/transaction/customer-portal/', tags=["Customer"],)
