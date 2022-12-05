@@ -33,6 +33,7 @@ exceptiongroup
 fastapi
 fastapi-jwt-auth
 fastapi-mail
+newrelic
 fastapi-pagination
 flake8
 Flask
