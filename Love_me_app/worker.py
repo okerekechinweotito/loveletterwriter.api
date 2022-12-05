@@ -25,7 +25,7 @@ env_config = ConnectionConfig(
     MAIL_FROM_NAME='LOVEME',
     USE_CREDENTIALS=True,
     MAIL_TLS=True,
-    MAIL_SSL=False
+    MAIL_SSL=False,
     TEMPLATE_FOLDER='templates',
  )
 
