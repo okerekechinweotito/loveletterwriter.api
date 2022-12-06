@@ -30,10 +30,13 @@ def get_admin_by_id(db:Session, id):
 
 def authenticate(db:Session,email:str, password:str):
     user = db.query(Admin).filter(Admin.email == email).first()
+    print(user.approved)
     if not user:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail='invalid email or password')
     if not verify_password(password, user.password):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail='invalid email or password')
+    if not user.approved:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail='You need to be approved to get access')
     return {
         'first_name': user.first_name,
         'last_name': user.last_name,
@@ -112,14 +115,14 @@ def delete_single_entry(db:Session, id):
 
 
     
-@router.post('/signup',tags=['Admin'], response_model=AdminDetails)
-def create_admin_(admin_:AdminCreate,user:dict=Depends(get_current_user),db:Session=Depends(get_db)):
-    current_user = user
-    if current_user is not None:
+@router.post('/signup',tags=['Admin Auth'], response_model=AdminDetails)
+def create_admin_(admin_:AdminCreate,db:Session=Depends(get_db)):
+    #current_user = user
+    #if current_user is not None:
         admin = Admin(**admin_.dict())
         new_admin = create_admin(db=db,admin=admin)
         return new_admin
-    raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired')
+    #raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired')
 
 @router.post('/login',response_model=AdminLoginDetails,tags=["Admin Auth"])
 def log_admin(login:Login,response:Response, db:Session=Depends(get_db),authorize:AuthJWT=Depends()):
@@ -149,7 +152,7 @@ def refresh_token(response:Response,authorization:AuthJWT=Depends(), refresh_tok
 def log_out(authorize_: AuthJWT=Depends()):
     logout(authorize=authorize_)
 
-@router.patch('/{admin_id}/approve', response_model=AdminDetails)
+@router.patch('/{admin_id}/approve',tags=["Admin"], response_model=AdminDetails)
 def approve(admin_id,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
     if current_user is not None:
