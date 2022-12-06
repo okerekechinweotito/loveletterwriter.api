@@ -4,8 +4,8 @@ from .database import engine
 from fastapi.middleware.cors import CORSMiddleware
 from .import models
 from .database import engine
-from .routers import ai_trainer,authentication,letter,receiver,schedule,subscription,transaction,users,product_review,dashboard,contact_page, role_application
-
+from .routers import ai_trainer,authentication,letter,receiver,schedule,subscription,transaction,users,product_review,dashboard,contact_page,mailsubscriber, role_application, feedback, admin, reset, chat_bot
+from fastapi.staticfiles import StaticFiles
 
 tags_metadata = [
     {
@@ -28,9 +28,17 @@ tags_metadata = [
         "name": "receiver",
         "description": "Operations related to the receiver of the love letters",
     },
-      {
+    {
         "name": "contact",
         "description": "The Operation related to our contact page in the love letter writer app",
+    },
+    {
+        "name": "reset_password",
+        "description": "Operations related to reseting password in the love letter writer app",
+    },
+    {
+        "name": "chat_bot",
+        "description": "The Operation related to chat bot",
     },
 ]
 
@@ -59,6 +67,15 @@ app.include_router(contact_page.router)
 app.include_router(dashboard.router)
 app.include_router(product_review.router)
 app.include_router(role_application.router)
+app.include_router(reset.router)
+app.include_router(mailsubscriber.router)
+app.include_router(admin.router)
+app.include_router(feedback.router)
+app.include_router(chat_bot.router)
+
+#StaticFiles Configuration
+app.mount("/static", StaticFiles(directory="./static"), name="static")
+
 
 @app.get("/")
 def get():

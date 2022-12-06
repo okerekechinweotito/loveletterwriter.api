@@ -12,8 +12,10 @@ class User(Base):
     last_name = Column(String(255))
     image = Column(String(255))
     password = Column(String(255))
-    email = Column(String(255))
-    facebook_id = Column(String(255))
+    email = Column(String(255), unique=True)
+    recovery_email = Column(String(255), unique=True, nullable=True)
+    facebook_id = Column(String(255), nullable=True)
+    twitter_id = Column(String(255), nullable=True)
     google_id = Column(String(255))
     is_sub_active = Column(Boolean, default=False)
     sub_end_date = Column(DateTime)
@@ -28,6 +30,7 @@ class User(Base):
     transaction = relationship('Transaction', back_populates='user')
     reset_pass = relationship('ResetPass', back_populates='user')
     product_review = relationship('ProductReview', back_populates='user')
+    feedback = relationship('Feedback', back_populates='user')
 
 
 class Receiver(Base):
@@ -47,7 +50,7 @@ class Letter(Base):
     __tablename__ = "letters"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id'))
-    receiver_id = Column(Integer, ForeignKey('receivers.id'))
+    receiver_id = Column(Integer, ForeignKey('receivers.id'), nullable=True)
     title = Column(TEXT)
     letter = Column(TEXT)
     date_sent = Column(DateTime(timezone=True), nullable=True)
@@ -97,6 +100,7 @@ class Subscription(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255))
     description = Column(String(255))
+    plan_id = Column(String(255))
     months = Column(Integer)
     amount = Column(Float)
     date_created = Column(DateTime)
@@ -118,7 +122,24 @@ class Transaction(Base):
     user = relationship('User',back_populates='transaction')
     subscription = relationship('Subscription',back_populates='transaction')
 
-    
+
+
+class Customer(Base):
+    """to store stripe customer id"""
+    __tablename__ = 'customer'
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    customer_id = Column(String(255),unique=True)
+
+
+class CustomerSubscription(Base):
+    """to store stripe customer id"""
+    __tablename__ = 'customer_subscription'
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    subscription_id = Column(String(255),unique=True)
+
+
     
 
 class ResetPass(Base):
@@ -130,7 +151,6 @@ class ResetPass(Base):
     expiry_date = Column(DateTime)
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     user = relationship('User', back_populates='reset_pass')
-
 
 class BlackListedTokens(Base):
     __tablename__ = "black_listed_tokens"
@@ -156,5 +176,51 @@ class RoleApplication(Base):
     linked_in = Column(String(255))
     cover_letter = Column(LargeBinary)
     cv = Column(LargeBinary)
+
+class PasswordResetToken(Base):
+    __tablename__ = "password_reset"
+    id = Column(Integer,primary_key=True, index=True)
+    token = Column(String(255))
+    email = Column(String(255),unique=True)
+    expiry_time = Column(DateTime)
+
+
+class MailSubscriber(Base):
+    __tablename__ = "mail_subscribers"
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(255))
+
+
+
+class Admin(Base):
+    __tablename__ = "administrators"
+    id = Column(Integer, primary_key=True, index=True)
+    first_name = Column(String(255))
+    last_name = Column(String(255))
+    email = Column(String(255),unique=True)
+    password = Column(String(255))
+    role = Column(String(255))
+    approved = Column(Boolean, default=False)
     
 
+
+
+    
+
+class Feedback(Base):
+    __tablename__ = "feedback_response"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    is_helpfull = Column(Boolean)
+    feedback = Column(String(255))
+    user = relationship('User', back_populates='feedback')
+
+
+
+class ChatBot(Base):
+    __tablename__ = "chat_bot"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    human = Column(TEXT)
+    ai = Column(TEXT)
+    date_created = Column(DateTime(timezone=True), server_default=func.now())

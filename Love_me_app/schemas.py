@@ -1,3 +1,4 @@
+from enum import Enum
 from pydantic import BaseModel, Field, EmailStr
 from datetime import datetime,date,time
 
@@ -6,26 +7,28 @@ class User(BaseModel):
     first_name:str
     last_name:str
     password:str
+    image:str
     email:EmailStr
-    facebook_id:str
+    recovery_email:Union[EmailStr, None]
+    facebook_id:Union[str, None]
     google_id:str
+    twitter_id:Union[str, None]
     is_sub_active:bool
     sub_end_date:datetime
     is_reminder:bool
     date_created:datetime
 
+
 class DisplayReceiver(BaseModel):
     id:int
     name:str
     email:EmailStr
-    phone_number:str
     date_created:datetime
     class Config:
         orm_mode=True
 class Receiver(BaseModel):
-    name:str
     email:EmailStr
-    phone_number:str
+
 
 class Letter(BaseModel):
     user_id:int
@@ -57,6 +60,7 @@ class Subscription(BaseModel):
     months:int
     amount:float
     date_created:datetime
+    plan_id:str
 
     class config:
         orm_mode = True
@@ -75,6 +79,7 @@ class SubscriptionBase(BaseModel):
     description:str
     months:str
     amount:float
+    plan_id:str
 
 
 class ResetPass(BaseModel):
@@ -101,6 +106,9 @@ class UserBase(BaseModel):
     first_name: str
     last_name:str
     email: EmailStr
+    recovery_email:Union[EmailStr, None]
+    twitter_id:Union[str, None]
+    facebook_id:Union[str, None]
 
 class UserCreate(UserBase):
     password:str=Field(min_length=6, description='password minimum length is 8 characters')
@@ -112,6 +120,9 @@ class UserDetails(UserBase):
     id: int
     first_name:str
     last_name:str
+    recovery_email: Union[EmailStr, None]
+    twitter_id: Union[str, None]
+    facebook_id: Union[str, None]
     is_sub_active:bool
     sub_end_date:Union[datetime, None]
     plan_type:Union[str, None]
@@ -122,7 +133,7 @@ class UserDetails(UserBase):
     class Config:
         orm_mode=True
 
-class UserUpdate(UserBase):
+class ImageUpdate(BaseModel):
     image:str
 
         
@@ -209,3 +220,72 @@ class RoleApplication(BaseModel):
     linked_in: str
     cover_letter: bytes
     cv: bytes
+
+class PassReset(BaseModel):
+    email:EmailStr 
+
+class ValidateResetToken(BaseModel):
+    token:str
+
+class NewPassword(BaseModel):
+    token:str
+    password:str
+class TranslateLetter(BaseModel):
+    language:str
+    letter:str
+ 
+class MailSubscriber(BaseModel):
+    email: EmailStr = Field(...)
+    
+    class Config:
+        orm_mode = True
+
+class GenerateLetter(BaseModel):
+    partner_name: str
+    occasion: str
+    relationship: str
+    inscription: str
+    custom_words: Union[str, None] = None
+
+class RoleName(str, Enum):
+    admin = "admin"
+    editor = "editor"
+    contributor = "contributor"
+
+class Admin(BaseModel):
+    first_name:str
+    last_name:str
+    email:EmailStr
+    role: RoleName
+
+    class Config:
+        orm_mode=True
+    
+class AdminCreate(Admin):
+    password:str
+    
+class AdminDetails(Admin):
+    id: int
+    approved: bool
+
+class AdminLoginDetails(BaseModel):
+    access_token:str
+    refresh_token:str
+    user:Admin
+    
+    class Config:
+        orm_mode=True
+
+
+
+class Statistics(BaseModel):
+    mail_subscribers: int
+    users: int
+    letters: int
+    admins:int
+class Feedback(BaseModel):
+    is_helpfull: bool
+    feedback: str
+
+class ChatBot(BaseModel):
+    question: str

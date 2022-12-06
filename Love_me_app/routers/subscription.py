@@ -1,12 +1,11 @@
 from fastapi import APIRouter,Depends,Request
 from ..import  schemas 
+from datetime import datetime
 from ..dependencies import get_current_user
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from ..import models
-import json
 from ..database import get_db
-from datetime import timedelta
 from dotenv import load_dotenv
 import os 
 load_dotenv()
@@ -19,7 +18,7 @@ router = APIRouter(tags=['subscription'])
 
 
 @router.post("/api/v1/subscription",description="endpoint to post subscription")
-async def subscribe(subscription:schemas.Subscription,db: Session = Depends(get_db),user:dict = Depends(get_current_user)):
+async def add_subscribtion_plans(subscription:schemas.Subscription,db: Session = Depends(get_db),user:dict = Depends(get_current_user)):
     if not user:
         raise HTTPException(status_code=401, detail="please login")
     data = models.Subscription(
@@ -27,7 +26,8 @@ async def subscribe(subscription:schemas.Subscription,db: Session = Depends(get_
         description=subscription.description,
         months=subscription.months,
         amount=subscription.amount,
-        date_created=subscription.date_created
+        date_created=subscription.date_created,
+        plan_id = subscription.plan_id
     )
     db.add(data)
     try:
@@ -44,28 +44,36 @@ async def subscribe(subscription:schemas.Subscription,db: Session = Depends(get_
 
 
 @router.get('/api/v1/subscription/plans',description="list of available plans")
-async def SubscriptionPlans(db: Session = Depends(get_db)):
+async def get_subscription_plans(db: Session = Depends(get_db)):
     plans = db.query(models.Subscription).all()
     return plans
 
 
 
-@router.post("/api/v1/subscription/checkout/{plan_id}")
-async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = Depends(get_current_user)):
+@router.post("/api/v1/subscription/checkout/{price_id}")
+async def subscribe_to_a_plan(price_id:str,db: Session = Depends(get_db),user:dict = Depends(get_current_user)):
 
+    customer = db.query(models.Customer).filter(models.Customer.user_id == user.id).first()
+    CUSTOMER_ID = customer.customer_id
     stripe.api_key = os.getenv("STRIPE_API_KEY")
 
-    querr = db.query(models.Subscription).filter_by(id=plan_id).first()
+    querr = db.query(models.Subscription).filter(models.Subscription.plan_id==price_id).first()
     plans = querr
+    if not plans:
+        raise HTTPException(status_code=401, detail="either plans does not exist or the Dev wrote nonsense")
+    # querry = db.query(models.CustomerSubscription).filter(models.CustomerSubscription.user_id == user.id).first()
+    # subscription_id = querry.subscription_id
     if not user:
         raise HTTPException(status_code=401, detail="please signin")
     else:   
-        if plans.name == "sweet love":
+        try:
+
             sessions = stripe.checkout.Session.create(
                 success_url = success_url,
                 cancel_url = cancel_url,
+                customer=CUSTOMER_ID,
                 mode='subscription',
-                customer_email= user.email,
+                payment_method_collection= "always",
                 metadata = {
                     'user_id':user.id,
                     'user_name':user.first_name,
@@ -75,69 +83,32 @@ async def subscribe_plan(plan_id:int,db: Session = Depends(get_db),user:dict = D
                 },
                 payment_method_types =["card"],
                     line_items =[{
-                        'price':os.getenv("SWEET_PLAN_ID"),
+                        'price':price_id,
                         'quantity':1,
                     }
                     ]
                 )
-        elif plans.name == "Advanced":
-            sessions = stripe.checkout.Session.create(
-                success_url = success_url,
-                cancel_url = cancel_url,
-                mode='subscription',
-                customer_email= user.email,
-                metadata = {
-                    'user_id':user.id,
-                    'user_name':user.first_name,
-                    'user_email':user.email,
-                    'plan_type':plans.name,
-                    'month':plans.months
-                },
-                payment_method_types =["card"],
-                    line_items =[{
-                        'price':os.getenv("ADVANCE_PLAN_ID"),
-                        'quantity':1,
-                    }
-                    ]
-                )
-        elif plans.name == "Pro gratifying":
-            sessions = stripe.checkout.Session.create(
-                success_url = success_url,
-                cancel_url = cancel_url,
-                mode='subscription',
-                customer_email= user.email,
-                metadata = {
-                    'user_id':user.id,
-                    'user_name':user.first_name,
-                    'user_email':user.email,
-                    'plan_type':plans.name,
-                    'month':plans.months
-                    
-                },
-                payment_method_types =["card"],
-                    line_items =[{
-                        'price':os.getenv("PRO_PLAN_ID"),
-                        'quantity':1,
-                        
-                    }
-                    ]
-                )
+            # print(sessions)
+            return {"url":sessions['url']}
+        except Exception as e:
+            return {"status_code": 403, "error": e.args}
 
-    return {"url":sessions['url']}
+        # return {"url":sessions['url']}
 
 
-
-
-@router.get("/success")
-async def successful(request:Request):
-    return {"success":"success"}
 
 
 @router.patch("/api/v1/subscription/{plan_id}",description="edit plans")
-async def UpdateSubscription(plan_id:int,request: schemas.SubscriptionBase,db:Session = Depends(get_db)):
+async def Update_a_Subscription_plan(plan_id:int,request: schemas.SubscriptionBase,db:Session = Depends(get_db)):
     plans = db.query(models.Subscription).filter(models.Subscription.id == plan_id)
     plans.update(request.dict(exclude_unset=True))
     db.commit()
-    return {"User successfully updated"}
+    # subscription = stripe.Subscription.retrieve(customer_id)
+    return {"Plan updated successfully"}
 
 
+
+@router.get('/api/v1/subscription/id',description="list of available plans")
+async def get_subscription_plans(db: Session = Depends(get_db)):
+    plans = db.query(models.CustomerSubscription).all()
+    return plans

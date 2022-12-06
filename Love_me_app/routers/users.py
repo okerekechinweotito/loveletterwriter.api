@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException, status, Depends, Cookie, Header
 from sqlalchemy.orm import Session
 from datetime import timedelta
 from fastapi_jwt_auth import AuthJWT
+import string, random, shutil
 
 #Import modules
 from ..send_email import password_reset_email
@@ -26,8 +27,6 @@ from PIL import Image
 db = get_db()
 router=APIRouter(tags=['User'],prefix="/api/v1/user/me")
 
-#StaticFiles Configuration
-router.mount("/static", StaticFiles(directory="static"), name="static")
 
 #Function to get current user
 def get_current_user(Authorize:AuthJWT=Depends(), db:Session=Depends(get_db), access_token:str=Cookie(default=None),Bearer=Header(default=None)):
@@ -106,7 +105,7 @@ def get_current_user(Authorize:AuthJWT=Depends(), db:Session=Depends(get_db), ac
 endpoint to get a user profile. The user has to be logged in already.
 
 """
-@router.get("/")
+@router.get("/get-user")
 def user_me(user:dict=Depends(get_current_user)):
     if user is None:
         raise HTTPException(status_code=401, detail="user not found")
@@ -114,6 +113,10 @@ def user_me(user:dict=Depends(get_current_user)):
         "firstname": user.first_name,
         "lastname": user.last_name,
         "email": user.email,
+        "image":user.image,
+        "recovery_email": user.recovery_email,
+        "facebook_id": user.facebook_id,
+        "twitter_id": user.twitter_id,
         "is_active": user.is_sub_active,
         "is_reminder": user.is_reminder,
         "date_joined": user.date_created,
@@ -124,24 +127,42 @@ def user_me(user:dict=Depends(get_current_user)):
 """
 endpoint to update user profile by getting the current user email and updating their profile.
 """
-@router.patch("/")
+@router.patch("/update-user")
 def update_profile(request: schemas.UserBase, user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=401, detail="user not found")
-    profile = db.query(models.User).filter(models.User.id)
-    profile.update(request.dict(exclude_unset=True))
+    if user.email==request.email:
+        profile = db.query(models.User).filter(models.User.id==user.id).first()
+        profile.email=request.email
+        profile.first_name=request.first_name
+        profile.last_name=request.last_name
+        profile.recovery_mail=request.recovery_email
+        profile.twitter_id=request.twitter_id
+        profile.facebook_id=request.facebook_id
+        db.commit()
+        db.refresh(profile)
+        return {"User successfully updated"}
+
+    elif UserCrud.get_user_by_email(db, request.email):
+        raise HTTPException(status_code=400, detail="user with this email already exists")
+ 
+    profile = db.query(models.User).filter(models.User.id==user.id).first()
+    profile.email=request.email
+    profile.first_name=request.first_name
+    profile.last_name=request.last_name
+    profile.recovery_mail=request.recovery_email
+    profile.twitter_id=request.twitter_id
+    profile.facebook_id=request.facebook_id
     db.commit()
+    db.refresh(profile)
     return {"User successfully updated"}
 
 
 """
-endpoint to update user profile picture by getting the current user email and updating their profile.
-"""
-@router.patch("/upload/profile_picture/")       
-async def upload_profile_picture(file: UploadFile = File(...),user:dict=Depends(get_current_user)):
-    if not user:
-       raise HTTPException(status_code=404, detail=f"User not found")
-    FILEPATH = "./static/profile_images/"
+function to process user profile picture to string(url)
+"""      
+async def get_image_url(file: UploadFile = File(...)):
+    FILEPATH = "./static/"
     filename = file.filename
     extension= filename.split(".")[1]
     if extension not in ['png', 'jpg']:
@@ -159,8 +180,20 @@ async def upload_profile_picture(file: UploadFile = File(...),user:dict=Depends(
     resized_image.save(generated_name)
     
     file.close()
-    file_url = "https://api.loveme.hng.tech"+generated_name[1:]
-    return{'status':'Profile Image Added', 'image':file_url}
+    file_url = generated_name[1:]
+    return file_url
     
-        
-  
+
+"""
+endpoint to update user profile picture by getting the current user email and updating their profile.
+"""    
+@router.post('/upload-image',)   
+async def upload_image(image: UploadFile = File(...), user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
+    if not user:
+        raise  HTTPException(status_code=404, detail="User not found")
+    current_user= db.query(models.User).filter(models.User.id == user.id)
+    image_url = await get_image_url(image)
+    current_user.update({models.User.image: image_url}, synchronize_session=False)
+    db.commit()
+    db.close()
+    return {'profile_image': image_url, "details":"Check Your Profile.." }

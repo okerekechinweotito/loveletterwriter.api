@@ -14,15 +14,21 @@ from ..dependencies import google_auth
 router=APIRouter(tags=['auth'],prefix="/api/v1/auth")
 authjwt_secret_key = "random"
 
-@router.post('/signup/', response_model=schemas.UserDetails, summary='endpoint for users to signup', status_code=201, tags=['auth'])
-def signup(user:schemas.UserCreate, db:Session=Depends(get_db)):
+@router.post('/signup/', response_model=schemas.LoginDetails, summary='endpoint for users to signup', status_code=201, tags=['auth'])
+def signup(response:Response,user:schemas.UserCreate, Authorize:AuthJWT=Depends(),db:Session=Depends(get_db)):
     '''
     endpoint to signup users 
     '''
 
     if  user_crud.get_user_by_email(db, user.email):
         raise HTTPException(status_code=400, detail='user with this email already exists')
-    return user_crud.create_user(db, user)
+    User=user_crud.create_user(db, user)
+    access_token=Authorize.create_access_token(subject=User.id, expires_time=timedelta(minutes=ACCESS_TOKEN_LIFETIME_MINUTES))
+    refresh_token=Authorize.create_refresh_token(subject=User.id, expires_time=timedelta(days=REFRESH_TOKEN_LIFETIME))
+    response.set_cookie(key='access_token',value=access_token, expires=access_cookies_time, max_age=access_cookies_time, httponly=True)
+    response.set_cookie(key='refresh_token',value=refresh_token, expires=refresh_cookies_time, max_age=refresh_cookies_time, httponly=True)
+    return {'access_token':access_token, 'refresh_token':refresh_token, 'user':User}
+
 
 
 @router.post('/login', status_code=200, tags=['auth'], response_model=schemas.LoginDetails,summary='endpoint to login users')
