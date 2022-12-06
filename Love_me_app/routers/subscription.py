@@ -57,8 +57,10 @@ async def subscribe_to_a_plan(price_id:str,db: Session = Depends(get_db),user:di
     CUSTOMER_ID = customer.customer_id
     stripe.api_key = os.getenv("STRIPE_API_KEY")
 
-    querr = db.query(models.Subscription).filter(plan_id==price_id).first()
+    querr = db.query(models.Subscription).filter(models.Subscription.plan_id==price_id).first()
     plans = querr
+    if not plans:
+        raise HTTPException(status_code=401, detail="either plans does not exist or the Dev wrote nonsense")
     # querry = db.query(models.CustomerSubscription).filter(models.CustomerSubscription.user_id == user.id).first()
     # subscription_id = querry.subscription_id
     if not user:
