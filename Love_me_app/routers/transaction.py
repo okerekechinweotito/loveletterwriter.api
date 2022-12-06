@@ -24,8 +24,7 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
  
     payload =await requests.body()
     sig_header = stripe_signature
-    # endpoint_secret = os.getenv("ENDPOINT_SECRET")
-    endpoint_secret = 'whsec_9408e100f9b71cae7e32ce9f54927bb1f2f76a88dfe62d9793e5d0ce16617066'
+    endpoint_secret = os.getenv("ENDPOINT_SECRET")
     
 
     event = None
@@ -43,8 +42,11 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
             ref_no = event.data.object.id,
             date_created = datetime.utcfromtimestamp(int(event.data.object.created)).strftime('%Y-%m-%d %H:%M:%S')
         )
-        rrr = db.query(models.CustomerSubscription).filter(models.CustomerSubscription.subscription_id == event.data.object.subscription,models.CustomerSubscription.user_id == event.data.object.metadata.user_id).scalar() is not None
-        print(rrr)
+        rrr = db.query(models.CustomerSubscription).filter(models.CustomerSubscription.user_id == event.data.object.metadata.user_id).first()
+        # print(rrr)
+        if rrr:
+            rrr.subscription_id = event.data.object.subscription
+            db.commit()
         insert_sub = models.CustomerSubscription(user_id=event.data.object.metadata.user_id, subscription_id=event.data.object.subscription)
         db.add(insert_sub)
         

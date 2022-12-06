@@ -59,8 +59,8 @@ async def subscribe_to_a_plan(plan_id:str,db: Session = Depends(get_db),user:dic
 
     querr = db.query(models.Subscription).filter(plan_id==plan_id).first()
     plans = querr
-    querry = db.query(models.CustomerSubscription).filter(models.CustomerSubscription.user_id == user.id).first()
-    subscription_id = querry.subscription_id
+    # querry = db.query(models.CustomerSubscription).filter(models.CustomerSubscription.user_id == user.id).first()
+    # subscription_id = querry.subscription_id
     if not user:
         raise HTTPException(status_code=401, detail="please signin")
     else:   
@@ -103,34 +103,6 @@ async def Update_a_Subscription_plan(plan_id:int,request: schemas.SubscriptionBa
     db.commit()
     # subscription = stripe.Subscription.retrieve(customer_id)
     return {"Plan updated successfully"}
-
-
-
-
-@router.get("/api/v1/subscription/status")
-async def check_subscription_status(db: Session = Depends(get_db),user:dict = Depends(get_current_user)):
-    querry = db.query(models.CustomerSubscription).filter(models.CustomerSubscription.user_id == user.id).first() #query customer tables
-    profile = db.query(models.User).filter(models.User.id == user.id) #query user to update
-    customer_id = querry.subscription_id
-    try:
-        subscription = stripe.Subscription.retrieve(customer_id)
-    except Exception as e:
-            return {"status_code": 403, "error": e.args}
-    if subscription.status == 'cancelled':
-        status = {"code":404,"message":"subscription is cancelled"}
-    else:
-        # Check if the subscription has expired
-        if subscription.current_period_end == datetime.now().timestamp():
-            # Cancel the subscription
-            subscription.delete()
-            print('Subscription has been cancelled')
-            status = {"code":405,"message":"subscription has been cancelled"}
-            return status
-        else:
-            print('Subscription is still active or has not yet expired')
-            status = {"code":201,"message":"subscription still active"}
-            return status
-    return status
 
 
 
