@@ -12,6 +12,8 @@ pipeline {
 		stage("restart server"){
                        steps {
                         sh 'sudo systemctl restart hng'
+                        sh 'sudo systemctl restart celery'
+                        sh 'sudo systemctl restart celerybeat'
                        }
                  }
         }
