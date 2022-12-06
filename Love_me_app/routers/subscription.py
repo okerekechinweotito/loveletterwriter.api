@@ -50,14 +50,14 @@ async def get_subscription_plans(db: Session = Depends(get_db)):
 
 
 
-@router.post("/api/v1/subscription/checkout/{plan_id}")
-async def subscribe_to_a_plan(plan_id:str,db: Session = Depends(get_db),user:dict = Depends(get_current_user)):
+@router.post("/api/v1/subscription/checkout/{price_id}")
+async def subscribe_to_a_plan(price_id:str,db: Session = Depends(get_db),user:dict = Depends(get_current_user)):
 
     customer = db.query(models.Customer).filter(models.Customer.user_id == user.id).first()
     CUSTOMER_ID = customer.customer_id
     stripe.api_key = os.getenv("STRIPE_API_KEY")
 
-    querr = db.query(models.Subscription).filter(plan_id==plan_id).first()
+    querr = db.query(models.Subscription).filter(plan_id==price_id).first()
     plans = querr
     # querry = db.query(models.CustomerSubscription).filter(models.CustomerSubscription.user_id == user.id).first()
     # subscription_id = querry.subscription_id
@@ -81,7 +81,7 @@ async def subscribe_to_a_plan(plan_id:str,db: Session = Depends(get_db),user:dic
                 },
                 payment_method_types =["card"],
                     line_items =[{
-                        'price':plan_id,
+                        'price':price_id,
                         'quantity':1,
                     }
                     ]
