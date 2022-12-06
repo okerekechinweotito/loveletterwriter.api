@@ -2,7 +2,7 @@ import os
 from fastapi_mail import FastMail, MessageSchema
 from celery import Celery
 from .models import Schedule
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta 
 from .models import Schedule, Letter
 from .database import  SessionLocal
 from sendgrid import SendGridAPIClient
@@ -63,7 +63,7 @@ def send_letter(user, letter, recepient, id):
 @celery.task
 def send_scheduled_letters():
     db=SessionLocal()
-    schedules=db.query(Schedule).filter(Schedule.completed== False,Schedule.schedule_time <= datetime.now(tz=timezone.utc)).all()
+    schedules=db.query(Schedule).filter(Schedule.completed== False,Schedule.schedule_time <= datetime.now(tz=timezone.utc)+timedelta(hours=1)).all()
     if schedules:
         for schedule in schedules:
                 send_letter.delay(f"{schedule.user.first_name} {schedule.user.last_name}", schedule.letter.letter, schedule.letter.receiver.email, schedule.letter.id)
@@ -80,7 +80,7 @@ def send_scheduled_letters():
 celery.conf.beat_schedule= { 
     'send_sceduled_letters':{ 
         'task': 'Love_me_app.worker.send_scheduled_letters',
-        'schedule':120,
+        'schedule':60,
 
     }
 
