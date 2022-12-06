@@ -24,8 +24,8 @@ env_config = ConnectionConfig(
     MAIL_SERVER='smtp.gmail.com',
     MAIL_FROM_NAME='LOVEME',
     USE_CREDENTIALS=True,
-    MAIL_SSL_TLS=False,
-    MAIL_STARTTLS=True,
+    MAIL_TLS=True,
+    MAIL_SSL=False,
     TEMPLATE_FOLDER='templates',
  )
 
@@ -63,7 +63,7 @@ def send_letter(user, letter, recepient, id):
 @celery.task
 def send_scheduled_letters():
     db=SessionLocal()
-    schedules=db.query(Schedule).filter(Schedule.completed== False,Schedule.schedule_time <= datetime.now()).all()
+    schedules=db.query(Schedule).filter(Schedule.completed== False,Schedule.schedule_time <= datetime.now(tz=timezone.utc)).all()
     if schedules:
         for schedule in schedules:
                 send_letter.delay(f"{schedule.user.first_name} {schedule.user.last_name}", schedule.letter.letter, schedule.letter.receiver.email, schedule.letter.id)

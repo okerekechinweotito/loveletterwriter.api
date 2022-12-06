@@ -8,10 +8,14 @@ from fastapi_jwt_auth import AuthJWT
 from datetime import timedelta
 from fastapi.responses import Response
 from fastapi_pagination import Page,add_pagination,paginate
+
+from dotenv import load_dotenv
+import os
+load_dotenv()
+
 router = APIRouter(prefix="/api/v1/admin")
 
-SECRET_KEY='secret'
-ALGORITHM='HS256'
+
 ACCESS_TOKEN_LIFETIME_MINUTES= 43200
 REFRESH_TOKEN_LIFETIME=14
 access_cookies_time=ACCESS_TOKEN_LIFETIME_MINUTES * 60
@@ -104,42 +108,10 @@ def delete_single_entry(db:Session, id):
         db.commit()
         return {"Entry deleted"}
   
-def delete_multiple_entries_admin(db:Session, entries:list):
-    for id in entries:
-        try:
-            print(id)
-            entry = get_admin_by_id(db,int(id))
-            db.delete(entry)
-        except Exception as e:
-            return {"Error": e}
-    else:
-
-        db.commit()
-        return {"Entries deleted"}
-
-def delete_multiple_entries_users(db:Session, entries):
-    for id in entries:
-        try:
-            entry = get_user_by_id(db,int(id))
-            db.delete(entry)
-            db.commit()
-        except Exception as e:
-            return {"Error": e}
-    return {"Entries deleted"}
-
-def delete_multiple_entries_mail_list(db:Session, entries:list):
-    for id in entries:
-        try:
-            entry = get_mail_subscriber(db,int(id))
-            db.delete(entry)
-            db.commit()
-        except Exception as e:
-            return {"Error": e}
-    return {"Entries deleted"}
-        
-        
 
 
+
+    
 @router.post('/signup',tags=['Admin'], response_model=AdminDetails)
 def create_admin_(admin_:AdminCreate,user:dict=Depends(get_current_user),db:Session=Depends(get_db)):
     current_user = user
@@ -265,10 +237,15 @@ def delete_single_mail_subscriber(user_id,user:dict=Depends(get_current_user),db
 @router.post('/admin/del',tags=['Admin'])
 def delete_multi_admins(admins:list,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
-    print(current_user)
     if current_user is not None:
-        delete_multiple_entries_admin(db=db, entries=admins)
-        return {"Entries deleted"}
+            entries = db.query(Admin).filter(Admin.id.in_(admins)).all()
+            for entry in entries:
+                db.delete(entry)
+                db.commit()
+            return {
+                'entries': len(entries),
+                'message': 'deleted'
+            }     
     else:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='Access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
@@ -277,8 +254,14 @@ def delete_multi_admins(admins:list,user:dict=Depends(get_current_user),db:Sessi
 def delete_multiple_mail_subscribers(multiple_ids:list,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
     if current_user is not None:
-        delete_multiple_entries_mail_list(db=db, entries=multiple_ids)
-        return {"Entries deleted"}
+        entries = db.query(MailSubscriber).filter(MailSubscriber.id.in_(multiple_ids)).all()
+        for entry in entries:
+            db.delete(entry)
+            db.commit()
+            return {
+                'entries': len(entries),
+                'message': 'deleted'
+            }     
     else:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
@@ -287,8 +270,14 @@ def delete_multiple_mail_subscribers(multiple_ids:list,user:dict=Depends(get_cur
 def delete_multiple_users(multiple_ids:list,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
     if current_user is not None:
-        delete_multiple_entries_users(db=db, entries=multiple_ids)
-        return {"Entries deleted"}
+        entries = db.query(User).filter(User.id.in_(multiple_ids)).all()
+        for entry in entries:
+            db.delete(entry)
+            db.commit()
+            return {
+                'entries': len(entries),
+                'message': 'deleted'
+            }
     else:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
@@ -296,11 +285,12 @@ def delete_multiple_users(multiple_ids:list,user:dict=Depends(get_current_user),
 
 @router.get('/initial',tags=['Intial'])
 def execute_initial_admin(db:Session= Depends(get_db)):
+    password_ = os.getenv("SUPER_ADMIN_PASSWORD")
     new_admin = Admin(
     first_name = "junior",
     last_name = "admin",
-    email = "junioradmin@gmail.com",
-    password = hash_password("string"),
+    email = os.getenv("SUPER_ADMIN_EMAIL"),
+    password = hash_password(password_),
     role = "admin",
     approved = True,
     )
