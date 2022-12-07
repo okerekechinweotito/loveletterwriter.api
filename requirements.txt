@@ -125,5 +125,5 @@ wcwidth
 Werkzeug
 wrapt
 wsproto
-prometheus-client
+aioprometheus
 
