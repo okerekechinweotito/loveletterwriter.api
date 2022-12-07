@@ -37,7 +37,7 @@ def get_schedule(schedule_id:int, db:Session=Depends(get_db), user:dict=Depends(
 
 @router.get('/schedule', response_model=List[schemas.Schedule_Letter], summary='endpoint to get all active scheduled letters')
 def get_all_scheduled_letter(offset:int=0, limit:int=10,db:Session=Depends(get_db), user:dict=Depends(get_current_user)):
-    letters=db.query(models.Schedule).filter(models.Schedule.completed==False, models.Schedule.user_id==user.id).order_by(models.Schedule.schedule_time.asc()).offset(offset).limit(limit).all()
+    letters=db.query(models.Schedule).filter(models.Schedule.completed==False, models.Schedule.user_id==user.id).offset(offset).limit(limit).all()
     return letters
 
 
