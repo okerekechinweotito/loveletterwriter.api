@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from .models import * 
 from .database import engine
 from fastapi.middleware.cors import CORSMiddleware
-from aioprometheus import Counter, MetricsMiddleware
+from aioprometheus import Counter, Gauge, Histogram, MetricsMiddleware
 from aioprometheus.asgi.starlette import metrics
 from .import models
 from .database import engine
