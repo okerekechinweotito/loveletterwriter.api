@@ -125,5 +125,5 @@ wcwidth
 Werkzeug
 wrapt
 wsproto
-aioprometheus
+aioprometheus[starlette]
 
