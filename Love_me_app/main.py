@@ -62,8 +62,8 @@ allow_headers=['*'])
 # created in a different module than where they are used.
 #app.state.users_events_counter = Counter("events", "Number of events.")
 app.state.requests_processing_time = Histogram(
-    "request_processing_time",
-    "HTTP request processing time in seconds",
+    "events",
+    "Event times in seconds",
 #   ["method", "path", "status_code", "headers", "app_name"],
 )
 #middleware for prometheus
