@@ -1,8 +1,109 @@
 <!DOCTYPE html>
-<head></head>
-<title>Love letter from {{ user }}</title>
-<body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loveme</title>
+</head>
+<body style="width: 100%; font-family: 'Avenir', sans-serif; color: #374957;
+padding: 0px;">
+  <style>
+    body, ul, div, section, p, header, main {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      height: 100vh;
+    }
+    @media (min-width: 768px) {
+      header {
+        padding: 50px;
+      }
 
-<p>{{ letter }}</p>
+      main {
+        padding: 10px 50px;
+      }
+  }
+  </style>
+  <header class="container" style="padding: 20px 20px;">
+    <img src="https://api.loveme.hng.tech/static/logo-header.jpg" alt="" srcset="">
+  </header>
+  <main style="width: 100%; padding: 2em;">
+    <!-- <section class="title" style="margin: 20px 0;
+    text-align: center; border-top: 2px solid #cecece; border-bottom: 2px solid #cecece;">
+      <h1 style="
+          font-weight: 200;
+          font-size: 24px;
+          line-height: 27px;
+          font-style: italic;
+      ">Love letter from {{user}}</h1>
+    </section> -->
+    <section style="
+      margin: 2em 1em;
+    ">
+      <p style="font-size: 18px;
+      line-height: 16px;
+      color: #374957;">
+{{ letter }}
+      </p>
+    </section>
+    <section class="btn-container" style="display: flex;
+      align-items: center;
+      justify-content: center;
+    ">
+      <button type="button" style="
+        background: #d2120f;
+        border: 1px solid #d2120f;
+        border-radius: 8px;
+        padding: 16px 28px;
+        color: #fff;
+        font-size: 18px;
+        line-height: 28px;
+      ">Action button</button>
+    </section>
+  </main>
+  <footer style="width: 100%; padding: 0.5em; position: absolute;
+  bottom: 0; display: flex;
+  gap: 0.5em; flex-direction: column; align-items: center; justify-content: center; align-items: center;">
+    <ul class="socials"
+      style="width: 100%;
+      display: flex;
+      gap: 1em;
+      list-style: none; align-items: center; justify-content: center;
+      align-items: center;">
+      <li>
+        <img src="https://api.loveme.hng.tech/static/twitter.jpg" alt="">
+      </li>
+      <li>
+        <img src="https://api.loveme.hng.tech/static/facebook.jpg" alt="">
+      </li>
+      <li>
+        <img src="https://api.loveme.hng.tech/static/linkedin.jpg" alt="">
+      </li>
+      <li>
+        <img src="https://api.loveme.hng.tech/static/instagram.jpg" alt="">
+      </li>
+    </ul>
+    <div style="width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    ">
+      <img src="https://api.loveme.hng.tech/static/logo-footer.jpg" alt="">
+    </div>
+    <div>
+      <p style="font-size: 12px;
+      line-height: 12px;
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #858B8F;">Copyright © 2022. All rights reserved. <br/> LoveMe Inc. Generate your personalized letter.</p>
+    </div>
+  </footer>
 </body>
+
 </html>
