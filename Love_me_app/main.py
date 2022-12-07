@@ -61,11 +61,11 @@ allow_headers=['*'])
 # can easily be accessed in the route handler - as metrics are often
 # created in a different module than where they are used.
 app.state.users_events_counter = Counter("events", "Number of events.")
-#app.state.REQUESTS_PROCESSING_TIME = Histogram(
-#    "fastapi_requests_duration_seconds",
- #   "Histogram of requests processing time by path (in seconds)",
-#   ["method", "path", "app_name"],
-#)
+app.state.requests_processing_time = Histogram(
+    "request_processing_time",
+    "HTTP request processing time in seconds",
+#   ["method", "path", "status_code", "headers", "app_name"],
+)
 #middleware for prometheus
 app.add_middleware(MetricsMiddleware)
 app.add_route("/metrics", metrics)
