@@ -43,12 +43,13 @@ padding: 0px;">
     </section> -->
     <section style="
       margin: 2em 1em;
-    ">
+    ">{% for i in letter %}
       <p style="font-size: 18px;
       line-height: 16px;
       color: #374957;">
-{{ letter }}
+{{ i }}
       </p>
+  {% endfor %}
     </section>
     <section class="btn-container" style="display: flex;
       align-items: center;

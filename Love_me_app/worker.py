@@ -35,7 +35,7 @@ async def send_email(user, letter, recepient):
     message=MessageSchema(
         subject=f'Love letter from {user}',
         recipients=[recepient,],
-        template_body={'user':user, 'letter':letter},
+        template_body={'user':user, 'letter':letter.split('\n\n')},
         subtype='html'
 
     )
