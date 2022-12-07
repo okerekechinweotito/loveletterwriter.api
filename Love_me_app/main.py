@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from .models import * 
 from .database import engine
 from fastapi.middleware.cors import CORSMiddleware
+from aioprometheus import Counter, MetricsMiddleware
+from aioprometheus.asgi.starlette import metrics
 from .import models
 from .database import engine
 from .routers import ai_trainer,authentication,letter,receiver,schedule,subscription,transaction,users,product_review,dashboard,contact_page,mailsubscriber, role_application, feedback, admin, reset, chat_bot
@@ -53,6 +55,16 @@ allow_origins=['*'],
 allow_credentials=True,
 allow_methods=['*'],
 allow_headers=['*'])
+
+# Any custom application metrics are automatically included in the exposed
+# metrics. It is a good idea to attach the metrics to 'app.state' so they
+# can easily be accessed in the route handler - as metrics are often
+# created in a different module than where they are used.
+app.state.users_events_counter = Counter("events", "Number of events.")
+
+#middleware for prometheus
+app.add_middleware(MetricsMiddleware)
+app.add_route("/metrics", metrics)
 
 
 app.include_router(authentication.router)
