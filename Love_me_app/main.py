@@ -60,7 +60,7 @@ allow_headers=['*'])
 # metrics. It is a good idea to attach the metrics to 'app.state' so they
 # can easily be accessed in the route handler - as metrics are often
 # created in a different module than where they are used.
-app.state.users_events_counter = Counter("events", "Number of events.")
+#app.state.users_events_counter = Counter("events", "Number of events.")
 app.state.requests_processing_time = Histogram(
     "request_processing_time",
     "HTTP request processing time in seconds",
