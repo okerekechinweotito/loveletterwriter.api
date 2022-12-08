@@ -1,12 +1,14 @@
 from fastapi import APIRouter,HTTPException,status
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from Love_me_app.database import get_db
 from fastapi import Depends
 from ..dependencies import get_current_user
-from ..schemas import ProductReviews,PydanticReview
+from ..schemas import ProductReviews
 from ..models import ProductReview as ProductReviewModel
-from fastapi_pagination import Page, add_pagination, paginate
+
 from datetime import datetime
+from ..models import User
 router = APIRouter(tags=['product_review'],prefix="/review")
 
 
@@ -33,13 +35,25 @@ def create_review(productReview: ProductReviews, user:dict=Depends(get_current_u
 
 @router.get('/all')
 def get_reviews( db:Session = Depends(get_db)):
+    reviews = (
+        db.query(ProductReviewModel, User)
+        .join(User, ProductReviewModel.user_id == User.id).order_by(func.random()).limit(10)
+        .all()
+    )
+    
 
-    reviews = db.query(ProductReviewModel).all()
-    for review in reviews:
-        review.user
-        print(review.user)
-        
-    return reviews
+    return [
+        {
+            "id": review.ProductReview.id,
+            "review": review.ProductReview.review,
+            "date_created": review.ProductReview.date_created,
+            "user_id": review.ProductReview.user_id,
+            "first_name": review.User.first_name,
+            "last_name": review.User.last_name,
+            "image": review.User.image,
+        }
+        for review in reviews
+    ]
 
 
 @router.delete('/{review_id}')
