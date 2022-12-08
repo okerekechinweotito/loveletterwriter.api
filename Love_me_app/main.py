@@ -72,7 +72,7 @@ async def startup():
         inprogress_name="inprogress",
         inprogress_labels=True,
     )
-    instrumentator.add(metrics.latency(buckets=(3, 4, 5,)))
+    instrumentator.add(metrics.latency(buckets=(3, 4, 5, 10, 15,)))
 
     instrumentator.instrument(app).expose(app, include_in_schema=False, should_gzip=True)
     
