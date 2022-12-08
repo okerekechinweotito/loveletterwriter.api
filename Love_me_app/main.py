@@ -66,7 +66,7 @@ async def startup():
         should_group_status_codes=False,
         should_ignore_untemplated=False,
         should_respect_env_var=True,
-        should_instrument_requests_inprogress=True,
+        should_instrument_requests_inprogress=False,
         excluded_handlers=["/metrics"],
         env_var_name="ENABLE_METRICS",
         inprogress_name="inprogress",
