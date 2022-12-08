@@ -48,9 +48,14 @@ def get_reviews( db:Session = Depends(get_db)):
             "review": review.ProductReview.review,
             "date_created": review.ProductReview.date_created,
             "user_id": review.ProductReview.user_id,
+            "user": 
+                {
             "first_name": review.User.first_name,
             "last_name": review.User.last_name,
             "image": review.User.image,
+             
+            }
+                           
         }
         for review in reviews
     ]
