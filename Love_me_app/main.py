@@ -59,20 +59,23 @@ allow_headers=['*'])
 # async def startup():
 #    Instrumentator().instrument(app).expose(app)
 
-instrumentator = Instrumentator(
-    should_group_status_codes=False,
-    should_ignore_untemplated=True,
-    should_respect_env_var=True,
-    should_instrument_requests_inprogress=True,
-    excluded_handlers=["None", "/metrics"],
-    env_var_name="ENABLE_METRICS",
-    inprogress_name="inprogress",
-    inprogress_labels=True,
-)
-instrumentator.add(metrics.latency(buckets=(3, 4, 5, 10)))
 
-instrumentator.expose(app, include_in_schema=False, should_gzip=True)
+@app.on_event("startup")
+async def startup():
+    instrumentator = Instrumentator(
+        should_group_status_codes=False,
+        should_ignore_untemplated=True,
+        should_respect_env_var=True,
+        should_instrument_requests_inprogress=True,
+        excluded_handlers=["/metrics"],
+        env_var_name="ENABLE_METRICS",
+        inprogress_name="inprogress",
+        inprogress_labels=True,
+    )
+    instrumentator.add(metrics.latency(buckets=(3, 4, 5, 10)))
 
+    instrumentator.expose(app, include_in_schema=False, should_gzip=True)
+    
 app.include_router(authentication.router)
 app.include_router(ai_trainer.router)
 app.include_router(letter.router)
