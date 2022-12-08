@@ -139,3 +139,19 @@ async def upload_image(image: UploadFile = File(...), user:dict=Depends(get_curr
     db.commit()
     db.close()
     return {'profile_image': image_url, "details":"Check Your Profile.." }
+
+
+
+"""
+endpoint to update user profile image to app's default profile image
+"""   
+@router.patch("/remove-image")
+async def remove_image(user:dict = Depends(get_current_user), db:Session = Depends(get_db)):
+    if not user:
+        raise HTTPException(status_code=404, detail="User not Found")
+    current_user= db.query(models.User).filter(models.User.id == user.id)
+    default_user_image ="/static/default_user_image.jpg"
+    current_user.update({models.User.image : default_user_image}, synchronize_session=False)
+    db.commit()
+    db.close()
+    return{"Profile Image Removed"}
