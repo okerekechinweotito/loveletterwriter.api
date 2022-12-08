@@ -64,7 +64,7 @@ allow_headers=['*'])
 async def startup():
     instrumentator = Instrumentator(
         should_group_status_codes=False,
-        should_ignore_untemplated=False,
+        should_ignore_untemplated=True,
         should_respect_env_var=True,
         should_instrument_requests_inprogress=False,
         excluded_handlers=["/metrics"],
