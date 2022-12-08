@@ -129,6 +129,7 @@ class UserDetails(UserBase):
     free_trial:bool
     is_reminder:bool
     date_created:datetime
+    last_active:datetime
 
     class Config:
         orm_mode=True
