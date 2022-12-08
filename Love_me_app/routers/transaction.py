@@ -42,10 +42,12 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
             ref_no = event.data.object.id,
             date_created = datetime.utcfromtimestamp(int(event.data.object.created)).strftime('%Y-%m-%d %H:%M:%S')
         )
-        rrr = db.query(models.CustomerSubscription).filter(models.CustomerSubscription.user_id == event.data.object.metadata.user_id).first()
-        # print(rrr)
-        if rrr:
-            rrr.subscription_id = event.data.object.subscription
+        #checking if the user already has a subscription id
+        sub_query = db.query(models.CustomerSubscription).filter(models.CustomerSubscription.user_id == event.data.object.metadata.user_id).first()
+        
+        if sub_query:
+            #update if exists
+            sub_query.subscription_id = event.data.object.subscription
             db.commit()
         insert_sub = models.CustomerSubscription(user_id=event.data.object.metadata.user_id, subscription_id=event.data.object.subscription)
         db.add(insert_sub)
@@ -82,8 +84,9 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
         except Exception as e:
             print(str(e))
         print("saved to data base..........................................")
-        print(event.data.object)
+        # print(event.data.object)
 
+    #not really needed
     elif event['type'] == 'customer.subscription.trial_will_end':
         print(event.data.object)
 
@@ -91,8 +94,7 @@ async def completed(requests:Request,stripe_signature:str = Header(), db:Session
     
 
 
-# def verify_payment():
-#     completed()
+
 
 @router.get("/transactions",description="get all the transaction in the db")
 async def transactions_data(db: Session = Depends(get_db)):
@@ -124,7 +126,7 @@ async def create_customer_object(user:dict = Depends(get_current_user),db: Sessi
     return HTTPException(status_code=401, detail="Please Login")
 
 
-"""this should be here"""
+"""this should be here, it might be needed"""
 # @router.post("/api/v1/transaction/create-subscription/{plan_id}")
 # async def create_subscription_object(plan_id:str,user:dict = Depends(get_current_user),db: Session = Depends(get_db)):
 #     if user:
