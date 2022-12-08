@@ -72,9 +72,9 @@ async def startup():
         inprogress_name="inprogress",
         inprogress_labels=True,
     )
-    instrumentator.add(metrics.latency(buckets=(3, 4, 5, 10)))
+    instrumentator.add(metrics.latency(buckets=(3, 4, 5,)))
 
-    instrumentator.expose(app, include_in_schema=False, should_gzip=True)
+    instrumentator.instrument(app).expose(app, include_in_schema=False, should_gzip=True)
     
 app.include_router(authentication.router)
 app.include_router(ai_trainer.router)
