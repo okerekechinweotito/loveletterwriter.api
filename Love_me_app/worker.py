@@ -17,9 +17,9 @@ celery=Celery(__name__, broker=os.getenv('CELERY_BROKER_URL', None))
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 
 env_config = ConnectionConfig(
-   MAIL_USERNAME='livingstonemaxwell971@gmail.com',
+   MAIL_USERNAME='contact.lovemeapp@gmail.com',
     MAIL_PASSWORD=os.getenv('MAIL2_PASSWORD'),
-    MAIL_FROM='livingstonemaxwell971@gmail.com',
+    MAIL_FROM='contact.lovemeapp@gmail.com',
     MAIL_PORT=587,
     MAIL_SERVER='smtp.gmail.com',
     MAIL_FROM_NAME='LoveMe',
