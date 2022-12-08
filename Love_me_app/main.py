@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from .models import * 
 from .database import engine
-from prometheus_fastapi_instrumentator import Instrumentator
+from prometheus_fastapi_instrumentator import Instrumentator, metrics
 from fastapi.middleware.cors import CORSMiddleware
 from .import models
 from .database import engine
