@@ -47,7 +47,7 @@ tags_metadata = [
 apm_config = {
  'SERVICE_NAME': 'Loveme',
  'SERVER_URL': 'http://localhost:8200',
- 'ENVIRONMENT': 'prod',
+ 'ENVIRONMENT': 'production',
 }
 apm = make_apm_client(apm_config)
 
