@@ -280,15 +280,12 @@ def delete_multiple_mail_subscribers(multiple_ids:list,user:dict=Depends(get_cur
 def delete_multiple_users(multiple_ids:list,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
     if current_user is not None:
-        count = 0
-        entries = db.query(User).filter(User.id.in_(multiple_ids)).all()
+        entries = db.query(User).filter(User.id.in_(multiple_ids)).filter(User.is_sub_active==False).all()
         for entry in entries:
-            if not entry.is_sub_active:
-                count+=1
                 db.delete(entry)
                 db.commit()
                 return {
-                'entries': count,
+                'entries': len(entries),
                 'message': 'deleted'
                 }
     else:
