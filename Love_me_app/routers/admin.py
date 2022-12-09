@@ -282,15 +282,15 @@ def delete_multiple_users(multiple_ids:list,user:dict=Depends(get_current_user),
     current_user = user
     if current_user is not None:
         try:
+            db.query(ChatBot).filter(ChatBot.user_id.in_(multiple_ids)).delete(synchronize_session=False)
             entries = db.query(User).filter(User.id.in_(multiple_ids)).filter(User.is_sub_active==False).all()
             for entry in entries:
                 db.delete(entry)
                 db.commit()
-            
         except Exception as e:
-            db.query(ChatBot).filter(ChatBot.user_id.in_(multiple_ids)).delete(synchronize_session=False)
-            
-            
+
+                return {"err":
+                str(e)}
         else:
             return {
                 'entries': len(entries),
