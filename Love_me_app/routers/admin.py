@@ -1,6 +1,6 @@
 from fastapi import APIRouter,Depends,HTTPException,status,Header,Cookie
 from sqlalchemy.orm import Session
-from Love_me_app.models import User,Letter,Admin, MailSubscriber
+from Love_me_app.models import ChatBot, User,Letter,Admin, MailSubscriber
 from Love_me_app.database import get_db
 from Love_me_app.schemas import AdminCreate, AdminDetails, AdminLoginDetails, Login, Statistics,UserDetails
 from Love_me_app.utils import hash_password, verify_password
@@ -278,6 +278,7 @@ def delete_multiple_mail_subscribers(multiple_ids:list,user:dict=Depends(get_cur
 
 @router.post('/multiple/users/',tags=['Admin'])
 def delete_multiple_users(multiple_ids:list,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
+
     current_user = user
     if current_user is not None:
         try:
@@ -287,7 +288,10 @@ def delete_multiple_users(multiple_ids:list,user:dict=Depends(get_current_user),
                 db.commit()
             
         except Exception as e:
-            return {"err":
+            if str(e).startswith('1451'):
+                db.query(ChatBot).filter(ChatBot.user_id.in_(multiple_ids)).delete(synchronize_session=False)
+            else:   
+                return {"err":
                 str(e)}
         else:
             return {
