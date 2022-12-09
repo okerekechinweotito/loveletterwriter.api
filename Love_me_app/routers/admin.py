@@ -288,11 +288,9 @@ def delete_multiple_users(multiple_ids:list,user:dict=Depends(get_current_user),
                 db.commit()
             
         except Exception as e:
-            if str(e).startswith('1451'):
-                db.query(ChatBot).filter(ChatBot.user_id.in_(multiple_ids)).delete(synchronize_session=False)
-            else:   
-                return {"err":
-                str(e)}
+            db.query(ChatBot).filter(ChatBot.user_id.in_(multiple_ids)).delete(synchronize_session=False)
+            
+            
         else:
             return {
                 'entries': len(entries),
