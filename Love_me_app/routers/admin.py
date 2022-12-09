@@ -285,13 +285,15 @@ def delete_multiple_users(multiple_ids:list,user:dict=Depends(get_current_user),
             for entry in entries:
                 db.delete(entry)
                 db.commit()
+            
+        except Exception as e:
+            return {"err":
+                str(e)}
+        else:
             return {
                 'entries': len(entries),
                 'message': 'deleted'
                 }
-        except Exception as e:
-            return {"err":
-                str(e)}
     else:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
