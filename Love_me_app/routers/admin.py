@@ -280,14 +280,17 @@ def delete_multiple_mail_subscribers(multiple_ids:list,user:dict=Depends(get_cur
 def delete_multiple_users(multiple_ids:list,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
     if current_user is not None:
-        entries = db.query(User).filter(User.id.in_(multiple_ids)).filter(User.is_sub_active==False).all()
-        for entry in entries:
+        try:
+            entries = db.query(User).filter(User.id.in_(multiple_ids)).filter(User.email=="false").all()
+            for entry in entries:
                 db.delete(entry)
                 db.commit()
                 return {
                 'entries': len(entries),
                 'message': 'deleted'
                 }
+        except Exception as e:
+            return e
     else:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
