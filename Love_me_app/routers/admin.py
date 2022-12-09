@@ -215,17 +215,19 @@ def delete_single_user(user_id,user:dict=Depends(get_current_user),db:Session= D
         user = db.query(User).filter(User.id==user_id).first()
         if user is not None:
             if not user.is_sub_active:
-                db.query(ChatBot).filter(ChatBot.user_id==user_id).delete(synchronize_session=False)
-                db.delete(user)
-                db.commit()
-                return {
-                "Deleted Successfully"
-                }
+                try:
+                    db.query(ChatBot).filter(ChatBot.user_id==user_id).delete(synchronize_session=False)
+                    db.delete(user)
+                    db.commit()
+                    return {
+                    "Deleted Successfully"
+                    }
+                except Exception as e:
+                    return {
+                        "error": str(e)
+                    }
             
-            raise HTTPException(status.HTTP_403_FORBIDDEN, detail="User Has an Active Subscription")
-            
-            
-                 
+            raise HTTPException(status.HTTP_403_FORBIDDEN, detail="User Has an Active Subscription")   
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
