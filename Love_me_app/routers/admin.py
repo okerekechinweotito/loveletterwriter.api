@@ -214,16 +214,15 @@ def delete_single_user(user_id,user:dict=Depends(get_current_user),db:Session= D
     if current_user is not None:
         user = db.query(User).filter(User.id==user_id).first()
         if user is not None:
-            if user.is_sub_active:
-                 return{
-                    "This User has an active Subscription"
-                 }
-            else:
+            if not user.is_sub_active:
                 db.delete(user)
                 db.commit()
                 return {
                 "Deleted Successfully"
                 }
+            return{
+                    "This User has an active Subscription"
+                 }
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
