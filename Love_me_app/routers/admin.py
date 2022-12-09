@@ -216,7 +216,11 @@ def delete_single_user(user_id,user:dict=Depends(get_current_user),db:Session= D
         if user is not None:
             if not user.is_sub_active:
                 try:
-                    db.query(ChatBot).filter(ChatBot.user_id==user_id).delete(synchronize_session=False)
+                    chats = db.query(ChatBot).filter(ChatBot.user_id==user_id)
+                    for chat in chats:
+                        db.delete(chat)
+                
+                    
                     db.delete(user)
                     db.commit()
                     return {
