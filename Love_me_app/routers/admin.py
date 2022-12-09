@@ -220,9 +220,11 @@ def delete_single_user(user_id,user:dict=Depends(get_current_user),db:Session= D
                 return {
                 "Deleted Successfully"
                 }
-            return{
-                    "This User has an active Subscription"
-                 }
+            
+            raise HTTPException(status.HTTP_403_FORBIDDEN, detail="User Has an Active Subscription")
+            
+            
+                 
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
