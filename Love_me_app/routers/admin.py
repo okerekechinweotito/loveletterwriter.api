@@ -290,7 +290,7 @@ def delete_multiple_users(multiple_ids:list,user:dict=Depends(get_current_user),
                 'message': 'deleted'
                 }
         except Exception as e:
-            return e
+            return str(e)
     else:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
