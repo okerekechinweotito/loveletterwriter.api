@@ -7,6 +7,7 @@ from .import models
 from .database import engine
 from .routers import ai_trainer,authentication,letter,receiver,schedule,subscription,transaction,users,product_review,dashboard,contact_page,mailsubscriber, role_application, feedback, admin, reset, chat_bot
 from fastapi.staticfiles import StaticFiles
+from elasticapm.contrib.starlette import make_apm_client, ElasticAPM
 
 tags_metadata = [
     {
@@ -43,6 +44,13 @@ tags_metadata = [
     },
 ]
 
+apm_config = {
+ 'SERVICE_NAME': 'Loveme',
+ 'SERVER_URL': 'http://localhost:5601',
+ 'ENVIRONMENT': 'prod',
+}
+apm = make_apm_client(apm_config)
+
 app = FastAPI(
     title="LoveMeApp",
     description="You don't know how to share your deepest feelings? Why not let an AI write love letters for you? Schedule it so it generates love letters and sends to your loved ones weekly for a small fee.",
@@ -54,6 +62,7 @@ allow_origins=['*'],
 allow_credentials=True,
 allow_methods=['*'],
 allow_headers=['*'])
+app.add_middleware(ElasticAPM, client=apm)
 
 # @app.on_event("startup")
 # async def startup():
