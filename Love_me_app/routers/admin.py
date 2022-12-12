@@ -1,6 +1,6 @@
 from fastapi import APIRouter,Depends,HTTPException,status,Header,Cookie
 from sqlalchemy.orm import Session
-from Love_me_app.models import User,Letter,Admin, MailSubscriber
+from Love_me_app.models import ChatBot, User,Letter,Admin, MailSubscriber
 from Love_me_app.database import get_db
 from Love_me_app.schemas import AdminCreate, AdminDetails, AdminLoginDetails, Login, Statistics,UserDetails
 from Love_me_app.utils import hash_password, verify_password
@@ -104,15 +104,7 @@ def create_admin(db:Session,admin:AdminCreate):
         db.commit()
         db.refresh(new_admin)
         return new_admin
-
-def delete_single_entry(db:Session, id):
-        ad = get_admin_by_id(db,id=id)
-        db.delete(ad)
-        db.commit()
-        return {"Entry deleted"}
   
-
-
 
     
 @router.post('/signup',tags=['Admin Auth'], response_model=AdminDetails)
@@ -158,10 +150,16 @@ def approve(admin_id,user:dict=Depends(get_current_user),db:Session= Depends(get
     if current_user is not None:
         admin = db.query(Admin).filter(Admin.id==admin_id).first()
         if admin is not None:
-            admin.approved = True
-            db.commit()
-            db.refresh(admin)
-            return admin
+            if admin.approved:
+                admin.approved = False
+                db.commit()
+                db.refresh(admin)
+                return admin
+            if not admin.approved:
+                admin.approved = True
+                db.commit()
+                db.refresh(admin)
+                return admin
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Not found")
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired')
 
@@ -202,8 +200,11 @@ def return_subscriber_list(user:dict=Depends(get_current_user),db:Session= Depen
 def delete_single_admin(admin_id,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
     if current_user is not None:
-        delete_single_entry(db=db, id=admin_id)
-        return {"Deleted Successfully"}
+        ad = db.query(Admin).filter(Admin.id==admin_id).first()
+        if ad:
+            db.delete(ad)
+            return {"Deleted Successfully"}
+        raise HTTPException(status.HTTP_404_NOT_FOUND,detail="Entry not found")
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
 
@@ -211,13 +212,26 @@ def delete_single_admin(admin_id,user:dict=Depends(get_current_user),db:Session=
 def delete_single_user(user_id,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
     if current_user is not None:
-        user = get_user_by_id(db=db, id=user_id)
+        user = db.query(User).filter(User.id==user_id).first()
         if user is not None:
-            db.delete(user)
-            db.commit()
-            return {
-                "Deleted Successfully"
-            }
+            if not user.is_sub_active:
+                try:
+                    chats = db.query(ChatBot).filter(ChatBot.user_id==user_id)
+                    for chat in chats:
+                        db.delete(chat)
+                
+                    
+                    db.delete(user)
+                    db.commit()
+                    return {
+                    "Deleted Successfully"
+                    }
+                except Exception as e:
+                    return {
+                        "error": str(e)
+                    }
+            
+            raise HTTPException(status.HTTP_403_FORBIDDEN, detail="User Has an Active Subscription")   
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 
@@ -226,7 +240,7 @@ def delete_single_user(user_id,user:dict=Depends(get_current_user),db:Session= D
 def delete_single_mail_subscriber(user_id,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
     current_user = user
     if current_user is not None:
-        user = db.query(User).filter(User.id== user_id).first()
+        user = db.query(MailSubscriber).filter(MailSubscriber.id== user_id).first()
         if user is not None:
             db.delete(user)
             db.commit()
@@ -271,16 +285,24 @@ def delete_multiple_mail_subscribers(multiple_ids:list,user:dict=Depends(get_cur
 
 @router.post('/multiple/users/',tags=['Admin'])
 def delete_multiple_users(multiple_ids:list,user:dict=Depends(get_current_user),db:Session= Depends(get_db)):
+
     current_user = user
     if current_user is not None:
-        entries = db.query(User).filter(User.id.in_(multiple_ids)).all()
-        for entry in entries:
-            db.delete(entry)
-            db.commit()
+        try:
+            db.query(ChatBot).filter(ChatBot.user_id.in_(multiple_ids)).delete(synchronize_session=False)
+            entries = db.query(User).filter(User.id.in_(multiple_ids)).filter(User.is_sub_active==False).all()
+            for entry in entries:
+                db.delete(entry)
+                db.commit()
+        except Exception as e:
+
+                return {"err":
+                str(e)}
+        else:
             return {
                 'entries': len(entries),
                 'message': 'deleted'
-            }
+                }
     else:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail='invalid access token or access token has expired', headers={'WWW-Authenticate': 'Bearer'})
 

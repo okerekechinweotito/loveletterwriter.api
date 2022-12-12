@@ -126,4 +126,5 @@ Werkzeug
 wrapt
 wsproto
 aioprometheus[starlette]
-
+prometheus-fastapi-instrumentator
+elastic-apm

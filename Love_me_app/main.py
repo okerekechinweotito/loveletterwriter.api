@@ -1,13 +1,13 @@
 from fastapi import FastAPI
 from .models import * 
 from .database import engine
+from prometheus_fastapi_instrumentator import Instrumentator, metrics
 from fastapi.middleware.cors import CORSMiddleware
-from aioprometheus import Counter, Gauge, Histogram, MetricsMiddleware
-from aioprometheus.asgi.starlette import metrics
 from .import models
 from .database import engine
 from .routers import ai_trainer,authentication,letter,receiver,schedule,subscription,transaction,users,product_review,dashboard,contact_page,mailsubscriber, role_application, feedback, admin, reset, chat_bot
 from fastapi.staticfiles import StaticFiles
+from elasticapm.contrib.starlette import make_apm_client, ElasticAPM
 
 tags_metadata = [
     {
@@ -44,6 +44,13 @@ tags_metadata = [
     },
 ]
 
+apm_config = {
+ 'SERVICE_NAME': 'Loveme',
+ 'SERVER_URL': 'http://localhost:8200',
+ 'ENVIRONMENT': 'production',
+}
+apm = make_apm_client(apm_config)
+
 app = FastAPI(
     title="LoveMeApp",
     description="You don't know how to share your deepest feelings? Why not let an AI write love letters for you? Schedule it so it generates love letters and sends to your loved ones weekly for a small fee.",
@@ -55,22 +62,29 @@ allow_origins=['*'],
 allow_credentials=True,
 allow_methods=['*'],
 allow_headers=['*'])
+app.add_middleware(ElasticAPM, client=apm)
 
-# Any custom application metrics are automatically included in the exposed
-# metrics. It is a good idea to attach the metrics to 'app.state' so they
-# can easily be accessed in the route handler - as metrics are often
-# created in a different module than where they are used.
-#app.state.users_events_counter = Counter("events", "Number of events.")
-app.state.requests_processing_time = Histogram(
-    "events",
-    "Event times in seconds",
-#   ["method", "path", "status_code", "headers", "app_name"],
-)
-#middleware for prometheus
-app.add_middleware(MetricsMiddleware)
-app.add_route("/metrics", metrics)
+# @app.on_event("startup")
+# async def startup():
+#    Instrumentator().instrument(app).expose(app)
 
 
+@app.on_event("startup")
+async def startup():
+    instrumentator = Instrumentator(
+        should_group_status_codes=False,
+        should_ignore_untemplated=True,
+        should_respect_env_var=True,
+        should_instrument_requests_inprogress=False,
+        excluded_handlers=["/metrics"],
+        env_var_name="ENABLE_METRICS",
+        inprogress_name="inprogress",
+        inprogress_labels=True,
+    )
+    instrumentator.add(metrics.latency(buckets=(0.01, 0.1, 0.5, 1, 1.5, 2, 3, 4, 4.5, 5, 7.5, 10, 15, 20, 25)))
+
+    instrumentator.instrument(app).expose(app, include_in_schema=False, should_gzip=True)
+    
 app.include_router(authentication.router)
 app.include_router(ai_trainer.router)
 app.include_router(letter.router)

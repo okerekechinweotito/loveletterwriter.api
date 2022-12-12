@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import Depends,  HTTPException, Cookie, Header
 from .database import get_db
 from sqlalchemy.orm import Session
@@ -21,6 +22,8 @@ def get_current_user(Authorize:AuthJWT=Depends(), db:Session=Depends(get_db), ac
         Authorize.jwt_required()
         user_id=Authorize.get_jwt_subject()
         user=UserCrud.get_user_by_id(db, user_id)
+        user.last_active = datetime.utcnow()
+        db.commit()
         return user
     except:
         raise exception
