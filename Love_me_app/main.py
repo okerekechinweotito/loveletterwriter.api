@@ -3,6 +3,7 @@ from .models import *
 from .database import engine
 from prometheus_fastapi_instrumentator import Instrumentator, metrics
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware import Middleware
 from .import models
 from .database import engine
 from .routers import ai_trainer,authentication,letter,receiver,schedule,subscription,transaction,users,product_review,dashboard,contact_page,mailsubscriber, role_application, feedback, admin, reset, chat_bot
@@ -51,17 +52,32 @@ apm_config = {
 }
 apm = make_apm_client(apm_config)
 
+middleware = [
+    Middleware(
+        CORSMiddleware,
+        allow_origins=['*'],
+        allow_credentials=True,
+        allow_methods=['*'],
+        allow_headers=['*']
+    )
+]
+
 app = FastAPI(
+    middleware=middleware,
     title="LoveMeApp",
     description="You don't know how to share your deepest feelings? Why not let an AI write love letters for you? Schedule it so it generates love letters and sends to your loved ones weekly for a small fee.",
     openapi_tags=tags_metadata
 )
 Base.metadata.create_all(engine)
-app.add_middleware(CORSMiddleware,
-allow_origins=['*'],
-allow_credentials=True,
-allow_methods=['*'],
-allow_headers=['*'])
+
+# app.add_middleware(CORSMiddleware,
+# allow_origins=['*'],
+# allow_credentials=True,
+# allow_methods=['*'],
+# allow_headers=['*'])
+
+
+
 app.add_middleware(ElasticAPM, client=apm)
 
 # @app.on_event("startup")
