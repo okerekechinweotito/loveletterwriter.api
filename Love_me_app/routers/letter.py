@@ -83,7 +83,7 @@ async def get_all_letter(user:dict = Depends(get_current_user), db:Session=Depen
     
 
 @router.get("/sent")
-def get_sent_letter(user:dict=Depends(get_current_user), db:Session=Depends(get_db)):
+async def get_sent_letter(user:dict=Depends(get_current_user), db:Session=Depends(get_db)):
     sent_letters = []
     if user:
         # get all sent letters from database
@@ -101,7 +101,7 @@ def get_sent_letter(user:dict=Depends(get_current_user), db:Session=Depends(get_
 
 
 @router.post("/send/{receiver_id}")
-def send_letter(payload:schemas.SendLetter,receiver_id,user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
+async def send_letter(payload:schemas.SendLetter,receiver_id,user:dict=Depends(get_current_user), db:Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Please log in")
     letter=payload.letter
@@ -141,3 +141,13 @@ def translate_letter(payload:schemas.TranslateLetter,user:dict=Depends(get_curre
     response = openai.Completion.create(engine = "text-davinci-002",prompt = f"Translate to {language}/n/n{letter}",
                                         temperature = 0,max_tokens = 200,top_p = 1,frequency_penalty = 0,presence_penalty = 0)
     return {response.choices[0].text}
+
+@router.delete("/delete-letter/{letter_id}")
+async def delete_letter(letter_id, user:dict=Depends(get_current_user), db: Session=Depends(get_db)):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Log In")
+    filtered_letter = db.query(models.Letter).filter(models.Letter.id == letter_id)
+    filtered_letter.delete(synchronize_session=False)
+    db.commit()
+    db.close()
+    return {"Letter deleted successfully"}
