@@ -65,7 +65,7 @@ class Schedule(Base):
     __tablename__ = "schedules"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id',ondelete='CASCADE'))
-    receiver_id = Column(Integer, ForeignKey('receivers.id'))
+    receiver_id = Column(Integer, ForeignKey('receivers.id'), nullable=False)
     letter_id=Column(Integer,ForeignKey('letters.id'))
     schedule_time = Column(DateTime(timezone=True))
     completed=Column(Boolean, default=False)
