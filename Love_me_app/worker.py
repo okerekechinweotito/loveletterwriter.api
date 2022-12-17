@@ -29,13 +29,13 @@ env_config = ConnectionConfig(
     TEMPLATE_FOLDER='templates',
  )
 
-async def send_email(user, letter, recepient):
+async def send_email(user, letter, recepient,user_email):
 
 
     message=MessageSchema(
         subject=f'Love letter from {user}',
         recipients=[recepient,],
-        template_body={'user':user, 'letter':letter.split('\n\n')},
+        template_body={'email':user_email, 'letter':letter.split('\n\n')},
         subtype='html'
 
     )
@@ -46,9 +46,9 @@ async def send_email(user, letter, recepient):
         return 'working'
 
 @celery.task
-def send_letter(user, letter, recepient, id):
+def send_letter(user, letter, recepient, id, user_email):
     try:
-        asyncio.run(send_email(user, letter, recepient))
+        asyncio.run(send_email(user, letter, recepient,user_email))
         db=SessionLocal()
         letter=db.query(Letter).filter(Letter.id==id).first()
         letter.date_sent=datetime.now(tz=timezone.utc)
@@ -66,7 +66,7 @@ def send_scheduled_letters():
     schedules=db.query(Schedule).filter(Schedule.completed== False,Schedule.schedule_time <= datetime.now(tz=timezone.utc)+timedelta(hours=1)).all()
     if schedules:
         for schedule in schedules:
-                send_letter.delay(f"{schedule.user.first_name} {schedule.user.last_name}", schedule.letter.letter, schedule.letter.receiver.email, schedule.letter.id)
+                send_letter.delay(f"{schedule.user.first_name} {schedule.user.last_name}", schedule.letter.letter, schedule.letter.receiver.email, schedule.letter.id, schedule.user.email)
                 schedule.completed=True
                 db.commit()
                 db.refresh(schedule)
