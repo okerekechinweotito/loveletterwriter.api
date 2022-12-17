@@ -23,10 +23,13 @@ def schedule_letter(letter_id:int,user:dict=Depends(get_current_user),db:Session
     obj=db.query(models.Letter).filter(models.Letter.id==letter_id, models.Letter.user_id ==user.id).first()
     if not obj:
         raise HTTPException(detail='this letter does not exists', status_code=404)
-    schedule=models.Schedule(user_id=user.id, letter_id=letter_id, schedule_time=date_scheduled)
-    db.add(schedule)
-    db.commit()
-    db.refresh(schedule)
+    try:
+     schedule=models.Schedule(user_id=user.id, letter_id=letter_id, schedule_time=date_scheduled)
+     db.add(schedule)
+     db.commit()
+     db.refresh(schedule)
+    except:
+      raise HTTPException(detail='invalid token or token has expired', status_code=401) 
     return {'message':'letter has been scheduled'}
 
 @router.get('/schedule/{schedule_id}', response_model=schemas.Schedule_Letter, summary='endpoint to get a particular schedule')
